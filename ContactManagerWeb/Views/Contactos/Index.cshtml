@@ -28,7 +28,6 @@
 
         .app { display: flex; height: 100%; width: 100%; }
 
-        /* Doble arroba para que ASP.NET no dé error. */
         @@keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -75,7 +74,6 @@
         .grid-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; animation: fadeUp 0.5s ease-out forwards; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-bottom: 30px; }
         
-        /* TARJETA FAVORITO (Mismo tamaño que el resto) */
         .fav-card { background: linear-gradient(135deg, #2D2554 0%, var(--bg-card) 100%); border: 1px solid #4B3F85; border-radius: 12px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; opacity: 0; animation: fadeUp 0.6s ease-out forwards; }
         .fav-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 25px rgba(0,0,0,0.3); border-color: #6B5BFF; }
         .fav-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #FF66C4, #A653FF); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; border: 2px solid #3E346B; }
@@ -87,12 +85,7 @@
         .act-btn:hover { color: white; transform: scale(1.2); }
         .act-btn.star { color: #FBBF24; }
 
-        /* TARJETAS NORMALES */
         .c-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 20px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; opacity: 0; animation: fadeUp 0.6s ease-out forwards; }
-        .c-card:nth-child(1) { animation-delay: 0.1s; }
-        .c-card:nth-child(2) { animation-delay: 0.2s; }
-        .c-card:nth-child(3) { animation-delay: 0.3s; }
-        .c-card:nth-child(4) { animation-delay: 0.4s; }
         .c-card:hover { border-color: #4A4A63; transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .sm-avatar { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; color: white; transition: transform 0.3s; }
         .c-card:hover .sm-avatar { transform: rotate(-10deg); }
@@ -156,14 +149,18 @@
         </div>
 
         <div class="content">
-            @{ var fav = Model.FirstOrDefault(c => c.EsFavorito) ?? Model.FirstOrDefault(); }
+            @* Lógica para buscar el favorito destacado *@
+            @{ 
+                var fav = Model.OrderByDescending(c => c.EsFavorito).FirstOrDefault(); 
+            }
+            
             @if (fav != null)
             {
                 <div class="grid-label">Favorito Destacado</div>
                 <div class="contacts-grid">
                     <div class="fav-card">
                         <div class="fav-avatar">
-                            @fav.Nombre.Substring(0, 2).ToUpper()
+                            @(fav.Nombre.Length >= 2 ? fav.Nombre.Substring(0, 2).ToUpper() : fav.Nombre.ToUpper())
                         </div>
                         <div class="fav-info">
                             <div class="fav-name">@fav.Nombre</div>
@@ -189,7 +186,7 @@
                             var color = colors[Math.Abs(contact.Nombre.GetHashCode()) % colors.Length]; 
                         }
                         <div class="sm-avatar" style="background-color: @color;">
-                            @contact.Nombre.Substring(0, 2).ToUpper()
+                            @(contact.Nombre.Length >= 2 ? contact.Nombre.Substring(0, 2).ToUpper() : contact.Nombre.ToUpper())
                         </div>
                         <div class="c-info">
                             <div class="c-name">@contact.Nombre</div>
