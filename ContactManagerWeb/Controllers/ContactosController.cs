@@ -33,5 +33,15 @@ namespace ContactManagerWeb.Controllers
             ListaContactos.Add(nuevoContacto);
             return RedirectToAction("Index");
         }
+
+        public IActionResult Frecuentes()
+        {
+            return View();
+        }
+
+        public IActionResult Ayuda()
+        {
+            return View();
+        }
     }
 }
