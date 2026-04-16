@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<ContactManagerWeb.Models.Contacto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     Layout = null; 
@@ -32,7 +33,7 @@
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         @@keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-30px); }
             to { opacity: 1; transform: translateX(0); }
@@ -48,6 +49,7 @@
         .search-side { background-color: #1C1C26; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 30px; transition: 0.3s; }
         .search-side:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(90, 79, 207, 0.2); }
         .search-side input { background: transparent; border: none; color: white; width: 100%; outline: none; }
+        .search-side button { background: transparent; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
         .sec-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px 5px; }
         
@@ -104,33 +106,34 @@
             <div class="logo-dot">📒</div>
             <span class="logo-name">Agenda</span>
         </div>
-        <div class="search-side">
-            <span style="font-size:15px">⌕</span>
-            <input type="text" placeholder="Buscar..." />
-        </div>
+        
+        <form class="search-side" asp-action="Index" method="get">
+            <button type="submit" style="font-size:15px">⌕</button>
+            <input type="text" name="searchString" placeholder="Buscar..." value="@Context.Request.Query["searchString"]" />
+        </form>
 
         <div class="sec-label">Vistas</div>
-        <a href="#" class="nav-item active">
+        <a asp-action="Index" class="nav-item @(string.IsNullOrEmpty(Context.Request.Query["soloFavoritos"]) && string.IsNullOrEmpty(Context.Request.Query["categoria"]) ? "active" : "")">
             <div class="nav-left"><span>👥</span><span class="nav-text">Todos</span></div>
-            <span class="nav-count">@Model.Count()</span>
+            <span class="nav-count">@(ViewBag.TotalTodos ?? 0)</span>
         </a>
-        <a href="#" class="nav-item">
+        <a asp-action="Index" asp-route-soloFavoritos="true" class="nav-item @(Context.Request.Query["soloFavoritos"] == "true" ? "active" : "")">
             <div class="nav-left"><span>⭐</span><span class="nav-text">Favoritos</span></div>
-            <span class="nav-count">@Model.Count(c => c.EsFavorito)</span>
+            <span class="nav-count">@(ViewBag.TotalFavoritos ?? 0)</span>
         </a>
 
         <div class="sec-label">Categorías</div>
-        <a href="#" class="nav-item">
+        <a asp-action="Index" asp-route-categoria="Trabajo" class="nav-item @(Context.Request.Query["categoria"] == "Trabajo" ? "active" : "")">
             <div class="nav-left"><span>💼</span><span class="nav-text">Trabajo</span></div>
-            <span class="nav-count">@Model.Count(c => c.Categoria == "Trabajo")</span>
+            <span class="nav-count">@(ViewBag.TotalTrabajo ?? 0)</span>
         </a>
-        <a href="#" class="nav-item">
+        <a asp-action="Index" asp-route-categoria="Amigos" class="nav-item @(Context.Request.Query["categoria"] == "Amigos" ? "active" : "")">
             <div class="nav-left"><span>🤝</span><span class="nav-text">Amigos</span></div>
-            <span class="nav-count">@Model.Count(c => c.Categoria == "Amigos")</span>
+            <span class="nav-count">@(ViewBag.TotalAmigos ?? 0)</span>
         </a>
-        <a href="#" class="nav-item">
+        <a asp-action="Index" asp-route-categoria="Familia" class="nav-item @(Context.Request.Query["categoria"] == "Familia" ? "active" : "")">
             <div class="nav-left"><span>🏡</span><span class="nav-text">Familia</span></div>
-            <span class="nav-count">@Model.Count(c => c.Categoria == "Familia")</span>
+            <span class="nav-count">@(ViewBag.TotalFamilia ?? 0)</span>
         </a>
 
         <div class="sidebar-footer">
@@ -140,11 +143,13 @@
 
     <main class="main">
         <div class="topbar">
-            <div class="page-title">Contactos</div>
+            <div class="page-title">
+                @(ViewData["FiltroActual"] != null ? ViewData["FiltroActual"] : "Contactos")
+            </div>
             <div class="tab-row">
-                <a href="#" class="tab active">Todos</a>
-                <a href="#" class="tab">Contactos Frecuentes</a>
-                <a href="#" class="tab">Ayuda</a>
+                <a href="@Url.Action("Index", "Contactos")" class="tab active">Todos</a>
+                <a href="@Url.Action("Frecuentes", "Contactos")" class="tab">Contactos Frecuentes</a>
+                <a href="@Url.Action("Ayuda", "Contactos")" class="tab">Ayuda</a>
             </div>
         </div>
 
@@ -154,7 +159,7 @@
                 var fav = Model.OrderByDescending(c => c.EsFavorito).FirstOrDefault(); 
             }
             
-            @if (fav != null)
+            @if (fav != null && fav.EsFavorito)
             {
                 <div class="grid-label">Favorito Destacado</div>
                 <div class="contacts-grid">
@@ -176,29 +181,40 @@
                 </div>
             }
 
-
             <div class="grid-label" style="animation-delay: 0.2s;">Todos los contactos</div>
             <div class="contacts-grid">
-                @foreach (var contact in Model.Where(c => c != fav))
+                @if (!Model.Any())
                 {
-                    <div class="c-card">
-                        @{ 
-                            var colors = new[] { "#295A76", "#8B3E56", "#7A5C29", "#1C5248", "#334166" }; 
-                            var color = colors[Math.Abs(contact.Nombre.GetHashCode()) % colors.Length]; 
-                        }
-                        <div class="sm-avatar" style="background-color: @color;">
-                            @(contact.Nombre.Length >= 2 ? contact.Nombre.Substring(0, 2).ToUpper() : contact.Nombre.ToUpper())
-                        </div>
-                        <div class="c-info">
-                            <div class="c-name">@contact.Nombre</div>
-                            <div class="c-phone">@contact.Telefono</div>
-                        </div>
-                        @if(contact.EsFavorito) {
-                            <button class="c-star" style="color: #FBBF24;">★</button>
-                        } else {
-                            <button class="c-star">☆</button>
-                        }
+                    <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--border-color); animation: fadeUp 0.5s ease-out forwards;">
+                        <div style="font-size: 3.5rem; margin-bottom: 15px;">🕵️‍♂️</div>
+                        <h3 style="color: var(--text-white); font-weight: 600; margin-bottom: 10px;">No se encontraron contactos</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Intenta buscar con otro nombre o limpia los filtros del menú izquierdo.</p>
+                        <a asp-action="Index" class="add-btn" style="display: inline-block; width: auto; padding: 10px 25px; margin-top: 20px;">Ver todos los contactos</a>
                     </div>
+                }
+                else
+                {
+                    @foreach (var contact in Model.Where(c => c != fav || !c.EsFavorito))
+                    {
+                        <div class="c-card">
+                            @{ 
+                                var colors = new[] { "#295A76", "#8B3E56", "#7A5C29", "#1C5248", "#334166" }; 
+                                var color = colors[Math.Abs(contact.Nombre.GetHashCode()) % colors.Length]; 
+                            }
+                            <div class="sm-avatar" style="background-color: @color;">
+                                @(contact.Nombre.Length >= 2 ? contact.Nombre.Substring(0, 2).ToUpper() : contact.Nombre.ToUpper())
+                            </div>
+                            <div class="c-info">
+                                <div class="c-name">@contact.Nombre</div>
+                                <div class="c-phone">@contact.Telefono</div>
+                            </div>
+                            @if(contact.EsFavorito) {
+                                <button class="c-star" style="color: #FBBF24;">★</button>
+                            } else {
+                                <button class="c-star">☆</button>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>

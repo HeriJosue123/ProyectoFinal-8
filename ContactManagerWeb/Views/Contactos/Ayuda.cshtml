@@ -1,0 +1,129 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Ayuda";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+
+<style>
+    :root {
+        --bg-main: #171721;
+        --bg-card: #20202B;
+        --text-white: #FFFFFF;
+        --text-muted: #8A8A9E;
+        --border-color: rgba(255, 255, 255, 0.08);
+        --accent: #5A4FCF;
+    }
+
+    @@keyframes scaleUp {
+        0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @@keyframes slideUpItem {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-wrapper { font-family: 'DM Sans', sans-serif; padding: 40px; color: var(--text-white); }
+    
+    /* Botón de retroceso */
+    .btn-back { 
+        display: inline-flex; align-items: center; gap: 10px; 
+        color: var(--text-muted); text-decoration: none; 
+        font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;
+        margin-bottom: 30px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        padding: 8px 15px; border-radius: 20px;
+        background: rgba(255,255,255,0.03); border: 1px solid transparent;
+    }
+    .btn-back:hover { 
+        color: var(--text-white); transform: translateX(-8px); 
+        background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1);
+    }
+
+    /* Contenedor principal estilo Dashboard */
+    .help-container {
+        background: radial-gradient(circle at top right, #3E346B 0%, var(--bg-card) 60%);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 50px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        animation: scaleUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    .help-title { 
+        font-family: 'DM Serif Display', serif; font-size: 3rem; margin-bottom: 10px; 
+        background: linear-gradient(135deg, #FFFFFF 0%, #A694FF 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .help-subtitle { color: #B4B4C7; font-size: 1.15rem; margin-bottom: 50px; font-weight: 400; }
+
+    .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+    
+    /* Tarjetas de ayuda interactivas */
+    .help-item { 
+        background: rgba(15, 15, 20, 0.4); 
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color); 
+        padding: 30px; 
+        border-radius: 20px; 
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        opacity: 0; animation: slideUpItem 0.6s ease-out forwards;
+    }
+    
+    .help-item:nth-child(1) { animation-delay: 0.2s; }
+    .help-item:nth-child(2) { animation-delay: 0.4s; }
+    .help-item:nth-child(3) { animation-delay: 0.6s; }
+
+    .help-item:hover {
+        background: rgba(45, 37, 84, 0.3);
+        border-color: #6B5BFF;
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(90, 79, 207, 0.2);
+    }
+
+    .icon-box {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: linear-gradient(135deg, rgba(157, 136, 255, 0.2), rgba(107, 91, 255, 0.1));
+        border: 1px solid rgba(157, 136, 255, 0.3);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 20px;
+        transition: transform 0.4s;
+    }
+    .help-item:hover .icon-box { transform: scale(1.1) rotate(5deg); background: rgba(157, 136, 255, 0.3); }
+
+    .help-item h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #FFFFFF; }
+    .help-item p { color: #8A8A9E; font-size: 0.95rem; line-height: 1.7; margin: 0; }
+</style>
+
+<div class="page-wrapper">
+    <a asp-action="Index" class="btn-back">
+        <span style="font-size:1.2rem;">←</span> Volver a la Agenda
+    </a>
+
+    <div class="help-container">
+        <h1 class="help-title">Centro de Ayuda</h1>
+        <p class="help-subtitle">Domina tu agenda con estos rápidos consejos.</p>
+
+        <div class="help-grid">
+            <div class="help-item">
+                <div class="icon-box">👥</div>
+                <h3>Contactos</h3>
+                <p>Encuentra tu lista completa en la pantalla inicial. Utiliza la barra de búsqueda superior para filtrar nombres en tiempo real.</p>
+            </div>
+
+            <div class="help-item">
+                <div class="icon-box">📁</div>
+                <h3>Categorías</h3>
+                <p>Navega a través de las secciones de Trabajo, Amigos y Familia ubicadas en el menú lateral para una organización impecable.</p>
+            </div>
+
+            <div class="help-item">
+                <div class="icon-box">⭐</div>
+                <h3>Favoritos</h3>
+                <p>Haz clic en la estrella de cualquier contacto para fijarlo. Estos aparecerán resaltados con un brillo especial en la parte superior.</p>
+            </div>
+        </div>
+    </div>
+</div>

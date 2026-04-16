@@ -4,18 +4,37 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ContactManagerWeb</title>
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background-color: #121217; }
-        .main-container { height: 100vh; display: flex; overflow: hidden; }
-        .render-body-container { flex-grow: 1; overflow-y: auto; }
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            background-color: #121217; 
+            color: #ffffff; /* Asegura que el texto general sea blanco sobre el fondo oscuro */
+        }
+        .main-container { 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden; 
+        }
+        .render-body-container { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; /* Da un respiro visual a los bordes de la pantalla */
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
-        @RenderBody()
+        <div class="render-body-container">
+            @RenderBody()
+        </div>
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
