@@ -124,13 +124,12 @@
             {
                 <div class="c-card" style="animation-delay: @(delay * 0.1)s;">
                     @{ 
-                        // Colores sobrios y elegantes (Azul oscuro, Vino, Mostaza mate, Verde pino, Pizarra)
                         var colors = new[] { 
-                            "linear-gradient(135deg, #295A76 0%, #1A3E54 100%)", 
-                            "linear-gradient(135deg, #8B3E56 0%, #5E2638 100%)", 
-                            "linear-gradient(135deg, #7A5C29 0%, #523D18 100%)", 
-                            "linear-gradient(135deg, #1C5248 0%, #10362F 100%)", 
-                            "linear-gradient(135deg, #334166 0%, #202A45 100%)" 
+                            "linear-gradient(135deg, #4A5568 0%, #2D3748 100%)", /* Gris Azulado Mate */
+                            "linear-gradient(135deg, #553C9A 0%, #322659 100%)", /* Morado Profundo */
+                            "linear-gradient(135deg, #2C7A7B 0%, #234E52 100%)", /* Esmeralda Oscuro */
+                            "linear-gradient(135deg, #975A16 0%, #744210 100%)", /* Bronce Elegante */
+                            "linear-gradient(135deg, #2B6CB0 0%, #2A4365 100%)"  /* Azul Marino */
 }; 
                         var bg = colors[Math.Abs(contact.Nombre.GetHashCode()) % colors.Length]; 
                     }
