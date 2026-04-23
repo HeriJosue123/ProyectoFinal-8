@@ -1,72 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ContactManagerWeb.Models;
-using System.Collections.Generic;
-using System.Linq; 
+using ContactManagerWeb.Data; 
+using System.Linq;
 
 namespace ContactManagerWeb.Controllers
 {
     public class ContactosController : Controller
     {
-        public static List<Contacto> ListaContactos = new List<Contacto>
-        {
-            new Contacto { Nombre = "Ana López", Telefono = "+34 612 345 678", Correo = "ana.lopez@example.com", Categoria = "Trabajo", EsFavorito = true },
-            new Contacto { Nombre = "Juan González", Telefono = "+34 612 345 678", Correo = "juangonzalez@gmail.com", Categoria = "Amigos", EsFavorito = false },
-            new Contacto { Nombre = "María Umaña", Telefono = "+34 612 345 678", Correo = "maria123@gmail.com", Categoria = "Amigos", EsFavorito = false },
-            new Contacto { Nombre = "Carlos Ruiz", Telefono = "+34 612 345 678", Correo = "carlosruiz@gmail.com", Categoria = "Familia", EsFavorito = false },
-            new Contacto { Nombre = "Laura Pérez", Telefono = "+34 612 345 678", Correo = "lauraperez@gmail.com", Categoria = "Trabajo", EsFavorito = false },
-            new Contacto { Nombre = "Miguel Soto", Telefono = "+34 612 345 678", Correo = "miguelsoto@gmail.com", Categoria = "Familia", EsFavorito = false }
-        };
+        // Variable para manejar la base de datos
+        private readonly ApplicationDbContext _context;
 
+        // Inyectamos el contexto en el constructor
+        public ContactosController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // 1. LEER (Consultar)
         public IActionResult Index(string searchString, string categoria, bool? soloFavoritos)
         {
-            // 1. Convertimos la lista temporalmente para poder aplicar los filtros
-            var contactos = ListaContactos.AsEnumerable();
+            // Traemos todos los contactos de SQL Server a la memoria
+            var listaCompleta = _context.Contactos.ToList();
+            var contactosFiltrados = listaCompleta.AsEnumerable();
 
-            // 2. Filtro de Búsqueda
+            // Filtros
             if (!string.IsNullOrEmpty(searchString))
             {
-                contactos = contactos.Where(s => s.Nombre != null && s.Nombre.Contains(searchString, System.StringComparison.OrdinalIgnoreCase));
+                contactosFiltrados = contactosFiltrados.Where(s => s.Nombre != null && s.Nombre.Contains(searchString, System.StringComparison.OrdinalIgnoreCase));
             }
 
-            // 3. Filtro de Categoría
             if (!string.IsNullOrEmpty(categoria))
             {
-                contactos = contactos.Where(c => c.Categoria == categoria);
+                contactosFiltrados = contactosFiltrados.Where(c => c.Categoria == categoria);
                 ViewData["FiltroActual"] = "Mostrando Categoría: " + categoria;
             }
 
-            // 4. Filtro de Favoritos
             if (soloFavoritos == true)
             {
-                contactos = contactos.Where(c => c.EsFavorito == true);
+                contactosFiltrados = contactosFiltrados.Where(c => c.EsFavorito == true);
                 ViewData["FiltroActual"] = "Mostrando Contactos Favoritos";
             }
 
-            // --- ¡ESTO ES LO QUE FALTABA! LOS CONTADORES PARA EL MENÚ LATERAL ---
-            ViewBag.TotalTodos = ListaContactos.Count();
-            ViewBag.TotalFavoritos = ListaContactos.Count(c => c.EsFavorito == true);
-            ViewBag.TotalTrabajo = ListaContactos.Count(c => c.Categoria == "Trabajo");
-            ViewBag.TotalAmigos = ListaContactos.Count(c => c.Categoria == "Amigos");
-            ViewBag.TotalFamilia = ListaContactos.Count(c => c.Categoria == "Familia");
-            // ----------------------------------------------------------------------
+            // Tus contadores para el menú lateral (ahora consultando la BD)
+            ViewBag.TotalTodos = listaCompleta.Count;
+            ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito == true);
+            ViewBag.TotalTrabajo = listaCompleta.Count(c => c.Categoria == "Trabajo");
+            ViewBag.TotalAmigos = listaCompleta.Count(c => c.Categoria == "Amigos");
+            ViewBag.TotalFamilia = listaCompleta.Count(c => c.Categoria == "Familia");
 
-            // 5. Devolvemos la lista final filtrada a la vista
-            return View(contactos.ToList());
+            return View(contactosFiltrados.ToList());
         }
+
         public IActionResult Frecuentes()
         {
-            // Simulamos los frecuentes enviando solo los que son favoritos
-            var contactosFrecuentes = ListaContactos.Where(c => c.EsFavorito == true).ToList();
+            // Consultamos directo a la base de datos
+            var contactosFrecuentes = _context.Contactos.Where(c => c.EsFavorito == true).ToList();
             return View(contactosFrecuentes);
         }
 
         public IActionResult Ayuda()
         {
-            // Simplemente renderiza la vista Ayuda.cshtml
             return View();
         }
 
-        
+        // 2. CREAR 
         public IActionResult Crear()
         {
             return View();
@@ -75,7 +72,52 @@ namespace ContactManagerWeb.Controllers
         [HttpPost]
         public IActionResult Crear(Contacto nuevoContacto)
         {
-            ListaContactos.Add(nuevoContacto);
+            if (ModelState.IsValid)
+            {
+                _context.Contactos.Add(nuevoContacto); // Prepara el Insert
+                _context.SaveChanges(); // Ejecuta el guardado en SQL
+                return RedirectToAction("Index");
+            }
+            return View(nuevoContacto);
+        }
+
+        // 3. ACTUALIZAR (EDITAR)
+        // GET: Muestra el formulario con los datos cargados
+        public IActionResult Editar(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var contacto = _context.Contactos.Find(id); // Busca el contacto en la BD
+            if (contacto == null) return NotFound();
+
+            return View(contacto);
+        }
+
+        // POST: Guarda los cambios en la BD
+        [HttpPost]
+        public IActionResult Editar(int id, Contacto contactoModificado)
+        {
+            if (id != contactoModificado.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _context.Contactos.Update(contactoModificado);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(contactoModificado);
+        }
+
+        // 4. ELIMINAR
+        [HttpPost]
+        public IActionResult Eliminar(int id)
+        {
+            var contacto = _context.Contactos.Find(id);
+            if (contacto != null)
+            {
+                _context.Contactos.Remove(contacto);
+                _context.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
     }

@@ -173,9 +173,14 @@
                                 <span>@fav.Telefono</span>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
                             <button class="act-btn star">★</button>
-                            <button class="act-btn">✎</button>
+                            
+                            <a asp-action="Editar" asp-route-id="@fav.Id" class="act-btn" style="text-decoration: none; line-height: 1;">✎</a>
+                            
+                            <form asp-action="Eliminar" asp-route-id="@fav.Id" method="post" style="margin: 0;" onsubmit="return confirm('¿Seguro que deseas eliminar a @fav.Nombre?');">
+                                <button type="submit" class="act-btn" style="color: #FF5C5C;" title="Eliminar">🗑</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -208,11 +213,20 @@
                                 <div class="c-name">@contact.Nombre</div>
                                 <div class="c-phone">@contact.Telefono</div>
                             </div>
-                            @if(contact.EsFavorito) {
-                                <button class="c-star" style="color: #FBBF24;">★</button>
-                            } else {
-                                <button class="c-star">☆</button>
-                            }
+                            
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                @if(contact.EsFavorito) {
+                                    <button class="c-star" style="color: #FBBF24;">★</button>
+                                } else {
+                                    <button class="c-star">☆</button>
+                                }
+                                
+                                <a asp-action="Editar" asp-route-id="@contact.Id" class="c-star" style="text-decoration: none;">✎</a>
+                                
+                                <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" style="margin: 0;" onsubmit="return confirm('¿Seguro que deseas eliminar a @contact.Nombre?');">
+                                    <button type="submit" class="c-star" style="color: #FF5C5C;" title="Eliminar">🗑</button>
+                                </form>
+                            </div>
                         </div>
                     }
                 }
