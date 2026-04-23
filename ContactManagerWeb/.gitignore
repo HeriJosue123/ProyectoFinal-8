@@ -1,0 +1,14 @@
+# Archivos de compilación (Basura técnica)
+[Bb]in/
+[Oo]bj/
+
+# Configuración de Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos temporales de publicación
+App_Data/jobs/
+App_Data/config/
