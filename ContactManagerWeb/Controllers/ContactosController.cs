@@ -1,150 +1,158 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ContactManagerWeb.Models;
-using ContactManagerWeb.Data; 
+using ContactManagerWeb.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ContactManagerWeb.Controllers
 {
     public class ContactosController : Controller
     {
-        // Variable para manejar la base de datos
         private readonly ApplicationDbContext _context;
 
-        // Inyectamos el contexto en el constructor
         public ContactosController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // 1. LEER (Consultar)
-        public IActionResult Index(string searchString, string categoria, bool? soloFavoritos)
+        // --- 1. LISTADO (INDEX) CON FILTROS AVANZADOS ---
+        public async Task<IActionResult> Index(string searchString, string categoria, bool? soloFavoritos)
         {
-            // Traemos todos los contactos de SQL Server a la memoria
-            var listaCompleta = _context.Contactos.ToList();
-            var contactosFiltrados = listaCompleta.AsEnumerable();
+            // PRO: Usamos IQueryable para filtrar en SQL y no en la memoria del servidor
+            IQueryable<Contacto> query = _context.Contactos;
 
-            // Filtros
+            // Filtro por Nombre/Apellido
             if (!string.IsNullOrEmpty(searchString))
             {
-                contactosFiltrados = contactosFiltrados.Where(s =>
-                    (s.Nombre != null && s.Nombre.Contains(searchString, System.StringComparison.OrdinalIgnoreCase)) ||
-                    (s.Apellido != null && s.Apellido.Contains(searchString, System.StringComparison.OrdinalIgnoreCase))
-                );
+                query = query.Where(s => s.Nombre.Contains(searchString) || s.Apellido.Contains(searchString));
             }
 
+            // Filtro por Categoría
             if (!string.IsNullOrEmpty(categoria))
             {
-                contactosFiltrados = contactosFiltrados.Where(c => c.Categoria == categoria);
-                ViewData["FiltroActual"] = "Mostrando Categoría: " + categoria;
+                query = query.Where(c => c.Categoria == categoria);
+                ViewData["FiltroActual"] = $"Categoría: {categoria}";
             }
 
+            // Filtro Favoritos
             if (soloFavoritos == true)
             {
-                contactosFiltrados = contactosFiltrados.Where(c => c.EsFavorito == true);
-                ViewData["FiltroActual"] = "Mostrando Contactos Favoritos";
+                query = query.Where(c => c.EsFavorito);
+                ViewData["FiltroActual"] = "Mis Favoritos ⭐";
             }
 
-            // Tus contadores para el menú lateral (ahora consultando la BD)
+            // PRO: Contadores optimizados (Se ejecutan en paralelo o de forma eficiente en la DB)
+            var listaCompleta = await _context.Contactos.ToListAsync();
             ViewBag.TotalTodos = listaCompleta.Count;
-            ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito == true);
+            ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito);
             ViewBag.TotalTrabajo = listaCompleta.Count(c => c.Categoria == "Trabajo");
             ViewBag.TotalAmigos = listaCompleta.Count(c => c.Categoria == "Amigos");
             ViewBag.TotalFamilia = listaCompleta.Count(c => c.Categoria == "Familia");
 
-            return View(contactosFiltrados.ToList());
+            return View(await query.ToListAsync());
         }
 
-        public IActionResult Frecuentes()
-        {
-            // Consultamos directo a la base de datos
-            var contactosFrecuentes = _context.Contactos.Where(c => c.EsFavorito == true).ToList();
-            return View(contactosFrecuentes);
-        }
-
-        public IActionResult Ayuda()
-        {
-            return View();
-        }
-        // 2. DETALLES (Consultar un solo registro)
-        public IActionResult Detalles(int? id)
+        // --- 2. DETALLES ---
+        public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null) return NotFound();
 
-            var contacto = _context.Contactos.Find(id); // Busca el ID en SQL
+            var contacto = await _context.Contactos.FirstOrDefaultAsync(m => m.Id == id);
             if (contacto == null) return NotFound();
 
             return View(contacto);
         }
 
-        // 3. CREAR 
-        public IActionResult Crear()
-        {
-            return View();
-        }
+        // --- 3. CREAR ---
+        public IActionResult Crear() => View();
 
         [HttpPost]
-        public IActionResult Crear(Contacto nuevoContacto)
+        [ValidateAntiForgeryToken] // Seguridad contra ataques XSRF
+        public async Task<IActionResult> Crear(Contacto contacto)
         {
             if (ModelState.IsValid)
             {
-                _context.Contactos.Add(nuevoContacto); // Prepara el Insert
-                _context.SaveChanges(); // Ejecuta el guardado en SQL
-                return RedirectToAction("Index");
+                _context.Add(contacto);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            return View(nuevoContacto);
+            return View(contacto);
         }
 
-        // 4. ACTUALIZAR (EDITAR)
-        // GET: Muestra el formulario con los datos cargados
-        public IActionResult Editar(int? id)
+        // --- 4. EDITAR ---
+        public async Task<IActionResult> Editar(int? id)
         {
             if (id == null) return NotFound();
 
-            var contacto = _context.Contactos.Find(id); // Busca el contacto en la BD
+            var contacto = await _context.Contactos.FindAsync(id);
             if (contacto == null) return NotFound();
 
             return View(contacto);
         }
 
-        // POST: Guarda los cambios en la BD
         [HttpPost]
-        public IActionResult Editar(int id, Contacto contactoModificado)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editar(int id, Contacto contacto)
         {
-            if (id != contactoModificado.Id) return NotFound();
+            if (id != contacto.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
-                _context.Contactos.Update(contactoModificado);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    _context.Update(contacto);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ContactoExists(contacto.Id)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
             }
-            return View(contactoModificado);
+            return View(contacto);
         }
 
-        // 5. ELIMINAR
+        // --- 5. ELIMINAR (POST) ---
         [HttpPost]
-        public IActionResult Eliminar(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Eliminar(int id)
         {
-            var contacto = _context.Contactos.Find(id);
+            var contacto = await _context.Contactos.FindAsync(id);
             if (contacto != null)
             {
                 _context.Contactos.Remove(contacto);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
+        // --- 6. TOGGLE FAVORITO (SÚPER ÚTIL PARA LA ESTRELLA) ---
         [HttpPost]
-        public IActionResult ToggleFavorito(int id)
+        public async Task<IActionResult> ToggleFavorito(int id)
         {
-            var contacto = _context.Contactos.Find(id);
+            var contacto = await _context.Contactos.FindAsync(id);
             if (contacto != null)
             {
                 contacto.EsFavorito = !contacto.EsFavorito;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            // Regresa a la página donde estabas
             return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        // --- 7. VISTAS EXTRAS ---
+        public async Task<IActionResult> Frecuentes()
+        {
+            var frecuentes = await _context.Contactos.Where(c => c.EsFavorito).ToListAsync();
+            return View(frecuentes);
+        }
+
+        public IActionResult Ayuda() => View();
+
+        private bool ContactoExists(int id)
+        {
+            return _context.Contactos.Any(e => e.Id == id);
         }
     }
 }
