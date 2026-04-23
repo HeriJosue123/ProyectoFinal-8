@@ -1,0 +1,253 @@
+﻿@model IEnumerable<ContactManagerWeb.Models.Contacto>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Agregados Recientemente";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agregados Recientemente — Agenda Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-main: #0F0F14;
+            --bg-nav: rgba(15, 15, 20, 0.8);
+            --bg-card: #171721;
+            --text-white: #FFFFFF;
+            --text-muted: #8A8A9E;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --accent: #5A4FCF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-white); 
+            min-height: 100vh; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        @@keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- NAVBAR SUPERIOR PREMIUM --- */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 50px; background: var(--bg-nav);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            height: 70px; position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-white); }
+        .brand-icon {
+            background: linear-gradient(135deg, #9D88FF, #6B5BFF);
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .brand-name { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
+
+        .tab-row { display: flex; gap: 30px; align-items: center; }
+        .tab { 
+            color: var(--text-muted); text-decoration: none; font-weight: 500; 
+            font-size: 0.95rem; transition: 0.3s; position: relative; padding-bottom: 5px; 
+        }
+        .tab.active { color: white; }
+        .tab.active::after { 
+            content: ''; position: absolute; bottom: -2px; left: 0; 
+            width: 100%; height: 2px; background-color: var(--accent); border-radius: 2px; 
+        }
+        .tab:hover { color: white; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            flex: 1; padding: 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%;
+            position: relative; z-index: 1;
+        }
+
+        /* Centrado de Título y Subtítulo */
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title { 
+            font-size: 2.8rem; font-weight: 700; letter-spacing: -1px;
+            margin-bottom: 15px; color: var(--text-white); animation: fadeUp 0.6s ease-out forwards;
+        }
+        .page-subtitle {
+            color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;
+            max-width: 700px; margin: 0 auto; animation: fadeUp 0.7s ease-out forwards; opacity: 0;
+        }
+
+        /* --- GRID Y TARJETAS --- */
+        .contacts-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; 
+        }
+
+        .avatar-box {
+            width: 50px; height: 50px; border-radius: 12px; display: flex; 
+            align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; flex-shrink: 0;
+        }
+
+        .fav-card {
+            position: relative; z-index: 1; background: linear-gradient(135deg, #2D2554 0%, var(--bg-card) 100%); 
+            border: 1px solid #4B3F85; border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; opacity: 0; animation: fadeUp 0.6s ease-out forwards;
+        }
+        .fav-card:hover { z-index: 100; transform: translateY(-4px) scale(1.02); border-color: #6B5BFF; }
+
+        .c-card {
+            position: relative; z-index: 1; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); 
+            border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; 
+            opacity: 0; animation: fadeUp 0.6s ease-out forwards;
+        }
+        .c-card:hover { z-index: 100; border-color: rgba(255,255,255,0.15); transform: translateY(-4px) scale(1.02); }
+
+        .fav-info, .c-info { flex: 1; min-width: 0; }
+        .fav-name, .c-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white;}
+        .fav-detail, .c-phone { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* --- DROPDOWNS Y BOTONES --- */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; font-weight: bold; line-height: 1; padding: 0 5px; transition: color 0.3s; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #1C1C26; min-width: 170px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; padding: 5px 0; animation: fadeUp 0.2s ease-out forwards; z-index: 1000; }
+        .dropdown-content a, .dropdown-content .btn-delete { color: #E2E2E9; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 500; background: transparent; border: none; cursor: pointer; transition: 0.2s; }
+        .dropdown-content a:hover, .dropdown-content .btn-delete:hover { background-color: #2A254D; color: white; }
+        .dropdown-content .btn-delete { color: #FF5C5C; }
+        .dropdown-content .btn-delete:hover { color: #FF7070; }
+
+        .star-toggle-btn { background: none; border: none; padding: 0; cursor: pointer; outline: none; transition: transform 0.2s; }
+        .star-toggle-btn:hover { transform: scale(1.2); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a asp-action="Index" class="nav-brand">
+            <div class="brand-icon">📒</div>
+            <span class="brand-name">Agenda Web</span>
+        </a>
+
+        <div class="tab-row">
+            <a href="@Url.Action("Index", "Contactos")" class="tab">Todos los Contactos</a>
+            <a href="@Url.Action("Recientes", "Contactos")" class="tab active">Agregados Recientemente</a>
+            <a href="@Url.Action("Ayuda", "Contactos")" class="tab">Centro de Ayuda</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+        <div class="header-section">
+            <h1 class="page-title">Agregados Recientemente</h1>
+            <p class="page-subtitle">
+                Aquí encontrarás los últimos contactos que has integrado a tu agenda. Esta vista rápida está diseñada para ayudarte a retomar conversaciones recientes o completar información pendiente, sin necesidad de buscar en toda tu lista.
+            </p>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); padding: 40px; border-radius: 16px; text-align: center; margin-top: 40px; color: var(--text-muted); animation: fadeUp 0.8s ease forwards; opacity: 0;">
+                Aún no has agregado contactos. ¡Empieza a llenar tu agenda para verlos aquí!
+            </div>
+        }
+        else
+        {
+            <div class="contacts-grid">
+                @{ 
+                    int delay = 1;
+                    int countFav = 0;
+                    int countOtros = 0;
+
+                    var favGradients = new[] {
+                        "linear-gradient(135deg, #6366f1, #a855f7)", "linear-gradient(135deg, #3b82f6, #2dd4bf)",
+                        "linear-gradient(135deg, #f43f5e, #fb923c)", "linear-gradient(135deg, #22c55e, #84cc16)",
+                        "linear-gradient(135deg, #8b5cf6, #d946ef)", "linear-gradient(135deg, #f59e0b, #eab308)"
+                    };
+
+                    var neonPalette = new (string Bg, string Text)[] {
+                        ("rgba(99, 102, 241, 0.12)", "#818cf8"), ("rgba(16, 185, 129, 0.12)", "#34d399"),
+                        ("rgba(244, 63, 94, 0.12)", "#fb7185"), ("rgba(234, 179, 8, 0.12)", "#facc15"),
+                        ("rgba(168, 85, 247, 0.12)", "#c084fc"), ("rgba(6, 182, 212, 0.12)", "#22d3ee")
+                    };
+                }
+
+                @foreach (var contact in Model)
+                {
+                    if (contact.EsFavorito)
+                    {
+                        var grad = favGradients[countFav % 6];
+                        countFav++;
+
+                        <div class="fav-card" style="animation-delay: @(delay * 0.1)s;">
+                            <div class="avatar-box" style="background: @grad; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                                @(string.IsNullOrEmpty(contact.Nombre) ? "?" : contact.Nombre.Substring(0, 1).ToUpper())
+                            </div>
+                            <div class="fav-info">
+                                <div class="fav-name" title="@contact.Nombre @contact.Apellido">@contact.Nombre @contact.Apellido</div>
+                                <div class="fav-detail">@contact.Telefono</div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: center; flex-shrink: 0;">
+                                <form asp-action="ToggleFavorito" asp-route-id="@contact.Id" method="post">
+                                    <button type="submit" class="star-toggle-btn"><span style="color: #FBBF24; font-size: 1.3rem;">★</span></button>
+                                </form>
+                                <div class="dropdown">
+                                    <button class="dropdown-btn">⋮</button>
+                                    <div class="dropdown-content">
+                                        <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
+                                        <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
+                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="return confirm('¿Eliminar contacto?');">
+                                            <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        var style = neonPalette[countOtros % 6];
+                        countOtros++;
+
+                        <div class="c-card" style="animation-delay: @(delay * 0.1)s;">
+                            <div class="avatar-box" style="background-color: @style.Bg; border: 1.5px solid @style.Text; color: @style.Text;">
+                                @(string.IsNullOrEmpty(contact.Nombre) ? "?" : contact.Nombre.Substring(0, 1).ToUpper())
+                            </div>
+                            <div class="c-info">
+                                <div class="c-name" title="@contact.Nombre @contact.Apellido">@contact.Nombre @contact.Apellido</div>
+                                <div class="c-phone">@contact.Telefono</div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: center; flex-shrink: 0;">
+                                <form asp-action="ToggleFavorito" asp-route-id="@contact.Id" method="post">
+                                    <button type="submit" class="star-toggle-btn"><span style="color: #444; font-size: 1.3rem;">★</span></button>
+                                </form>
+                                <div class="dropdown">
+                                    <button class="dropdown-btn">⋮</button>
+                                    <div class="dropdown-content">
+                                        <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
+                                        <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
+                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="return confirm('¿Eliminar contacto?');">
+                                            <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    delay++;
+                }
+            </div>
+        }
+    </main>
+</body>
+</html>

@@ -21,33 +21,41 @@ namespace ContactManagerWeb.Controllers
         {
             IQueryable<Contacto> query = _context.Contactos;
 
-            // Filtro por Nombre/Apellido
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(s => s.Nombre.Contains(searchString) || s.Apellido.Contains(searchString));
             }
 
-            // Filtro por Categoría
             if (!string.IsNullOrEmpty(categoria))
             {
                 query = query.Where(c => c.Categoria == categoria);
                 ViewData["FiltroActual"] = $"Categoría: {categoria}";
             }
 
-            // Filtro Favoritos
             if (soloFavoritos == true)
             {
                 query = query.Where(c => c.EsFavorito);
                 ViewData["FiltroActual"] = "Mis Favoritos ⭐";
             }
 
-            // Contadores para el Sidebar
+            // --- MODIFICACIÓN: ORDENAR ALFABÉTICAMENTE ---
+            // Ordena primero por Nombre (A-Z) y luego por Apellido (A-Z) si tienen el mismo nombre
+            query = query.OrderBy(c => c.Nombre).ThenBy(c => c.Apellido);
+            // ---------------------------------------------
+
             var listaCompleta = await _context.Contactos.ToListAsync();
             ViewBag.TotalTodos = listaCompleta.Count;
             ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito);
             ViewBag.TotalTrabajo = listaCompleta.Count(c => c.Categoria == "Trabajo");
             ViewBag.TotalAmigos = listaCompleta.Count(c => c.Categoria == "Amigos");
             ViewBag.TotalFamilia = listaCompleta.Count(c => c.Categoria == "Familia");
+
+            // Mantiene la lógica intacta para encontrar los 3 más recientes para el badge "NUEVO"
+            ViewBag.NuevosIds = listaCompleta
+                .OrderByDescending(c => c.FechaCreacion)
+                .Take(3)
+                .Select(c => c.Id)
+                .ToList();
 
             return View(await query.ToListAsync());
         }
@@ -72,10 +80,8 @@ namespace ContactManagerWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                // --- APORTE JOSUÉ: Normalización de texto ---
                 contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
                 contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
-                // --------------------------------------------
 
                 _context.Add(contacto);
                 await _context.SaveChangesAsync();
@@ -105,10 +111,8 @@ namespace ContactManagerWeb.Controllers
             {
                 try
                 {
-                    // --- APORTE JOSUÉ: Normalización de texto ---
                     contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
                     contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
-                    // --------------------------------------------
 
                     _context.Update(contacto);
                     await _context.SaveChangesAsync();
@@ -137,7 +141,7 @@ namespace ContactManagerWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // --- 6. TOGGLE FAVORITO (Interacción con la estrella) ---
+        // --- 6. TOGGLE FAVORITO ---
         [HttpPost]
         public async Task<IActionResult> ToggleFavorito(int id)
         {
@@ -150,11 +154,17 @@ namespace ContactManagerWeb.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-        // --- 7. VISTAS EXTRAS ---
-        public async Task<IActionResult> Frecuentes()
+        // --- 7. VISTAS EXTRAS (Recientes) ---
+        public async Task<IActionResult> Recientes()
         {
-            var frecuentes = await _context.Contactos.Where(c => c.EsFavorito).ToListAsync();
-            return View(frecuentes);
+            var recientes = await _context.Contactos
+                .OrderByDescending(c => c.FechaCreacion)
+                .Take(4)
+                .ToListAsync();
+
+            ViewData["FiltroActual"] = "Agregados Recientemente";
+
+            return View(recientes);
         }
 
         public IActionResult Ayuda() => View();

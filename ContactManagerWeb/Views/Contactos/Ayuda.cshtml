@@ -1,129 +1,271 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
 @{
-    ViewData["Title"] = "Ayuda";
+    ViewData["Title"] = "Centro de Ayuda";
+    Layout = null;
 }
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Centro de Ayuda — Agenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-<style>
-    :root {
-        --bg-main: #171721;
-        --bg-card: #20202B;
-        --text-white: #FFFFFF;
-        --text-muted: #8A8A9E;
-        --border-color: rgba(255, 255, 255, 0.08);
-        --accent: #5A4FCF;
-    }
+    <style>
+        :root {
+            --bg-main: #0F0F14;
+            --bg-nav: rgba(15, 15, 20, 0.8);
+            --bg-card: #171721;
+            --text-white: #FFFFFF;
+            --text-muted: #8A8A9E;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --accent: #5A4FCF;
+        }
 
-    @@keyframes scaleUp {
-        0% { opacity: 0; transform: scale(0.95) translateY(20px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
+        
+        /* BLOQUEAMOS EL SCROLL Y FIJAMOS EL ALTO AL 100% DE LA PANTALLA */
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-white); 
+            height: 100vh; 
+            overflow: hidden; /* Elimina cualquier barra de scroll */
+            display: flex;
+            flex-direction: column;
+        }
 
-    @@keyframes slideUpItem {
-        0% { opacity: 0; transform: translateY(20px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
+        /* --- ANIMACIONES --- */
+        @@keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
-    .page-wrapper { font-family: 'DM Sans', sans-serif; padding: 40px; color: var(--text-white); }
-    
-    /* Botón de retroceso */
-    .btn-back { 
-        display: inline-flex; align-items: center; gap: 10px; 
-        color: var(--text-muted); text-decoration: none; 
-        font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px;
-        margin-bottom: 30px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
-        padding: 8px 15px; border-radius: 20px;
-        background: rgba(255,255,255,0.03); border: 1px solid transparent;
-    }
-    .btn-back:hover { 
-        color: var(--text-white); transform: translateX(-8px); 
-        background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1);
-    }
+        /* --- NAVBAR SUPERIOR --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            height: 70px; /* Alto fijo para el navbar */
+        }
 
-    /* Contenedor principal estilo Dashboard */
-    .help-container {
-        background: radial-gradient(circle at top right, #3E346B 0%, var(--bg-card) 60%);
-        border: 1px solid var(--border-color);
-        border-radius: 24px;
-        padding: 50px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-        animation: scaleUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-    }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-white);
+        }
 
-    .help-title { 
-        font-family: 'DM Serif Display', serif; font-size: 3rem; margin-bottom: 10px; 
-        background: linear-gradient(135deg, #FFFFFF 0%, #A694FF 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .help-subtitle { color: #B4B4C7; font-size: 1.15rem; margin-bottom: 50px; font-weight: 400; }
+        .brand-icon {
+            background: linear-gradient(135deg, #9D88FF, #6B5BFF);
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
 
-    .help-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-    
-    /* Tarjetas de ayuda interactivas */
-    .help-item { 
-        background: rgba(15, 15, 20, 0.4); 
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--border-color); 
-        padding: 30px; 
-        border-radius: 20px; 
-        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-        opacity: 0; animation: slideUpItem 0.6s ease-out forwards;
-    }
-    
-    .help-item:nth-child(1) { animation-delay: 0.2s; }
-    .help-item:nth-child(2) { animation-delay: 0.4s; }
-    .help-item:nth-child(3) { animation-delay: 0.6s; }
+        .brand-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
 
-    .help-item:hover {
-        background: rgba(45, 37, 84, 0.3);
-        border-color: #6B5BFF;
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(90, 79, 207, 0.2);
-    }
+        /* Pestañas de Navegación */
+        .tab-row { display: flex; gap: 30px; align-items: center; }
+        
+        .tab { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 0.95rem;
+            transition: 0.3s; 
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        .tab.active { color: white; }
+        .tab.active::after { 
+            content: ''; position: absolute; bottom: -2px; left: 0; 
+            width: 100%; height: 2px; 
+            background-color: var(--accent); border-radius: 2px; 
+        }
+        .tab:hover { color: white; }
 
-    .icon-box {
-        width: 50px; height: 50px; border-radius: 14px;
-        background: linear-gradient(135deg, rgba(157, 136, 255, 0.2), rgba(107, 91, 255, 0.1));
-        border: 1px solid rgba(157, 136, 255, 0.3);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.5rem; margin-bottom: 20px;
-        transition: transform 0.4s;
-    }
-    .help-item:hover .icon-box { transform: scale(1.1) rotate(5deg); background: rgba(157, 136, 255, 0.3); }
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centra todo verticalmente */
+            align-items: center;     /* Centra todo horizontalmente */
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
 
-    .help-item h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #FFFFFF; }
-    .help-item p { color: #8A8A9E; font-size: 0.95rem; line-height: 1.7; margin: 0; }
-</style>
+        /* Luz ambiental de fondo */
+        .ambient-glow {
+            position: absolute;
+            top: -10%; left: 50%;
+            transform: translateX(-50%);
+            width: 800px; height: 500px;
+            background: radial-gradient(ellipse at top, rgba(90, 79, 207, 0.15), transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
 
-<div class="page-wrapper">
-    <a asp-action="Index" class="btn-back">
-        <span style="font-size:1.2rem;">←</span> Volver a la Agenda
-    </a>
+        .hero-section {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 45px;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
 
-    <div class="help-container">
-        <h1 class="help-title">Centro de Ayuda</h1>
-        <p class="help-subtitle">Domina tu agenda con estos rápidos consejos.</p>
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            color: var(--text-white);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* --- GRID DE TARJETAS HORIZONTALES --- */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px;
+        }
+
+        .help-card {
+            background: linear-gradient(160deg, rgba(28,28,38,0.7) 0%, rgba(20,20,28,0.4) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px 20px; /* Reducido para que quepa bien en pantalla */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        /* Línea superior de color */
+        .help-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--accent-color); opacity: 0.5; transition: opacity 0.4s, box-shadow 0.4s;
+        }
+
+        /* Variables de color */
+        .help-card:nth-child(1) { --accent-color: #3b82f6; animation-delay: 0.1s; } 
+        .help-card:nth-child(2) { --accent-color: #f59e0b; animation-delay: 0.2s; } 
+        .help-card:nth-child(3) { --accent-color: #8b5cf6; animation-delay: 0.3s; } 
+        .help-card:nth-child(4) { --accent-color: #ec4899; animation-delay: 0.4s; } 
+
+        .help-card:hover {
+            transform: translateY(-8px);
+            background: rgba(30, 30, 40, 0.9);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .help-card:hover::before { opacity: 1; box-shadow: 0 0 15px var(--accent-color); }
+
+        .icon-box {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Colores de iluminación del ícono */
+        .help-card:nth-child(1):hover .icon-box { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); transform: scale(1.1) rotate(-5deg); }
+        .help-card:nth-child(2):hover .icon-box { background: rgba(251, 191, 36, 0.15); border-color: #f59e0b; color: #f59e0b; box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); transform: scale(1.1) rotate(5deg); }
+        .help-card:nth-child(3):hover .icon-box { background: rgba(139, 92, 246, 0.15); border-color: #8b5cf6; color: #8b5cf6; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); transform: scale(1.1) rotate(-5deg); }
+        .help-card:nth-child(4):hover .icon-box { background: rgba(236, 72, 153, 0.15); border-color: #ec4899; color: #ec4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); transform: scale(1.1) rotate(5deg); }
+
+        .help-card h3 {
+            font-size: 1.15rem; font-weight: 700; color: #FFFFFF;
+            margin-bottom: 10px; letter-spacing: -0.3px;
+        }
+
+        .help-card p {
+            font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
+        }
+
+        /* Responsive Breakpoints */
+        @@media (max-width: 1100px) {
+            .help-grid { grid-template-columns: repeat(2, 1fr); }
+            body { overflow-y: auto; } /* Permite scroll solo si la pantalla es muy pequeña */
+            .main-content { padding: 40px 20px; justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a asp-action="Index" class="nav-brand">
+            <div class="brand-icon">📒</div>
+            <span class="brand-name">Agenda Web</span>
+        </a>
+
+        <div class="tab-row">
+            <a href="@Url.Action("Index", "Contactos")" class="tab">Todos los Contactos</a>
+            <a href="@Url.Action("Recientes", "Contactos")" class="tab">Agregados Recientemente</a>
+            <a href="@Url.Action("Ayuda", "Contactos")" class="tab active">Centro de Ayuda</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="ambient-glow"></div>
+
+        <div class="hero-section">
+            <h1 class="hero-title">Centro de Ayuda</h1>
+            <p class="hero-subtitle">
+                Bienvenido al soporte de tu agenda. Encuentra respuestas rápidas y descubre cómo gestionar, buscar y organizar tus contactos de manera eficiente.
+            </p>
+        </div>
 
         <div class="help-grid">
-            <div class="help-item">
-                <div class="icon-box">👥</div>
-                <h3>Contactos</h3>
-                <p>Encuentra tu lista completa en la pantalla inicial. Utiliza la barra de búsqueda superior para filtrar nombres en tiempo real.</p>
+            
+            <div class="help-card">
+                <div class="icon-box">🔍</div>
+                <h3>Búsqueda de Contactos</h3>
+                <p>Encuentra personas al instante. Escribe un nombre o apellido en la barra de búsqueda de la pestaña "Todos" para filtrar tu agenda en tiempo real.</p>
             </div>
 
-            <div class="help-item">
-                <div class="icon-box">📁</div>
-                <h3>Categorías</h3>
-                <p>Navega a través de las secciones de Trabajo, Amigos y Familia ubicadas en el menú lateral para una organización impecable.</p>
-            </div>
-
-            <div class="help-item">
+            <div class="help-card">
                 <div class="icon-box">⭐</div>
-                <h3>Favoritos</h3>
-                <p>Haz clic en la estrella de cualquier contacto para fijarlo. Estos aparecerán resaltados con un brillo especial en la parte superior.</p>
+                <h3>Gestión de Favoritos</h3>
+                <p>Marca la estrella (★) en un contacto para anclarlo. Tus favoritos siempre aparecerán en la parte superior con un diseño destacado para fácil acceso.</p>
             </div>
+
+            <div class="help-card">
+                <div class="icon-box">📁</div>
+                <h3>Uso de Categorías</h3>
+                <p>Filtra tu agenda seleccionando Trabajo, Amigos o Familia en el menú lateral. Mantén tu red organizada y visualiza solo el grupo que necesitas.</p>
+            </div>
+
+            <div class="help-card">
+                <div class="icon-box">⚙️</div>
+                <h3>Edición y Eliminación</h3>
+                <p>Usa el menú de opciones (⋮) en cualquier tarjeta. Podrás actualizar números telefónicos, ver información completa o eliminar un contacto de tu red.</p>
+            </div>
+
         </div>
-    </div>
-</div>
+    </main>
+
+</body>
+</html>
