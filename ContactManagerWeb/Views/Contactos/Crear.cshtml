@@ -1,4 +1,5 @@
 ﻿@model ContactManagerWeb.Models.Contacto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     Layout = null;
@@ -197,6 +198,14 @@
                 .btn-cancel:hover {
                     color: #FFF;
                 }
+
+            /* Estilo para los mensajes de error de validación */
+            .text-danger {
+                color: #FF5555;
+                font-size: 0.7rem;
+                margin-top: 4px;
+                display: block;
+            }
     </style>
 </head>
 <body>
@@ -207,23 +216,26 @@
             <p>Añade los detalles a tu agenda</p>
         </div>
 
-        <form asp-action="Crear">
+        <form asp-action="Crear" method="post">
 
             <div class="row-inputs">
                 <div>
                     <label class="form-label">Nombre</label>
-                    <input asp-for="Nombre" class="dark-input" required placeholder="Ej: Laura" />
+                    <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
                 <div>
                     <label class="form-label">Apellido</label>
-                    <input asp-for="Apellido" class="dark-input" required placeholder="Ej: Pérez" />
+                    <input asp-for="Apellido" class="dark-input" placeholder="Ej: Pérez" />
+                    <span asp-validation-for="Apellido" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row-inputs">
                 <div>
                     <label class="form-label">Teléfono</label>
-                    <input asp-for="Telefono" class="dark-input" placeholder="+503 ..." />
+                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" maxlength="14" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
                 <div>
                     <label class="form-label">Categoría</label>
@@ -233,14 +245,17 @@
                         <option value="Amigos">👥 Amigos</option>
                         <option value="Familia">❤️ Familia</option>
                     </select>
+                    <span asp-validation-for="Categoria" class="text-danger"></span>
                 </div>
             </div>
 
-            <label class="form-label">Correo Electrónico</label>
+            <label class="form-label">Correo Electrónico (Opcional)</label>
             <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" />
+            <span asp-validation-for="Correo" class="text-danger"></span>
 
-            <label class="form-label">Dirección</label>
+            <label class="form-label">Dirección (Opcional)</label>
             <input asp-for="Direccion" class="dark-input" placeholder="Ingresa la dirección" />
+            <span asp-validation-for="Direccion" class="text-danger"></span>
 
             <label class="form-label">Importancia</label>
             <div class="star-toggle-container" onclick="document.getElementById('favStar').click();">
@@ -255,6 +270,7 @@
     </div>
 
     <script>
+            // Lógica de la Estrella
             const checkbox = document.getElementById('favStar');
             const text = document.getElementById('favText');
 
@@ -267,6 +283,44 @@
                     text.style.color = "#8A8A9E";
                 }
             });
+
+            // Lógica de Máscara de Teléfono Automática
+            const phoneInput = document.getElementById('Telefono');
+        
+            phoneInput.addEventListener('input', function(e) {
+                // Eliminar todo lo que no sea dígito
+                let value = this.value.replace(/\D/g, '');
+
+                // Si el usuario incluyó el 503 por defecto, lo quitamos temporalmente para formatear los 8 dígitos reales
+                if (value.startsWith('503')) {
+                    value = value.substring(3);
+                }
+
+                // Limitar a máximo 8 dígitos
+                value = value.substring(0, 8);
+
+                // Reconstruir el string con el formato +503 XXXX-XXXX
+                if (value.length === 0) {
+                    this.value = '';
+                } else if (value.length <= 4) {
+                    this.value = '+503 ' + value;
+                } else {
+                    this.value = '+503 ' + value.substring(0, 4) + '-' + value.substring(4);
+                }
+            });
+
+            // Agregar "+503 " cuando el usuario hace clic en el input vacío
+            phoneInput.addEventListener('focus', function() {
+                if (this.value === '') {
+                    this.value = '+503 ';
+                }
+            });
     </script>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </body>
 </html>

@@ -19,7 +19,6 @@ namespace ContactManagerWeb.Controllers
         // --- 1. LISTADO (INDEX) CON FILTROS AVANZADOS ---
         public async Task<IActionResult> Index(string searchString, string categoria, bool? soloFavoritos)
         {
-            // PRO: Usamos IQueryable para filtrar en SQL y no en la memoria del servidor
             IQueryable<Contacto> query = _context.Contactos;
 
             // Filtro por Nombre/Apellido
@@ -42,7 +41,7 @@ namespace ContactManagerWeb.Controllers
                 ViewData["FiltroActual"] = "Mis Favoritos ⭐";
             }
 
-            // PRO: Contadores optimizados (Se ejecutan en paralelo o de forma eficiente en la DB)
+            // Contadores para el Sidebar
             var listaCompleta = await _context.Contactos.ToListAsync();
             ViewBag.TotalTodos = listaCompleta.Count;
             ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito);
@@ -68,11 +67,16 @@ namespace ContactManagerWeb.Controllers
         public IActionResult Crear() => View();
 
         [HttpPost]
-        [ValidateAntiForgeryToken] // Seguridad contra ataques XSRF
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(Contacto contacto)
         {
             if (ModelState.IsValid)
             {
+                // --- APORTE JOSUÉ: Normalización de texto ---
+                contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
+                contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
+                // --------------------------------------------
+
                 _context.Add(contacto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -101,6 +105,11 @@ namespace ContactManagerWeb.Controllers
             {
                 try
                 {
+                    // --- APORTE JOSUÉ: Normalización de texto ---
+                    contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
+                    contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
+                    // --------------------------------------------
+
                     _context.Update(contacto);
                     await _context.SaveChangesAsync();
                 }
@@ -128,7 +137,7 @@ namespace ContactManagerWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // --- 6. TOGGLE FAVORITO (SÚPER ÚTIL PARA LA ESTRELLA) ---
+        // --- 6. TOGGLE FAVORITO (Interacción con la estrella) ---
         [HttpPost]
         public async Task<IActionResult> ToggleFavorito(int id)
         {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContactManagerWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260423073236_ActualizacionModeloContactos")]
-    partial class ActualizacionModeloContactos
+    [Migration("20260423200546_MigracionInicial")]
+    partial class MigracionInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

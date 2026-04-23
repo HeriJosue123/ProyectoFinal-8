@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ContactManagerWeb.Migrations
 {
     /// <inheritdoc />
-    public partial class AgregandoApellidoYCamposNuevos : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
