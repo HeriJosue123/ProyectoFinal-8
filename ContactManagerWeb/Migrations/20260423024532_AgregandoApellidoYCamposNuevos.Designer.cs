@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContactManagerWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260421202415_Inicial")]
-    partial class Inicial
+    [Migration("20260423024532_AgregandoApellidoYCamposNuevos")]
+    partial class AgregandoApellidoYCamposNuevos
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,6 +57,11 @@ namespace ContactManagerWeb.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Categoria")
                         .IsRequired()

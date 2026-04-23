@@ -26,7 +26,10 @@ namespace ContactManagerWeb.Controllers
             // Filtros
             if (!string.IsNullOrEmpty(searchString))
             {
-                contactosFiltrados = contactosFiltrados.Where(s => s.Nombre != null && s.Nombre.Contains(searchString, System.StringComparison.OrdinalIgnoreCase));
+                contactosFiltrados = contactosFiltrados.Where(s =>
+                    (s.Nombre != null && s.Nombre.Contains(searchString, System.StringComparison.OrdinalIgnoreCase)) ||
+                    (s.Apellido != null && s.Apellido.Contains(searchString, System.StringComparison.OrdinalIgnoreCase))
+                );
             }
 
             if (!string.IsNullOrEmpty(categoria))

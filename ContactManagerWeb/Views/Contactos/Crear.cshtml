@@ -53,8 +53,17 @@
         </div>
 
         <form asp-action="Crear">
-            <label class="form-label">Nombre Completo</label>
-            <input asp-for="Nombre" class="dark-input" required placeholder="Ej: Laura Pérez" />
+            
+            <div class="row-inputs">
+                <div>
+                    <label class="form-label">Nombre</label>
+                    <input asp-for="Nombre" class="dark-input" required placeholder="Ej: Laura" />
+                </div>
+                <div>
+                    <label class="form-label">Apellido</label>
+                    <input asp-for="Apellido" class="dark-input" required placeholder="Ej: Pérez" />
+                </div>
+            </div>
 
             <div class="row-inputs">
                 <div>

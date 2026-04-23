@@ -12,6 +12,10 @@ namespace ContactManagerWeb.Models
         [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres")]
         public string Nombre { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "El apellido es obligatorio")]
+        [StringLength(100)]
+        public string Apellido { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "El teléfono es obligatorio")]
         [Phone(ErrorMessage = "Formato de teléfono no válido")]
         [Display(Name = "Número de Teléfono")]
@@ -20,6 +24,7 @@ namespace ContactManagerWeb.Models
         [EmailAddress(ErrorMessage = "Formato de correo electrónico no válido")]
         [StringLength(150)]
         public string? Correo { get; set; }
+
 
         
         [Display(Name = "Dirección Física")]
