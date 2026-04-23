@@ -1,7 +1,7 @@
 ﻿@model ContactManagerWeb.Models.Contacto
 
 @{
-    Layout = null; 
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -12,36 +12,194 @@
     <title>Nuevo Contacto</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
-        body { background-color: #121217; color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        
-        @@keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        :root {
+            --bg-body: #0F0F14;
+            --bg-card: #171721;
+            --bg-input: #1C1C26;
+            --accent: #5A4FCF;
+            --text-muted: #8A8A9E;
+            --border: #2D2D3D;
+            --star-off: #444;
+            --star-on: #FBBF24;
         }
 
-        .glass-card { background-color: #171721; border: 1px solid #2D2D3D; border-radius: 20px; padding: 40px; width: 100%; max-width: 550px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); animation: fadeInUp 0.6s ease-out; }
-        
-        .form-header { text-align: center; margin-bottom: 30px; }
-        .form-header h2 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; font-weight: 400; margin-bottom: 5px; }
-        .form-header p { color: #8A8A9E; font-size: 0.95rem; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+        }
 
-        .form-label { color: #8A8A9E; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; margin-top: 15px; }
-        .dark-input { width: 100%; background-color: #1C1C26; border: 1px solid #2D2D3D; color: #FFF; border-radius: 12px; padding: 12px 15px; transition: 0.3s; outline: none; }
-        .dark-input:focus { background-color: #20202B; border-color: #5A4FCF; box-shadow: 0 0 0 3px rgba(90, 79, 207, 0.2); }
-        
-        .row-inputs { display: flex; gap: 15px; }
-        .row-inputs > div { flex: 1; }
+        body {
+            background-color: var(--bg-body);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-        .checkbox-container { display: flex; align-items: center; background-color: #1C1C26; border: 1px solid #2D2D3D; padding: 15px; border-radius: 12px; margin-top: 20px; margin-bottom: 30px; cursor: pointer; transition: 0.3s; }
-        .checkbox-container:hover { border-color: #5A4FCF; }
-        .checkbox-container input { width: 20px; height: 20px; margin-right: 15px; accent-color: #5A4FCF; cursor: pointer; }
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        .btn-gradient { display: block; text-align: center; background: linear-gradient(135deg, #5A4FCF, #3E346B); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; font-size: 1rem; cursor: pointer; transition: 0.3s; text-decoration: none; margin-bottom: 15px; }
-        .btn-gradient:hover { background: linear-gradient(135deg, #6B5BFF, #4B3F85); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3); }
-        
-        .btn-cancel { display: block; text-align: center; color: #8A8A9E; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
-        .btn-cancel:hover { color: #FFF; }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .form-header h2 {
+                font-family: 'DM Serif Display', serif;
+                font-size: 2.2rem;
+                font-weight: 400;
+                margin-bottom: 5px;
+            }
+
+            .form-header p {
+                color: var(--text-muted);
+                font-size: 0.95rem;
+            }
+
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 15px;
+        }
+
+        .dark-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #FFF;
+            border-radius: 12px;
+            padding: 12px 15px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+            .dark-input:focus {
+                background-color: #20202B;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(90, 79, 207, 0.2);
+            }
+
+        .row-inputs {
+            display: flex;
+            gap: 15px;
+        }
+
+            .row-inputs > div {
+                flex: 1;
+            }
+
+        /* --- ESTILOS DE LA ESTRELLA INTERACTIVA --- */
+        .star-toggle-container {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .star-toggle-container:hover {
+                border-color: var(--accent);
+            }
+
+        .hidden-check {
+            display: none;
+        }
+        /* Escondemos el checkbox real */
+
+        .star-icon-label {
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--star-off);
+            transition: all 0.3s ease;
+            line-height: 1;
+            margin-right: 15px;
+            user-select: none;
+        }
+
+        /* Cuando el checkbox esté marcado, iluminamos la estrella */
+        .hidden-check:checked + .star-icon-label {
+            color: var(--star-on);
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            transform: scale(1.1);
+        }
+
+        #favText {
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        /* ------------------------------------------ */
+
+        .btn-gradient {
+            display: block;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent), #3E346B);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            width: 100%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            margin-bottom: 15px;
+        }
+
+            .btn-gradient:hover {
+                background: linear-gradient(135deg, #6B5BFF, #4B3F85);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3);
+            }
+
+        .btn-cancel {
+            display: block;
+            text-align: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .btn-cancel:hover {
+                color: #FFF;
+            }
     </style>
 </head>
 <body>
@@ -53,7 +211,7 @@
         </div>
 
         <form asp-action="Crear">
-            
+
             <div class="row-inputs">
                 <div>
                     <label class="form-label">Nombre</label>
@@ -86,15 +244,33 @@
             <label class="form-label">Dirección</label>
             <input asp-for="Direccion" class="dark-input" placeholder="Ingresa la dirección" />
 
-            <label class="checkbox-container">
-                <input type="checkbox" asp-for="EsFavorito" />
-                <span class="form-label" style="margin: 0; color: #FFF;">Marcar como favorito ⭐</span>
-            </label>
+            <label class="form-label">Importancia</label>
+            <div class="star-toggle-container" onclick="document.getElementById('favStar').click();">
+                <input type="checkbox" asp-for="EsFavorito" id="favStar" class="hidden-check" />
+                <label for="favStar" class="star-icon-label" onclick="event.stopPropagation();">★</label>
+                <span id="favText" style="color: var(--text-muted);">Marcar como favorito</span>
+            </div>
 
             <button type="submit" class="btn-gradient">Guardar Contacto</button>
             <a asp-action="Index" class="btn-cancel">Cancelar y volver a la agenda</a>
         </form>
     </div>
+
+    @* Script para cambiar el texto al hacer clic *@
+    <script>
+        const checkbox = document.getElementById('favStar');
+        const text = document.getElementById('favText');
+
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                text.innerText = "¡Es un contacto favorito! ⭐";
+                text.style.color = "#FBBF24";
+            } else {
+                text.innerText = "Marcar como favorito";
+                text.style.color = "#8A8A9E";
+            }
+        });
+    </script>
 
 </body>
 </html>

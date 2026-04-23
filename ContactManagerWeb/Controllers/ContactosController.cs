@@ -65,8 +65,18 @@ namespace ContactManagerWeb.Controllers
         {
             return View();
         }
+        // 2. DETALLES (Consultar un solo registro)
+        public IActionResult Detalles(int? id)
+        {
+            if (id == null) return NotFound();
 
-        // 2. CREAR 
+            var contacto = _context.Contactos.Find(id); // Busca el ID en SQL
+            if (contacto == null) return NotFound();
+
+            return View(contacto);
+        }
+
+        // 3. CREAR 
         public IActionResult Crear()
         {
             return View();
@@ -84,7 +94,7 @@ namespace ContactManagerWeb.Controllers
             return View(nuevoContacto);
         }
 
-        // 3. ACTUALIZAR (EDITAR)
+        // 4. ACTUALIZAR (EDITAR)
         // GET: Muestra el formulario con los datos cargados
         public IActionResult Editar(int? id)
         {
@@ -111,7 +121,7 @@ namespace ContactManagerWeb.Controllers
             return View(contactoModificado);
         }
 
-        // 4. ELIMINAR
+        // 5. ELIMINAR
         [HttpPost]
         public IActionResult Eliminar(int id)
         {
@@ -122,6 +132,19 @@ namespace ContactManagerWeb.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ToggleFavorito(int id)
+        {
+            var contacto = _context.Contactos.Find(id);
+            if (contacto != null)
+            {
+                contacto.EsFavorito = !contacto.EsFavorito;
+                _context.SaveChanges();
+            }
+            // Regresa a la página donde estabas
+            return Redirect(Request.Headers["Referer"].ToString());
         }
     }
 }
