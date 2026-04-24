@@ -129,6 +129,108 @@
 
         .star-toggle-btn { background: none; border: none; padding: 0; cursor: pointer; outline: none; transition: transform 0.2s; }
         .star-toggle-btn:hover { transform: scale(1.2); }
+
+        /* --- MODAL DE ELIMINAR PREMIUM --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 15, 20, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: linear-gradient(160deg, #1C1C26 0%, #171721 100%);
+            border: 1px solid rgba(255, 92, 92, 0.2);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-icon {
+            width: 60px; height: 60px;
+            background: rgba(255, 92, 92, 0.1);
+            border: 1px solid rgba(255, 92, 92, 0.3);
+            color: #FF5C5C;
+            font-size: 1.8rem;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 0 20px rgba(255, 92, 92, 0.2);
+        }
+
+        .modal-title {
+            color: #FFFFFF;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-cancelar {
+            background: rgba(255, 255, 255, 0.05);
+            color: #E2E2E9;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancelar:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFF;
+        }
+
+        .btn-confirmar-eliminar {
+            background: #FF5C5C;
+            color: #FFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 92, 92, 0.3);
+        }
+
+        .btn-confirmar-eliminar:hover {
+            background: #FF4242;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 92, 92, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -206,7 +308,7 @@
                                     <div class="dropdown-content">
                                         <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
                                         <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
-                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="return confirm('¿Eliminar contacto?');">
+                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="mostrarAlertaEliminar(event, this);">
                                             <button type="submit" class="btn-delete">🗑️ Eliminar</button>
                                         </form>
                                     </div>
@@ -236,7 +338,7 @@
                                     <div class="dropdown-content">
                                         <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
                                         <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
-                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="return confirm('¿Eliminar contacto?');">
+                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="mostrarAlertaEliminar(event, this);">
                                             <button type="submit" class="btn-delete">🗑️ Eliminar</button>
                                         </form>
                                     </div>
@@ -249,5 +351,38 @@
             </div>
         }
     </main>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <h3 class="modal-title">¿Eliminar contacto?</h3>
+            <p class="modal-text">Esta acción no se puede deshacer. El contacto será borrado permanentemente de tu agenda.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancelar" onclick="cerrarAlerta()">Cancelar</button>
+                <button type="button" class="btn-confirmar-eliminar" onclick="confirmarEliminacion()">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let formularioAEliminar = null;
+
+        function mostrarAlertaEliminar(evento, formulario) {
+            evento.preventDefault(); 
+            formularioAEliminar = formulario; 
+            document.getElementById('deleteModal').classList.add('active'); 
+        }
+
+        function cerrarAlerta() {
+            formularioAEliminar = null;
+            document.getElementById('deleteModal').classList.remove('active'); 
+        }
+
+        function confirmarEliminacion() {
+            if (formularioAEliminar) {
+                formularioAEliminar.submit(); 
+            }
+        }
+    </script>
 </body>
 </html>
