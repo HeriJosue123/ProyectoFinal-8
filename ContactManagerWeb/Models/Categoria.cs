@@ -15,5 +15,8 @@ namespace ContactManagerWeb.Models
         public string? Descripcion { get; set; }
 
         public string? ColorHexadecimal { get; set; }
+
+        // Agregamos la propiedad para el Emoji de la interfaz
+        public string? Emoji { get; set; }
     }
 }

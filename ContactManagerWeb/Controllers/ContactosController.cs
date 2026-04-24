@@ -4,6 +4,7 @@ using ContactManagerWeb.Models;
 using ContactManagerWeb.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ContactManagerWeb.Controllers
 {
@@ -16,43 +17,55 @@ namespace ContactManagerWeb.Controllers
             _context = context;
         }
 
-        // --- 1. LISTADO (INDEX) CON FILTROS AVANZADOS ---
+        // --- 1. LISTADO (INDEX) CON FILTROS Y CATEGORÍAS DE DB ---
         public async Task<IActionResult> Index(string searchString, string categoria, bool? soloFavoritos)
         {
             IQueryable<Contacto> query = _context.Contactos;
 
+            // Filtro por texto
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(s => s.Nombre.Contains(searchString) || s.Apellido.Contains(searchString));
             }
 
+            // Filtro por Categoría Dinámica
             if (!string.IsNullOrEmpty(categoria))
             {
                 query = query.Where(c => c.Categoria == categoria);
                 ViewData["FiltroActual"] = $"Categoría: {categoria}";
             }
 
+            // Filtro por Favoritos
             if (soloFavoritos == true)
             {
                 query = query.Where(c => c.EsFavorito);
                 ViewData["FiltroActual"] = "Mis Favoritos ⭐";
             }
 
-            // --- MODIFICACIÓN: ORDENAR ALFABÉTICAMENTE ---
-            // Ordena primero por Nombre (A-Z) y luego por Apellido (A-Z) si tienen el mismo nombre
+            // Orden Alfabético
             query = query.OrderBy(c => c.Nombre).ThenBy(c => c.Apellido);
-            // ---------------------------------------------
 
-            var listaCompleta = await _context.Contactos.ToListAsync();
-            ViewBag.TotalTodos = listaCompleta.Count;
-            ViewBag.TotalFavoritos = listaCompleta.Count(c => c.EsFavorito);
-            ViewBag.TotalTrabajo = listaCompleta.Count(c => c.Categoria == "Trabajo");
-            ViewBag.TotalAmigos = listaCompleta.Count(c => c.Categoria == "Amigos");
-            ViewBag.TotalFamilia = listaCompleta.Count(c => c.Categoria == "Familia");
+            // Conteos Generales
+            var listaContactos = await _context.Contactos.ToListAsync();
+            ViewBag.TotalTodos = listaContactos.Count;
+            ViewBag.TotalFavoritos = listaContactos.Count(c => c.EsFavorito);
 
-            // Mantiene la lógica intacta para encontrar los 3 más recientes para el badge "NUEVO"
-            ViewBag.NuevosIds = listaCompleta
-                .OrderByDescending(c => c.FechaCreacion)
+            // --- CARGA DE CATEGORÍAS DINÁMICAS PARA EL SIDEBAR ---
+            var categoriasMenu = await _context.Categorias
+                .Select(cat => new
+                {
+                    Id = cat.Id,
+                    Nombre = cat.NombreCategoria,
+                    Emoji = cat.Emoji,
+                    // Contamos contactos que pertenecen a esta categoría específica
+                    Count = _context.Contactos.Count(c => c.Categoria == cat.NombreCategoria)
+                }).ToListAsync();
+
+            ViewBag.CategoriasDinamicas = categoriasMenu;
+
+            // Lógica para badge "NUEVO" (3 últimos registros)
+            ViewBag.NuevosIds = listaContactos
+                .OrderByDescending(c => c.Id) // Usamos Id o FechaCreacion
                 .Take(3)
                 .Select(c => c.Id)
                 .ToList();
@@ -72,7 +85,12 @@ namespace ContactManagerWeb.Controllers
         }
 
         // --- 3. CREAR ---
-        public IActionResult Crear() => View();
+        public async Task<IActionResult> Crear()
+        {
+            // Mandamos la lista de categorías para el dropdown
+            ViewBag.Categorias = await _context.Categorias.ToListAsync();
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -81,12 +99,14 @@ namespace ContactManagerWeb.Controllers
             if (ModelState.IsValid)
             {
                 contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
-                contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
+                if (!string.IsNullOrEmpty(contacto.Apellido))
+                    contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
 
                 _context.Add(contacto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View(contacto);
         }
 
@@ -98,6 +118,8 @@ namespace ContactManagerWeb.Controllers
             var contacto = await _context.Contactos.FindAsync(id);
             if (contacto == null) return NotFound();
 
+            // Mandamos la lista de categorías para el dropdown
+            ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View(contacto);
         }
 
@@ -112,7 +134,8 @@ namespace ContactManagerWeb.Controllers
                 try
                 {
                     contacto.Nombre = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Nombre.ToLower());
-                    contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
+                    if (!string.IsNullOrEmpty(contacto.Apellido))
+                        contacto.Apellido = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(contacto.Apellido.ToLower());
 
                     _context.Update(contacto);
                     await _context.SaveChangesAsync();
@@ -124,13 +147,28 @@ namespace ContactManagerWeb.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View(contacto);
         }
 
-        // --- 5. ELIMINAR (POST) ---
-        [HttpPost]
+        // --- 5. ELIMINAR (SOLUCIÓN AL ERROR 404) ---
+
+        // GET: Para mostrar la vista o modal de confirmación
+        [HttpGet]
+        public async Task<IActionResult> Eliminar(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var contacto = await _context.Contactos.FirstOrDefaultAsync(m => m.Id == id);
+            if (contacto == null) return NotFound();
+
+            return View(contacto);
+        }
+
+        // POST: La acción que realmente borra de la base de datos
+        [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Eliminar(int id)
+        public async Task<IActionResult> EliminarConfirmado(int id)
         {
             var contacto = await _context.Contactos.FindAsync(id);
             if (contacto != null)
@@ -154,15 +192,14 @@ namespace ContactManagerWeb.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-        // --- 7. VISTAS EXTRAS (Recientes) ---
+        // --- 7. VISTAS EXTRAS ---
         public async Task<IActionResult> Recientes()
         {
+            // Usamos la misma lógica de Navbar premium en esta vista
             var recientes = await _context.Contactos
-                .OrderByDescending(c => c.FechaCreacion)
+                .OrderByDescending(c => c.Id)
                 .Take(4)
                 .ToListAsync();
-
-            ViewData["FiltroActual"] = "Agregados Recientemente";
 
             return View(recientes);
         }

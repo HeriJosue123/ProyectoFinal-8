@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContactManagerWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260423200546_MigracionInicial")]
-    partial class MigracionInicial
+    [Migration("20260424003823_AgregarColumnaEmojiReal")]
+    partial class AgregarColumnaEmojiReal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,9 @@ namespace ContactManagerWeb.Migrations
                     b.Property<string>("Descripcion")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Emoji")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NombreCategoria")
                         .IsRequired()

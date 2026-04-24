@@ -1,0 +1,234 @@
+﻿@model ContactManagerWeb.Models.Categoria
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Categoría — Agenda</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-body: #0F0F14;
+            --bg-card: #171721;
+            --bg-input: #1C1C26;
+            --accent: #5A4FCF;
+            --text-muted: #8A8A9E;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body { 
+            background-color: var(--bg-body); 
+            color: #FFF; 
+            font-family: 'DM Sans', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            /* Padding inferior para que el menú tenga espacio al bajar */
+            padding: 40px 20px 150px 20px;
+            box-sizing: border-box;
+        }
+
+        @@keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .card { 
+            background: var(--bg-card); 
+            padding: 40px; 
+            border-radius: 28px; 
+            border: 1px solid var(--border); 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6); 
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        h2 { text-align: center; margin-bottom: 35px; font-weight: 700; letter-spacing: -1px; font-size: 1.8rem; }
+
+        .form-group { margin-bottom: 25px; position: relative; }
+        label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        
+        .dark-input { 
+            width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); 
+            background: var(--bg-input); color: white; outline: none; transition: 0.3s; box-sizing: border-box; font-size: 1rem;
+        }
+        .dark-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(90, 79, 207, 0.15); }
+
+        .custom-emoji-picker { position: relative; user-select: none; }
+        .emoji-trigger { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .emoji-trigger .current { display: flex; align-items: center; gap: 12px; }
+
+        /* Despliegue hacia ABAJO */
+        .emoji-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            width: 100%;
+            background: #1C1C26;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 15px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .emoji-dropdown.active { display: block; animation: scaleIn 0.2s ease-out; }
+
+        .emoji-section-title {
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin: 12px 0 8px 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+        }
+
+        .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+
+        .emoji-item {
+            aspect-ratio: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; border-radius: 10px; cursor: pointer; transition: 0.2s;
+        }
+        .emoji-item:hover { background: rgba(255, 255, 255, 0.05); transform: scale(1.2); }
+
+        .emoji-dropdown::-webkit-scrollbar { width: 5px; }
+        .emoji-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        /* BOTONES UNIFICADOS CON DM SANS 700 */
+        .btn-save { 
+            width: 100%; padding: 16px; background: var(--accent); color: white; border: none; 
+            border-radius: 15px; cursor: pointer; transition: 0.3s; margin-top: 15px; 
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .btn-save:hover { background: #6B5BFF; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3); }
+        
+        .btn-back { 
+            display: block; text-align: center; margin-top: 25px; color: var(--text-muted); text-decoration: none; 
+            font-size: 0.9rem; transition: 0.3s; 
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+        }
+        .btn-back:hover { color: white; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Crear Categoría</h2>
+        <form asp-action="Crear" method="post">
+            
+            <div class="form-group">
+                <label>Nombre de la Categoría</label>
+                <input asp-for="NombreCategoria" class="dark-input" placeholder="Ej: Universidad, Gym, Lab..." required autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+                <label>Icono Representativo</label>
+                <input type="hidden" asp-for="Emoji" id="hiddenEmoji" value="📁" />
+                
+                <div class="custom-emoji-picker">
+                    <div class="dark-input emoji-trigger" onclick="toggleEmojiDropdown()">
+                        <div class="current">
+                            <span id="displayEmoji" style="font-size: 1.3rem;">📁</span>
+                            <span id="displayText">General / Otros</span>
+                        </div>
+                        <span style="font-size: 0.8rem; opacity: 0.5;">▼</span>
+                    </div>
+
+                    <div class="emoji-dropdown" id="emojiDropdown">
+                        
+                        <div class="emoji-section-title">Gimnasio y Deporte</div>
+                        <div class="emoji-grid">
+                            <div class="emoji-item" onclick="selectEmoji('🏋️', 'Gym')">🏋️</div>
+                            <div class="emoji-item" onclick="selectEmoji('💪', 'Fuerza')">💪</div>
+                            <div class="emoji-item" onclick="selectEmoji('🥊', 'Boxeo')">🥊</div>
+                            <div class="emoji-item" onclick="selectEmoji('🏃', 'Running')">🏃</div>
+                            <div class="emoji-item" onclick="selectEmoji('🚴', 'Ciclismo')">🚴</div>
+                            <div class="emoji-item" onclick="selectEmoji('🧘', 'Yoga')">🧘</div>
+                            <div class="emoji-item" onclick="selectEmoji('⚽', 'Fútbol')">⚽</div>
+                            <div class="emoji-item" onclick="selectEmoji('🏀', 'Básquet')">🏀</div>
+                        </div>
+
+                        <div class="emoji-section-title">Social y Vida</div>
+                        <div class="emoji-grid">
+                            <div class="emoji-item" onclick="selectEmoji('🤝', 'Social')">🤝</div>
+                            <div class="emoji-item" onclick="selectEmoji('🫂', 'Amigos')">🫂</div>
+                            <div class="emoji-item" onclick="selectEmoji('👥', 'Grupo')">👥</div>
+                            <div class="emoji-item" onclick="selectEmoji('👪', 'Familia')">👪</div>
+                            <div class="emoji-item" onclick="selectEmoji('👫', 'Pareja')">👫</div>
+                            <div class="emoji-item" onclick="selectEmoji('🎉', 'Fiesta')">🎉</div>
+                            <div class="emoji-item" onclick="selectEmoji('🍻', 'Salida')">🍻</div>
+                            <div class="emoji-item" onclick="selectEmoji('🍕', 'Comida')">🍕</div>
+                        </div>
+
+                        <div class="emoji-section-title">Trabajo y Tech</div>
+                        <div class="emoji-grid">
+                            <div class="emoji-item" onclick="selectEmoji('💼', 'Trabajo')">💼</div>
+                            <div class="emoji-item" onclick="selectEmoji('💻', 'IT / Dev')">💻</div>
+                            <div class="emoji-item" onclick="selectEmoji('🖥️', 'Soporte')">🖥️</div>
+                            <div class="emoji-item" onclick="selectEmoji('🏢', 'Empresa')">🏢</div>
+                            <div class="emoji-item" onclick="selectEmoji('💵', 'Dinero')">💵</div>
+                            <div class="emoji-item" onclick="selectEmoji('💰', 'Ahorro')">💰</div>
+                            <div class="emoji-item" onclick="selectEmoji('🚀', 'Startup')">🚀</div>
+                            <div class="emoji-item" onclick="selectEmoji('📱', 'Móvil')">📱</div>
+                        </div>
+
+                        <div class="emoji-section-title">Estudio y Otros</div>
+                        <div class="emoji-grid">
+                            <div class="emoji-item" onclick="selectEmoji('📚', 'Estudio')">📚</div>
+                            <div class="emoji-item" onclick="selectEmoji('🎓', 'Grado')">🎓</div>
+                            <div class="emoji-item" onclick="selectEmoji('🎨', 'Arte')">🎨</div>
+                            <div class="emoji-item" onclick="selectEmoji('📸', 'Foto')">📸</div>
+                            <div class="emoji-item" onclick="selectEmoji('💡', 'Ideas')">💡</div>
+                            <div class="emoji-item" onclick="selectEmoji('🏥', 'Salud')">🏥</div>
+                            <div class="emoji-item" onclick="selectEmoji('✈️', 'Viajes')">✈️</div>
+                            <div class="emoji-item" onclick="selectEmoji('📁', 'Otros')">📁</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Descripción Breve</label>
+                <textarea asp-for="Descripcion" class="dark-input" rows="2" placeholder="Opcional..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-save">Finalizar Registro</button>
+            <a asp-action="Index" asp-controller="Contactos" class="btn-back">Cancelar y volver</a>
+        </form>
+    </div>
+
+    <script>
+        function toggleEmojiDropdown() {
+            document.getElementById('emojiDropdown').classList.toggle('active');
+        }
+
+        function selectEmoji(emoji, text) {
+            document.getElementById('hiddenEmoji').value = emoji;
+            document.getElementById('displayEmoji').innerText = emoji;
+            document.getElementById('displayText').innerText = text;
+            toggleEmojiDropdown();
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.custom-emoji-picker')) {
+                document.getElementById('emojiDropdown').classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

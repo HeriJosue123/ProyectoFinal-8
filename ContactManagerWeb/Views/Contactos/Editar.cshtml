@@ -237,10 +237,14 @@
                 <div>
                     <label class="form-label">Categoría</label>
                     <select asp-for="Categoria" class="dark-input">
-                        <option value="General">🌐 General</option>
-                        <option value="Trabajo">💼 Trabajo</option>
-                        <option value="Amigos">👥 Amigos</option>
-                        <option value="Familia">❤️ Familia</option>
+                        <option value="">-- Seleccionar --</option>
+                        @if (ViewBag.Categorias != null)
+                        {
+                            foreach (var cat in (IEnumerable<ContactManagerWeb.Models.Categoria>)ViewBag.Categorias)
+                            {
+                                <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option>
+                            }
+                        }
                     </select>
                     <span asp-validation-for="Categoria" class="text-danger"></span>
                 </div>
@@ -311,10 +315,8 @@
             });
     </script>
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 </body>
 </html>
