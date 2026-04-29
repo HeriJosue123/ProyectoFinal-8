@@ -12,6 +12,9 @@ namespace ContactManagerWeb
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Registro de la Capa de Servicios
+            builder.Services.AddScoped<ContactManagerWeb.Services.ContactService>();
+
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
