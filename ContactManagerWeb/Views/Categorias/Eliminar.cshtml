@@ -1,13 +1,14 @@
-﻿@model ContactManagerWeb.Models.Contacto
+﻿@model ContactManagerWeb.Models.Categoria
 @{
     Layout = null;
 }
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eliminar Contacto</title>
+    <title>Eliminar Categoría</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
     <style>
             :root {
@@ -46,29 +47,32 @@
                 text-align: center;
             }
 
-            /* --- AQUÍ ESTÁ EL ARREGLO --- */
             .warning-icon {
                 width: 60px;
                 height: 60px;
                 background: var(--warning-bg);
                 color: var(--warning-color);
                 border-radius: 50%;
-                /* Cambiado de flex a grid para un centrado perfecto */
                 display: grid;
-                place-items: center; /* Centrado absoluto súper preciso */
-            
+                place-items: center;
                 margin: 0 auto 20px auto;
                 font-size: 1.8rem;
                 border: 1px solid rgba(245, 158, 11, 0.2);
-                line-height: 1; /* Reset de altura de línea para evitar desvíos */
+                line-height: 1;
             }
-            /* --------------------------- */
 
             h2 {
                 margin: 0 0 15px 0;
                 font-weight: 700;
                 font-size: 1.5rem;
                 color: #FFF;
+            }
+            
+            .item-name {
+                color: var(--warning-color);
+                font-weight: 700;
+                display: block;
+                margin: 10px 0;
             }
         
             .warning-text {
@@ -122,10 +126,14 @@
     <div class="card">
         <div class="warning-icon">⚠️</div>
         
-        <h2>¿Eliminar contacto?</h2>
-        <p class="warning-text">Esta acción no se puede deshacer. El contacto será borrado permanentemente de tu agenda.</p>
+        <h2>¿Eliminar categoría?</h2>
+        <p class="warning-text">
+            ¿Estás seguro de que quieres eliminar <span class="item-name">@Model.NombreCategoria @Model.Emoji</span>?<br>
+            Esta acción podría afectar a los contactos que usan esta categoría.
+        </p>
 
         <form asp-action="Eliminar" method="post">
+            @* Importante: Usar el Id de la categoría *@
             <input type="hidden" asp-for="Id" />
             
             <div class="button-group">

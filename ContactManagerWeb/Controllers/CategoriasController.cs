@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ContactManagerWeb.Data;
+﻿using ContactManagerWeb.Data;
 using ContactManagerWeb.Models;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ContactManagerWeb.Controllers
 {
@@ -16,58 +17,40 @@ namespace ContactManagerWeb.Controllers
             _context = context;
         }
 
-        // --- 1. LISTADO (OPCIONAL) ---
+        // Listado de todas las categorías
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categorias.ToListAsync());
         }
 
-        // --- 2. DETALLES DE CATEGORÍA ---
-        // Se activa al dar clic en "👀 Ver Detalles"
-        public async Task<IActionResult> Detalles(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var categoria = await _context.Categorias
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (categoria == null) return NotFound();
-
-            return View(categoria);
-        }
-
-        // --- 3. CREAR CATEGORÍA (GET) ---
+        // Formulario para crear categoría
         public IActionResult Crear()
         {
             return View();
         }
 
-        // --- 4. CREAR CATEGORÍA (POST) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(Categoria categoria)
         {
             if (ModelState.IsValid)
             {
-                _context.Categorias.Add(categoria);
+                _context.Add(categoria);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Contactos");
+                return RedirectToAction(nameof(Index));
             }
             return View(categoria);
         }
 
-        // --- 5. EDITAR CATEGORÍA (GET) ---
+        // Formulario para editar categoría
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null) return NotFound();
-
             var categoria = await _context.Categorias.FindAsync(id);
             if (categoria == null) return NotFound();
-
             return View(categoria);
         }
 
-        // --- 6. EDITAR CATEGORÍA (POST) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, Categoria categoria)
@@ -76,23 +59,14 @@ namespace ContactManagerWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(categoria);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoriaExists(categoria.Id)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction("Index", "Contactos");
+                _context.Update(categoria);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             return View(categoria);
         }
 
-        // --- 7. ELIMINAR CATEGORÍA (GET) ---
-        // ¡ESTE ES EL QUE CARGA LA VISTA BONITA DE CONFIRMACIÓN!
+        // GET: Muestra la confirmación de eliminación (Aquí estaba el error)
         public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null) return NotFound();
@@ -102,27 +76,33 @@ namespace ContactManagerWeb.Controllers
 
             if (categoria == null) return NotFound();
 
+            // Enviamos el objeto 'categoria' a la vista
             return View(categoria);
         }
 
-        // --- 8. ELIMINAR CATEGORÍA (POST) ---
-        // Se activa cuando confirmas en la vista anterior
+        // POST: Ejecuta la eliminación
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             var categoria = await _context.Categorias.FindAsync(id);
+
             if (categoria != null)
             {
-                _context.Categorias.Remove(categoria);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Categorias.Remove(categoria);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    // Error común: No se puede borrar si hay contactos usando esta categoría
+                    TempData["Error"] = "No se puede eliminar esta categoría porque tiene contactos asociados.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            return RedirectToAction("Index", "Contactos");
-        }
 
-        private bool CategoriaExists(int id)
-        {
-            return _context.Categorias.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
