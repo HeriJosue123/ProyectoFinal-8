@@ -23,16 +23,17 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
         body { background-color: var(--bg-body); color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .glass-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; width: 100%; max-width: 550px; }
+        .glass-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; width: 100%; max-width: 550px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .form-header { text-align: center; margin-bottom: 30px; }
         .form-header h2 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; }
         .form-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 15px; }
-        .dark-input { width: 100%; background-color: var(--bg-input); border: 1px solid var(--border); color: #FFF; border-radius: 12px; padding: 12px 15px; outline: none; }
-        .dark-input:focus { border-color: var(--accent); }
+        .dark-input { width: 100%; background-color: var(--bg-input); border: 1px solid var(--border); color: #FFF; border-radius: 12px; padding: 12px 15px; outline: none; transition: 0.3s; }
+        .dark-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(90, 79, 207, 0.1); }
         .text-danger { color: var(--danger); font-size: 0.75rem; font-weight: 500; margin-top: 6px; display: block; padding-left: 5px; }
         .row-inputs { display: flex; gap: 15px; }
         .row-inputs > div { flex: 1; }
-        .btn-gradient { display: block; text-align: center; background: linear-gradient(135deg, var(--accent), #3E346B); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; }
+        .btn-gradient { display: block; text-align: center; background: linear-gradient(135deg, var(--accent), #3E346B); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 25px; transition: 0.3s; }
+        .btn-gradient:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3); }
     </style>
 </head>
 <body>
@@ -45,20 +46,20 @@
         <form asp-action="Crear" method="post">
             <div class="row-inputs">
                 <div>
-                    <label asp-for="Nombre" class="form-label"></label>
-                    <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" />
+                    <label asp-for="Nombre" class="form-label">Nombre</label>
+                    <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" autocomplete="off" />
                     <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
                 <div>
                     <label asp-for="Apellido" class="form-label">Apellido (Opcional)</label>
-                    <input asp-for="Apellido" class="dark-input" placeholder="Ej: Pérez" />
+                    <input asp-for="Apellido" class="dark-input" placeholder="Ej: Pérez" autocomplete="off" />
                 </div>
             </div>
 
             <div class="row-inputs">
                 <div>
                     <label asp-for="Telefono" class="form-label">Teléfono</label>
-                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" />
+                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
                 <div>
@@ -86,30 +87,24 @@
                                 <option value="😀">😀</option><option value="😂">😂</option><option value="🥰">🥰</option>
                                 <option value="😎">😎</option><option value="🥺">🥺</option><option value="🥳">🥳</option>
                                 <option value="😡">😡</option><option value="🤯">🤯</option><option value="👻">👻</option>
-                                <option value="🤡">🤡</option><option value="🤖">🤖</option><option value="👽">👽</option>
+                                <option value="🤡">🤡</option>
                             </optgroup>
                             <optgroup label="Amor y Parejas">
                                 <option value="❤️">❤️</option><option value="💖">💖</option><option value="👩‍❤️‍👨">👩‍❤️‍👨</option>
-                                <option value="👨‍❤️‍👨">👨‍❤️‍👨</option><option value="👩‍❤️‍👩">👩‍❤️‍👩</option><option value="💑">💑</option>
-                                <option value="👨‍👩‍👧">👨‍👩‍👧</option><option value="🤝">🤝</option>
+                                <option value="💑">💑</option><option value="🤝">🤝</option>
                             </optgroup>
                             <optgroup label="Banderas">
-                                <option value="🏳️‍🌈">🏳️‍🌈</option><option value="🏳️‍⚧️">🏳️‍⚧️</option><option value="🇸🇻">🇸🇻</option>
-                                <option value="🇲🇽">🇲🇽</option><option value="🇺🇸">🇺🇸</option><option value="🇪🇸">🇪🇸</option>
-                                <option value="🏁">🏁</option><option value="🚩">🚩</option><option value="🏴‍☠️">🏴‍☠️</option>
+                                <option value="🏳️‍🌈">🏳️‍🌈</option><option value="🇸🇻">🇸🇻</option><option value="🇲🇽">🇲🇽</option>
+                                <option value="🇺🇸">🇺🇸</option><option value="🇪🇸">🇪🇸</option>
                             </optgroup>
                             <optgroup label="Trabajo y Estilo">
                                 <option value="💼">💼</option><option value="💻">💻</option><option value="🎓">🎓</option>
-                                <option value="🏥">🏥</option><option value="✈️">✈️</option><option value="🛒">🛒</option>
-                                <option value="💰">💰</option><option value="🏋️">🏋️</option><option value="🎮">🎮</option>
-                                <option value="🍔">🍔</option><option value="🍕">🍕</option><option value="🎧">🎧</option>
-                                <option value="📚">📚</option>
+                                <option value="✈️">✈️</option><option value="💰">💰</option><option value="🏋️">🏋️</option>
+                                <option value="🎮">🎮</option><option value="🍕">🍕</option>
                             </optgroup>
-                            <optgroup label="Símbolos Extras">
+                            <optgroup label="Símbolos">
                                 <option value="✨">✨</option><option value="🔥">🔥</option><option value="🌟">🌟</option>
-                                <option value="📌">📌</option><option value="💡">💡</option><option value="🔔">🔔</option>
-                                <option value="🚫">🚫</option><option value="⚡">⚡</option><option value="💎">💎</option>
-                                <option value="🎯">🎯</option>
+                                <option value="📌">📌</option><option value="💡">💡</option>
                             </optgroup>
                         </select>
                         <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre de categoría" style="flex: 1;" />
@@ -129,13 +124,12 @@
         </form>
     </div>
 
+    @* SCRIPTS *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/localization/messages_es.js"></script>
 
     <script>
-        // Muestra u oculta los campos para la nueva categoría
         function verificarNuevaCategoria() {
             var select = document.getElementById("selectCategoria");
             var container = document.getElementById("nuevaCategoriaContainer");
@@ -150,15 +144,44 @@
             }
         }
 
-        /
+        // --- MÁSCARA DE TELÉFONO OBLIGATORIA (+503, Sin Letras, Guion Automático) ---
         const phoneInput = document.getElementById('Telefono');
+
+        // 1. Al entrar al campo, poner el prefijo si está vacío
+        phoneInput.addEventListener('focus', function() {
+            if (this.value.trim() === "") {
+                this.value = "+503 ";
+            }
+        });
+
+        // 2. Controlar la escritura
         phoneInput.addEventListener('input', function(e) {
-            let value = this.value.replace(/\D/g, '');
-            if (value.startsWith('503')) value = value.substring(3);
-            value = value.substring(0, 8);
-            if (value.length === 0) this.value = '';
-            else if (value.length <= 4) this.value = '+503 ' + value;
-            else this.value = '+503 ' + value.substring(0, 4) + '-' + value.substring(4);
+            let value = this.value;
+
+            // Siempre debe empezar con +503 
+            if (!value.startsWith("+503 ")) {
+                value = "+503 " + value.replace(/\D/g, "").replace(/^503/, "");
+            }
+
+            // Extraer solo los números después del prefijo
+            let numbers = value.substring(5).replace(/\D/g, ""); 
+
+            // Limitar a 8 dígitos
+            numbers = numbers.substring(0, 8);
+
+            // Aplicar formato XXXX-XXXX
+            if (numbers.length > 4) {
+                this.value = "+503 " + numbers.substring(0, 4) + "-" + numbers.substring(4);
+            } else {
+                this.value = "+503 " + numbers;
+            }
+        });
+
+        // 3. Bloquear que borren el prefijo con el teclado
+        phoneInput.addEventListener('keydown', function(e) {
+            if (e.key === "Backspace" && this.value.length <= 5) {
+                e.preventDefault();
+            }
         });
     </script>
 </body>
