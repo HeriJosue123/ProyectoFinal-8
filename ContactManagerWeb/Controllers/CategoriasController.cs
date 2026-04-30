@@ -17,13 +17,38 @@ namespace ContactManagerWeb.Controllers
             _context = context;
         }
 
-        // Listado de todas las categorías
+        // ==========================================
+        // LISTADO DE CATEGORÍAS
+        // ==========================================
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categorias.ToListAsync());
         }
 
-        // Formulario para crear categoría
+        // ==========================================
+        // DETALLES DE UNA CATEGORÍA (El que faltaba)
+        // ==========================================
+        public async Task<IActionResult> Detalles(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var categoria = await _context.Categorias
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (categoria == null)
+            {
+                return NotFound();
+            }
+
+            return View(categoria);
+        }
+
+        // ==========================================
+        // CREAR CATEGORÍA
+        // ==========================================
         public IActionResult Crear()
         {
             return View();
@@ -42,12 +67,16 @@ namespace ContactManagerWeb.Controllers
             return View(categoria);
         }
 
-        // Formulario para editar categoría
+        // ==========================================
+        // EDITAR CATEGORÍA
+        // ==========================================
         public async Task<IActionResult> Editar(int? id)
         {
             if (id == null) return NotFound();
+
             var categoria = await _context.Categorias.FindAsync(id);
             if (categoria == null) return NotFound();
+
             return View(categoria);
         }
 
@@ -59,14 +88,32 @@ namespace ContactManagerWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Update(categoria);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Update(categoria);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Categorias.Any(e => e.Id == categoria.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(categoria);
         }
 
-        // GET: Muestra la confirmación de eliminación (Aquí estaba el error)
+        // ==========================================
+        // ELIMINAR CATEGORÍA
+        // ==========================================
+
+        // GET: Confirmación
         public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null) return NotFound();
@@ -76,11 +123,10 @@ namespace ContactManagerWeb.Controllers
 
             if (categoria == null) return NotFound();
 
-            // Enviamos el objeto 'categoria' a la vista
             return View(categoria);
         }
 
-        // POST: Ejecuta la eliminación
+        // POST: Ejecución
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
@@ -96,7 +142,7 @@ namespace ContactManagerWeb.Controllers
                 }
                 catch (DbUpdateException)
                 {
-                    // Error común: No se puede borrar si hay contactos usando esta categoría
+                    // Manejo de error si la categoría está en uso por algún contacto
                     TempData["Error"] = "No se puede eliminar esta categoría porque tiene contactos asociados.";
                     return RedirectToAction(nameof(Index));
                 }

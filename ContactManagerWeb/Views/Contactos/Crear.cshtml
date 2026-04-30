@@ -83,7 +83,6 @@
                 border-color: var(--accent);
             }
 
-        /* ESTILO PARA LAS ADVERTENCIAS DEBAJO DE LOS BOXES */
         .text-danger {
             color: var(--danger);
             font-size: 0.75rem;
@@ -127,31 +126,36 @@
         <form asp-action="Crear" method="post">
             <div class="row-inputs">
                 <div>
-                    <label class="form-label">Nombre</label>
+                    <label asp-for="Nombre" class="form-label"></label>
                     <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" />
-                    <span asp-validation-for="Nombre" class="text-danger"></span> @* <-- APARECE AQUÍ *@
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
                 <div>
-                    <label class="form-label">Apellido (Opcional)</label>
+                    <label asp-for="Apellido" class="form-label">Apellido (Opcional)</label>
                     <input asp-for="Apellido" class="dark-input" placeholder="Ej: Pérez" />
                 </div>
             </div>
 
             <div class="row-inputs">
                 <div>
-                    <label class="form-label">Teléfono</label>
+                    <label asp-for="Telefono" class="form-label">Teléfono</label>
                     <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" />
-                    <span asp-validation-for="Telefono" class="text-danger"></span> @* <-- APARECE AQUÍ *@
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
                 <div>
                     <label class="form-label">Categoría</label>
                     <select asp-for="Categoria" class="dark-input">
-                        <option value="">-- Seleccionar --</option>
+                        <option value="General">General (Por defecto)</option>
+
                         @if (ViewBag.Categorias != null)
                         {
                             foreach (var cat in (IEnumerable<ContactManagerWeb.Models.Categoria>)ViewBag.Categorias)
                             {
-                                <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option>
+                                // Evitamos duplicar "General" si ya existe en la base de datos
+                                if (cat.NombreCategoria != "General")
+                                {
+                                    <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option>
+                                }
                             }
                         }
                     </select>
@@ -159,11 +163,11 @@
                 </div>
             </div>
 
-            <label class="form-label">Correo Electrónico (Opcional)</label>
+            <label asp-for="Correo" class="form-label">Correo Electrónico (Opcional)</label>
             <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" />
-            <span asp-validation-for="Correo" class="text-danger"></span> @* <-- APARECE AQUÍ *@
+            <span asp-validation-for="Correo" class="text-danger"></span>
 
-            <label class="form-label">Dirección (Opcional)</label>
+            <label asp-for="Direccion" class="form-label">Dirección (Opcional)</label>
             <input asp-for="Direccion" class="dark-input" placeholder="Ingresa la dirección" />
 
             <button type="submit" class="btn-gradient">Guardar Contacto</button>
@@ -171,8 +175,14 @@
         </form>
     </div>
 
+    @* SCRIPTS DE VALIDACIÓN Y MÁSCARA *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    @* Localización en español para jQuery Validate *@
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/localization/messages_es.js"></script>
+
     <script>
-        // Mantenemos la lógica de la máscara de teléfono que ya tenían
         const phoneInput = document.getElementById('Telefono');
         phoneInput.addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
@@ -184,4 +194,4 @@
         });
     </script>
 </body>
-</html>
+</html>}

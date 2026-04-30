@@ -21,7 +21,8 @@ namespace ContactManagerWeb.Controllers
             _contactService = contactService;
         }
 
-        // Muestra el listado principal con filtros de búsqueda, categorías y favoritos
+        // --- ACCIÓN: VISTA PRINCIPAL (INDEX) ---
+        // Muestra el listado con filtros de búsqueda, categorías y favoritos
         public async Task<IActionResult> Index(string searchString, string categoria, bool? soloFavoritos)
         {
             IQueryable<Contacto> query = _context.Contactos;
@@ -50,11 +51,11 @@ namespace ContactManagerWeb.Controllers
 
             var listaContactos = await _context.Contactos.ToListAsync();
 
-            // Datos para las estadísticas de la barra lateral
+            // Estadísticas para la barra lateral
             ViewBag.TotalTodos = listaContactos.Count;
             ViewBag.TotalFavoritos = listaContactos.Count(c => c.EsFavorito);
 
-            // Conteo dinámico de contactos por cada categoría
+            // Conteo dinámico de contactos por categoría para el Sidebar
             ViewBag.CategoriasDinamicas = await _context.Categorias
                 .Select(cat => new {
                     Id = cat.Id,
@@ -63,7 +64,7 @@ namespace ContactManagerWeb.Controllers
                     Count = _context.Contactos.Count(c => c.Categoria == cat.NombreCategoria)
                 }).ToListAsync();
 
-            // Identifica los 3 contactos más recientes para mostrar badges de "Nuevo"
+            // Badge de "Nuevo" para los últimos 3 registros
             ViewBag.NuevosIds = listaContactos
                 .OrderByDescending(c => c.Id)
                 .Take(3)
@@ -73,24 +74,31 @@ namespace ContactManagerWeb.Controllers
             return View(await query.ToListAsync());
         }
 
-        // Muestra la información detallada de un contacto
+        // --- ACCIÓN: DETALLES DEL CONTACTO ---
         public async Task<IActionResult> Detalles(int? id) =>
             (id == null) ? NotFound() : View(await _context.Contactos.FirstOrDefaultAsync(m => m.Id == id));
 
-        // Carga el formulario para crear un nuevo contacto
+        // --- ACCIÓN: CREAR CONTACTO (GET) ---
+        // Carga el formulario de creación
         public async Task<IActionResult> Crear()
         {
             ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View();
         }
 
-        // Procesa la creación del contacto validando duplicados y formato mediante el Service
+        // --- ACCIÓN: CREAR CONTACTO (POST) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(Contacto contacto)
         {
             try
             {
+                // ASIGNACIÓN POR DEFECTO: Si no elige categoría, se guarda como "General"
+                if (string.IsNullOrWhiteSpace(contacto.Categoria))
+                {
+                    contacto.Categoria = "General";
+                }
+
                 await _contactService.ValidarYNormalizar(contacto);
                 _context.Add(contacto);
                 await _context.SaveChangesAsync();
@@ -104,7 +112,7 @@ namespace ContactManagerWeb.Controllers
             }
         }
 
-        // Carga el formulario de edición con los datos del contacto
+        // --- ACCIÓN: EDITAR CONTACTO (GET) ---
         public async Task<IActionResult> Editar(int? id)
         {
             var c = await _context.Contactos.FindAsync(id);
@@ -112,7 +120,7 @@ namespace ContactManagerWeb.Controllers
             return c == null ? NotFound() : View(c);
         }
 
-        // Procesa la actualización de un contacto existente
+        // --- ACCIÓN: EDITAR CONTACTO (POST) ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, Contacto contacto)
@@ -121,6 +129,12 @@ namespace ContactManagerWeb.Controllers
 
             try
             {
+                // ASIGNACIÓN POR DEFECTO: Mantenemos la lógica en la edición también
+                if (string.IsNullOrWhiteSpace(contacto.Categoria))
+                {
+                    contacto.Categoria = "General";
+                }
+
                 await _contactService.ValidarYNormalizar(contacto);
                 _context.Update(contacto);
                 await _context.SaveChangesAsync();
@@ -134,7 +148,7 @@ namespace ContactManagerWeb.Controllers
             }
         }
 
-        // Muestra la página de confirmación antes de borrar (GET)
+        // --- ACCIÓN: ELIMINAR CONTACTO (GET - Confirmación) ---
         public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null) return NotFound();
@@ -142,7 +156,7 @@ namespace ContactManagerWeb.Controllers
             return contacto == null ? NotFound() : View(contacto);
         }
 
-        // Ejecuta la eliminación definitiva del contacto (POST)
+        // --- ACCIÓN: ELIMINAR CONTACTO (POST - Ejecución) ---
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
@@ -156,7 +170,8 @@ namespace ContactManagerWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Cambia el estado de favorito sin salir de la página actual
+        // --- ACCIÓN: TOGGLE FAVORITO (AJAX/REFERER) ---
+        // Cambia el estado de estrella sin perder la posición actual
         [HttpPost]
         public async Task<IActionResult> ToggleFavorito(int id)
         {
@@ -169,17 +184,22 @@ namespace ContactManagerWeb.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-        // Muestra los últimos 10 contactos agregados al sistema
+        // --- ACCIÓN: CONTACTOS RECIENTES ---
+        // Muestra los últimos 9 contactos (Configuración 3x3)
         public async Task<IActionResult> Recientes()
         {
-            var lista = await _context.Contactos.OrderByDescending(c => c.Id).Take(10).ToListAsync();
+            var lista = await _context.Contactos
+                .OrderByDescending(c => c.Id)
+                .Take(9)
+                .ToListAsync();
             return View(lista);
         }
 
-        // Muestra la vista de ayuda al usuario
+        // --- ACCIÓN: AYUDA ---
         public IActionResult Ayuda() => View();
 
-        // Método privado para mapear excepciones del Service hacia los campos del formulario
+        // --- MÉTODO PRIVADO: MANEJO DE ERRORES ---
+        // Mapea excepciones del Service hacia el ModelState para mostrarlos en el formulario
         private void CapturarErrores(Exception ex)
         {
             string msg = ex.Message.ToLower();
