@@ -56,6 +56,28 @@ namespace ContactManagerWeb.Services
             {
                 contacto.Apellido = null;
             }
+
+            // VALIDACIÓN DE TELÉFONO 
+            if (!string.IsNullOrWhiteSpace(contacto.Telefono))
+            {
+                // 1. Limpiamos el texto para dejar solo los números reales
+                var soloNumeros = contacto.Telefono
+                    .Replace("+503", "")
+                    .Replace("-", "")
+                    .Replace(" ", "");
+
+                // 2. Regla: Debe tener exactamente 8 dígitos
+                if (soloNumeros.Length != 8)
+                {
+                    throw new Exception("El número de teléfono debe tener exactamente 8 dígitos.");
+                }
+
+                // 3. Regla: No se permiten letras en este campo
+                if (!soloNumeros.All(char.IsDigit))
+                {
+                    throw new Exception("El número de teléfono solo puede contener dígitos numéricos.");
+                }
+            }
         }
     }
 }
