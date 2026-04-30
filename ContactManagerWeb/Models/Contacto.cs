@@ -18,7 +18,6 @@ namespace ContactManagerWeb.Models
 
         // Lo mismo para el teléfono
         [Required(ErrorMessage = "El número de teléfono es requerido")]
-        [RegularExpression(@"^\+503 \d{4}-\d{4}$", ErrorMessage = "El formato debe ser +503 XXXX-XXXX")]
         [Display(Name = "Número de Teléfono")]
         public string Telefono { get; set; } = string.Empty;
 

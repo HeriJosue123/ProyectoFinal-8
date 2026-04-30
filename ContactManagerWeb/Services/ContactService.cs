@@ -19,69 +19,61 @@ namespace ContactManagerWeb.Services
 
         public async Task ValidarYNormalizar(Contacto contacto)
         {
-            // --- REGLA 1: Asignar categoría por defecto si viene vacía ---
+            var textInfo = new CultureInfo("es-ES", false).TextInfo;
+
+            // 1. Normalizar Nombre
+            if (string.IsNullOrWhiteSpace(contacto.Nombre))
+                throw new Exception("El nombre del contacto es obligatorio.");
+
+            contacto.Nombre = textInfo.ToTitleCase(contacto.Nombre.Trim().ToLower());
+
+            // 2. Arreglo para Apellido (Si es vacío, se guarda "" para evitar error de NULL en SQL)
+            if (string.IsNullOrWhiteSpace(contacto.Apellido))
+            {
+                contacto.Apellido = "";
+            }
+            else
+            {
+                contacto.Apellido = textInfo.ToTitleCase(contacto.Apellido.Trim().ToLower());
+            }
+
+            // 3. Categoría por defecto
             if (string.IsNullOrWhiteSpace(contacto.Categoria))
             {
                 contacto.Categoria = "General";
             }
 
-            // --- REGLA 2: Evitar teléfonos duplicados ---
+            // 4. Validación de Teléfono
+            if (string.IsNullOrWhiteSpace(contacto.Telefono))
+                throw new Exception("El número de teléfono es obligatorio.");
+
+            string soloNumeros = new string(contacto.Telefono.Where(char.IsDigit).ToArray());
+
+            if (soloNumeros.Length < 8)
+                throw new Exception("El teléfono debe contener al menos 8 dígitos.");
+
+            // Validar Duplicados
             var duplicado = await _context.Contactos
-                .FirstOrDefaultAsync(c => c.Telefono == contacto.Telefono && c.Id != contacto.Id);
+                .AnyAsync(c => c.Telefono == contacto.Telefono && c.Id != contacto.Id);
 
-            if (duplicado != null)
+            if (duplicado)
+                throw new Exception($"El número {contacto.Telefono} ya está registrado.");
+
+            // 5. Arreglo para Correo y Dirección (Evitar valores NULL en la BD)
+            if (string.IsNullOrWhiteSpace(contacto.Correo))
             {
-                throw new Exception($"El número ya está registrado bajo el nombre \"{duplicado.Nombre}\".");
-            }
-
-            // --- REGLA 3: Validación de formato y duplicidad de correo ---
-            if (!string.IsNullOrWhiteSpace(contacto.Correo))
-            {
-                var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$");
-                if (!emailRegex.IsMatch(contacto.Correo))
-                {
-                    throw new Exception("Formato de correo inválido. Asegúrate de incluir '@' y un dominio.");
-                }
-
-                var correoDuplicado = await _context.Contactos
-                    .AnyAsync(c => c.Correo == contacto.Correo && c.Id != contacto.Id);
-
-                if (correoDuplicado)
-                {
-                    throw new Exception("Esta dirección de correo ya pertenece a otro contacto.");
-                }
-            }
-
-            // --- REGLA 4: Validación estricta de teléfono (8 dígitos) ---
-            if (!string.IsNullOrWhiteSpace(contacto.Telefono))
-            {
-                var soloNumeros = contacto.Telefono
-                    .Replace("+503", "")
-                    .Replace("-", "")
-                    .Replace(" ", "");
-
-                if (soloNumeros.Length != 8 || !soloNumeros.All(char.IsDigit))
-                {
-                    throw new Exception("El número de teléfono debe tener exactamente 8 dígitos numéricos.");
-                }
-            }
-
-            // --- REGLA 5: Normalización de textos (Mayúsculas iniciales) ---
-            if (string.IsNullOrWhiteSpace(contacto.Nombre))
-            {
-                throw new Exception("El nombre del contacto es obligatorio.");
-            }
-
-            var textInfo = new CultureInfo("es-ES", false).TextInfo;
-            contacto.Nombre = textInfo.ToTitleCase(contacto.Nombre.Trim().ToLower());
-
-            if (!string.IsNullOrWhiteSpace(contacto.Apellido))
-            {
-                contacto.Apellido = textInfo.ToTitleCase(contacto.Apellido.Trim().ToLower());
+                contacto.Correo = "";
             }
             else
             {
-                contacto.Apellido = null;
+                var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$");
+                if (!emailRegex.IsMatch(contacto.Correo))
+                    throw new Exception("Formato de correo inválido.");
+            }
+
+            if (string.IsNullOrWhiteSpace(contacto.Direccion))
+            {
+                contacto.Direccion = "";
             }
         }
     }

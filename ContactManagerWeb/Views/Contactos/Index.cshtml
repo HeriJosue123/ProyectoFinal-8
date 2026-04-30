@@ -32,13 +32,11 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        /* --- SCROLL NATIVO LIBERADO PARA 50+ CONTACTOS --- */
         body {
             background-color: var(--bg-main);
             color: var(--text-white);
             min-height: 100vh;
             overflow-x: hidden;
-            /* Se quitó el overflow: hidden para que la página baje natural */
         }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -63,7 +61,6 @@
             100% { transform: translateY(0px); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
         }
 
-        /* --- SIDEBAR FIJO --- */
         .sidebar {
             width: 280px; 
             min-width: 280px; 
@@ -73,13 +70,13 @@
             flex-direction: column;
             padding: 25px 20px; 
             animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            position: fixed; /* Se queda quieto mientras la página baja */
+            position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
             z-index: 999; 
             transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow-y: auto; /* Permite scroll interno si la pantalla es muy bajita */
+            overflow-y: auto;
         }
         
         .sidebar::-webkit-scrollbar { width: 4px; }
@@ -119,20 +116,18 @@
         .nav-count { background-color: rgba(255,255,255,0.05); font-size: 0.75rem; padding: 3px 8px; border-radius: 8px; font-weight: 600; }
         .nav-item.active .nav-count { background-color: var(--accent); color: white; }
 
-        /* --- COMPARTIMENTO DE CATEGORÍAS (RESTORED) --- */
         .categories-container {
-            max-height: 220px; /* Altura perfecta para ~4.5 categorías */
+            max-height: 220px; 
             overflow-y: auto; 
             overflow-x: hidden; 
-            background: rgba(255, 255, 255, 0.02); /* Fondito sutil para que parezca cajita */
+            background: rgba(255, 255, 255, 0.02); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
             border-radius: 14px; 
             padding: 8px; 
-            margin-bottom: 10px; /* Espacio separador con el botón de abajo */
+            margin-bottom: 10px; 
             flex-shrink: 0;
         }
         
-        /* Scrollbar elegante solo para esta cajita */
         .categories-container::-webkit-scrollbar { width: 4px; }
         .categories-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
         .categories-container::-webkit-scrollbar-thumb:hover { background: var(--accent); }
@@ -144,7 +139,8 @@
         .add-cat-btn {
             display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px;
             border: 1px dashed rgba(107, 91, 255, 0.3); border-radius: 12px; color: var(--text-muted); text-decoration: none;
-            font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.01); flex-shrink: 0;
+            font-size: 0.85rem; font-weight: 600; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.01); 
+            flex-shrink: 0; margin-bottom: 20px; /* Separación extra */
         }
         .add-cat-btn:hover { border-style: solid; border-color: var(--accent); color: white; background: rgba(107, 91, 255, 0.1); transform: translateY(-2px); }
 
@@ -155,10 +151,9 @@
         }
         .add-btn:hover { background-color: var(--accent); border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px var(--accent-glow); }
 
-        /* --- CONTENIDO PRINCIPAL --- */
         .main {
             flex: 1; display: flex; flex-direction: column; 
-            margin-left: 280px; /* Offset por el sidebar fijo */
+            margin-left: 280px; 
             padding: 40px 60px 80px 60px; 
             transition: margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             position: relative; z-index: 1;
@@ -189,7 +184,6 @@
         .grid-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 18px; animation: fadeUp 0.5s ease-out forwards; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 40px; }
 
-        /* --- TARJETAS --- */
         .fav-card, .c-card {
             position: relative; z-index: 1; border-radius: 18px; padding: 16px 20px; display: flex; align-items: center; gap: 15px;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); opacity: 0; animation: fadeUp 0.6s ease-out forwards;
@@ -215,11 +209,7 @@
         .star-toggle-btn { background: none; border: none; padding: 0; cursor: pointer; outline: none; transition: transform 0.2s ease; }
         .star-toggle-btn:hover { transform: scale(1.3) rotate(15deg); }
 
-        /* ========================================================= */
-        /* --- EL MENÚ DESPLEGABLE INTELIGENTE (PURO CSS HOVER) --- */
-        /* ========================================================= */
         .dropdown { position: relative; display: inline-flex; align-items: center; }
-
         .dropdown-btn {
             background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem;
             cursor: pointer; font-weight: bold; padding: 5px 10px; transition: color 0.3s;
@@ -235,12 +225,10 @@
             padding: 8px 0; transition: all 0.2s ease-out; transform: translateY(10px); z-index: 99999;
         }
 
-        /* MAGIA: Modificador cuando se abre hacia ARRIBA (agregado por JS) */
         .dropdown.drop-up .dropdown-content {
             top: auto; bottom: 100%; margin-top: 0; margin-bottom: 5px; transform: translateY(-10px);
         }
 
-        /* EL PUENTE INVISIBLE: Evita cierres accidentales */
         .dropdown::after { content: ''; position: absolute; top: 100%; right: 0; width: 100%; height: 25px; background: transparent; }
         .dropdown.drop-up::after { top: auto; bottom: 100%; }
 
@@ -255,7 +243,6 @@
         .dropdown-content .btn-delete { color: #FF5C5C; }
         .dropdown-content .btn-delete:hover { background-color: rgba(255, 92, 92, 0.1); color: #FF7070; }
 
-        /* PORTAL DEL SIDEBAR PARA CATEGORÍAS */
         .cat-dropdown-portal {
             display: none; position: fixed; background-color: rgba(28, 28, 38, 0.98); backdrop-filter: blur(12px);
             min-width: 160px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color);
@@ -302,11 +289,19 @@
 
             <div class="sec-label">Categorías</div>
 
+            <a asp-controller="Categorias" asp-action="Crear" class="add-cat-btn">
+                <span style="font-size: 1.1rem; line-height: 1;">+</span>
+                <span>Añadir Categoría</span>
+            </a>
+
             <div class="categories-container" id="catContainer">
                 @if (ViewBag.CategoriasDinamicas != null)
                 {
                     foreach (var cat in ViewBag.CategoriasDinamicas)
                     {
+                        // OCULTAR CATEGORÍA GENERAL
+                        if (cat.NombreCategoria == "General") continue;
+
                         <div class="cat-item-wrapper">
                             <a asp-action="Index" asp-route-categoria="@cat.NombreCategoria"
                                class="nav-item @(Context.Request.Query["categoria"] == cat.NombreCategoria ? "active" : "")">
@@ -330,11 +325,6 @@
                 }
             </div>
 
-            <a asp-controller="Categorias" asp-action="Crear" class="add-cat-btn">
-                <span style="font-size: 1.1rem; line-height: 1;">+</span>
-                <span>Añadir Categoría</span>
-            </a>
-
             <div class="sidebar-footer">
                 <a class="add-btn" asp-action="Crear">+ Nuevo contacto</a>
             </div>
@@ -351,9 +341,9 @@
                     </div>
                 </div>
                 <div class="tab-row">
-                    <a href="@Url.Action("Index", "Contactos")" class="tab active">Todos</a>
-                    <a href="@Url.Action("Recientes", "Contactos")" class="tab">Agregados Recientemente</a>
-                    <a href="@Url.Action("Ayuda", "Contactos")" class="tab">Ayuda</a>
+                    <a asp-controller="Contactos" asp-action="Index" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">Todos</a>
+                    <a asp-controller="Contactos" asp-action="Recientes" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Recientes" ? "active" : "")">Agregados Recientemente</a>
+                    <a asp-controller="Contactos" asp-action="Ayuda" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Ayuda" ? "active" : "")">Ayuda</a>
                 </div>
             </div>
 
@@ -412,10 +402,6 @@
                                             <button class="dropdown-btn">⋮</button>
                                             <div class="dropdown-content">
                                                 <a asp-action="Detalles" asp-route-id="@item.Id">👀 Ver Detalles</a>
-                                                @if (string.IsNullOrEmpty(item.Categoria) || item.Categoria == "General")
-                                                {
-                                                    <a asp-action="Editar" asp-route-id="@item.Id">📁 Asignar Categoría</a>
-                                                }
                                                 <a asp-action="Editar" asp-route-id="@item.Id">✏️ Editar</a>
                                                 <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn-delete">🗑️ Eliminar</a>
                                             </div>
@@ -456,10 +442,6 @@
                                             <button class="dropdown-btn">⋮</button>
                                             <div class="dropdown-content">
                                                 <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
-                                                @if (string.IsNullOrEmpty(contact.Categoria) || contact.Categoria == "General")
-                                                {
-                                                    <a asp-action="Editar" asp-route-id="@contact.Id">📁 Asignar Categoría</a>
-                                                }
                                                 <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
                                                 <a asp-action="Eliminar" asp-route-id="@contact.Id" class="btn-delete">🗑️ Eliminar</a>
                                             </div>
@@ -477,7 +459,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Lógica del sidebar comprimible ajustada al nuevo Sidebar Fijo
             const sidebar = document.getElementById('mainSidebar');
             const mainContent = document.getElementById('mainContent');
             const toggleBtn = document.getElementById('toggleBtn');
@@ -489,7 +470,6 @@
                 toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
             });
 
-            // EL TRUCO DEL PORTAL (Sidebar Categorías Click)
             const catMenus = document.querySelectorAll('.cat-dropdown-portal');
             catMenus.forEach(menu => document.body.appendChild(menu));
 
@@ -517,14 +497,10 @@
                 });
             });
 
-            // LÓGICA INTELIGENTE DE COLISIONES PARA MENÚ DE CONTACTOS (Hover Anti-Borde)
             const dropdowns = document.querySelectorAll('.dropdown');
             dropdowns.forEach(dropdown => {
                 dropdown.addEventListener('mouseenter', function() {
                     const rect = this.getBoundingClientRect();
-                    // Como ahora la página tiene Scroll Nativo (100vh liberado), 
-                    // verificamos respecto a la pantalla del usuario (innerHeight).
-                    // Si hay menos de 220px de espacio por debajo, el menú abre hacia ARRIBA.
                     if (window.innerHeight - rect.bottom < 220) {
                         this.classList.add('drop-up');
                     } else {
@@ -533,7 +509,6 @@
                 });
             });
 
-            // BÚSQUEDA EN TIEMPO REAL
             const searchInput = document.getElementById('liveSearchInput');
             const cards = document.querySelectorAll('.contact-item-card');
             const emptyState = document.getElementById('dynamicEmptyState');
