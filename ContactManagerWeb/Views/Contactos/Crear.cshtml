@@ -13,203 +13,111 @@
     <title>Nuevo Contacto — Contact Manager Web</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
     <style>
-            :root {
-                --bg-body: #0F0F14;
-                --bg-card: #171721;
-                --bg-input: #1C1C26;
-                --accent: #5A4FCF;
-                --text-muted: #8A8A9E;
-                --border: #2D2D3D;
-                --star-off: #444;
-                --star-on: #FBBF24;
+        :root {
+            --bg-body: #0F0F14;
+            --bg-card: #171721;
+            --bg-input: #1C1C26;
+            --accent: #5A4FCF;
+            --text-muted: #8A8A9E;
+            --border: #2D2D3D;
+            --danger: #FF5555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .form-header h2 {
+                font-family: 'DM Serif Display', serif;
+                font-size: 2.2rem;
             }
 
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-                font-family: 'DM Sans', sans-serif;
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 15px;
+        }
+
+        .dark-input {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #FFF;
+            border-radius: 12px;
+            padding: 12px 15px;
+            outline: none;
+        }
+
+            .dark-input:focus {
+                border-color: var(--accent);
             }
 
-            body {
-                background-color: var(--bg-body);
-                color: #FFFFFF;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                padding: 20px;
+        /* ESTILO PARA LAS ADVERTENCIAS DEBAJO DE LOS BOXES */
+        .text-danger {
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 6px;
+            display: block;
+            padding-left: 5px;
+        }
+
+        .row-inputs {
+            display: flex;
+            gap: 15px;
+        }
+
+            .row-inputs > div {
+                flex: 1;
             }
 
-            @@keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .glass-card {
-                background-color: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: 20px;
-                padding: 40px;
-                width: 100%;
-                max-width: 550px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-                animation: fadeInUp 0.6s ease-out;
-            }
-
-            .form-header {
-                text-align: center;
-                margin-bottom: 30px;
-            }
-
-                .form-header h2 {
-                    font-family: 'DM Serif Display', serif;
-                    font-size: 2.2rem;
-                    font-weight: 400;
-                    margin-bottom: 5px;
-                }
-
-                .form-header p {
-                    color: var(--text-muted);
-                    font-size: 0.95rem;
-                }
-
-            .form-label {
-                color: var(--text-muted);
-                font-size: 0.8rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                display: block;
-                margin-bottom: 8px;
-                margin-top: 15px;
-            }
-
-            .dark-input {
-                width: 100%;
-                background-color: var(--bg-input);
-                border: 1px solid var(--border);
-                color: #FFF;
-                border-radius: 12px;
-                padding: 12px 15px;
-                transition: 0.3s;
-                outline: none;
-            }
-
-                .dark-input:focus {
-                    background-color: #20202B;
-                    border-color: var(--accent);
-                    box-shadow: 0 0 0 3px rgba(90, 79, 207, 0.2);
-                }
-
-            .row-inputs {
-                display: flex;
-                gap: 15px;
-            }
-
-                .row-inputs > div {
-                    flex: 1;
-                }
-
-            /* --- ESTILOS DE LA ESTRELLA INTERACTIVA --- */
-            .star-toggle-container {
-                display: flex;
-                align-items: center;
-                background-color: var(--bg-input);
-                border: 1px solid var(--border);
-                padding: 15px 20px;
-                border-radius: 12px;
-                margin-top: 20px;
-                margin-bottom: 30px;
-                cursor: pointer;
-                transition: 0.3s;
-            }
-
-                .star-toggle-container:hover {
-                    border-color: var(--accent);
-                }
-
-            .hidden-check {
-                display: none;
-            }
-
-            .star-icon-label {
-                font-size: 2rem;
-                cursor: pointer;
-                color: var(--star-off);
-                transition: all 0.3s ease;
-                line-height: 1;
-                margin-right: 15px;
-                user-select: none;
-            }
-
-            .hidden-check:checked + .star-icon-label {
-                color: var(--star-on);
-                text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-                transform: scale(1.1);
-            }
-
-            #favText {
-                font-weight: 600;
-                font-size: 0.9rem;
-                transition: 0.3s;
-            }
-
-            .btn-gradient {
-                display: block;
-                text-align: center;
-                background: linear-gradient(135deg, var(--accent), #3E346B);
-                color: white;
-                border: none;
-                padding: 15px;
-                border-radius: 12px;
-                font-weight: bold;
-                width: 100%;
-                font-size: 1rem;
-                cursor: pointer;
-                transition: 0.3s;
-                text-decoration: none;
-                margin-bottom: 15px;
-            }
-
-                .btn-gradient:hover {
-                    background: linear-gradient(135deg, #6B5BFF, #4B3F85);
-                    transform: translateY(-3px);
-                    box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3);
-                }
-
-            .btn-cancel {
-                display: block;
-                text-align: center;
-                color: var(--text-muted);
-                text-decoration: none;
-                font-size: 0.9rem;
-                font-weight: 600;
-                transition: 0.3s;
-            }
-
-                .btn-cancel:hover {
-                    color: #FFF;
-                }
-
-            /* Estilo para los mensajes de error de validación */
-            .text-danger {
-                color: #FF5555;
-                font-size: 0.7rem;
-                margin-top: 4px;
-                display: block;
-            }
+        .btn-gradient {
+            display: block;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent), #3E346B);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-
     <div class="glass-card">
         <div class="form-header">
             <h2>Nuevo Contacto</h2>
@@ -217,25 +125,23 @@
         </div>
 
         <form asp-action="Crear" method="post">
-
             <div class="row-inputs">
                 <div>
                     <label class="form-label">Nombre</label>
                     <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" />
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <span asp-validation-for="Nombre" class="text-danger"></span> @* <-- APARECE AQUÍ *@
                 </div>
                 <div>
-                    <label class="form-label">Apellido</label>
+                    <label class="form-label">Apellido (Opcional)</label>
                     <input asp-for="Apellido" class="dark-input" placeholder="Ej: Pérez" />
-                    <span asp-validation-for="Apellido" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="row-inputs">
                 <div>
                     <label class="form-label">Teléfono</label>
-                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" maxlength="14" />
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span> @* <-- APARECE AQUÍ *@
                 </div>
                 <div>
                     <label class="form-label">Categoría</label>
@@ -255,74 +161,27 @@
 
             <label class="form-label">Correo Electrónico (Opcional)</label>
             <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" />
-            <span asp-validation-for="Correo" class="text-danger"></span>
+            <span asp-validation-for="Correo" class="text-danger"></span> @* <-- APARECE AQUÍ *@
 
             <label class="form-label">Dirección (Opcional)</label>
             <input asp-for="Direccion" class="dark-input" placeholder="Ingresa la dirección" />
-            <span asp-validation-for="Direccion" class="text-danger"></span>
-
-            <label class="form-label">Importancia</label>
-            <div class="star-toggle-container" onclick="document.getElementById('favStar').click();">
-                <input type="checkbox" asp-for="EsFavorito" id="favStar" class="hidden-check" />
-                <label for="favStar" class="star-icon-label" onclick="event.stopPropagation();">★</label>
-                <span id="favText" style="color: var(--text-muted);">Marcar como favorito</span>
-            </div>
 
             <button type="submit" class="btn-gradient">Guardar Contacto</button>
-            <a asp-action="Index" class="btn-cancel">Cancelar y volver a la agenda</a>
+            <a asp-action="Index" style="display:block; text-align:center; color:var(--text-muted); margin-top:15px; text-decoration:none;">Cancelar</a>
         </form>
     </div>
 
     <script>
-            // Lógica de la Estrella
-            const checkbox = document.getElementById('favStar');
-            const text = document.getElementById('favText');
-
-            checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    text.innerText = "¡Es un contacto favorito! ⭐";
-                    text.style.color = "#FBBF24";
-                } else {
-                    text.innerText = "Marcar como favorito";
-                    text.style.color = "#8A8A9E";
-                }
-            });
-
-            // Lógica de Máscara de Teléfono Automática
-            const phoneInput = document.getElementById('Telefono');
-        
-            phoneInput.addEventListener('input', function(e) {
-                // Eliminar todo lo que no sea dígito
-                let value = this.value.replace(/\D/g, '');
-
-                // Si el usuario incluyó el 503 por defecto, lo quitamos temporalmente para formatear los 8 dígitos reales
-                if (value.startsWith('503')) {
-                    value = value.substring(3);
-                }
-
-                // Limitar a máximo 8 dígitos
-                value = value.substring(0, 8);
-
-                // Reconstruir el string con el formato +503 XXXX-XXXX
-                if (value.length === 0) {
-                    this.value = '';
-                } else if (value.length <= 4) {
-                    this.value = '+503 ' + value;
-                } else {
-                    this.value = '+503 ' + value.substring(0, 4) + '-' + value.substring(4);
-                }
-            });
-
-            // Agregar "+503 " cuando el usuario hace clic en el input vacío
-            phoneInput.addEventListener('focus', function() {
-                if (this.value === '') {
-                    this.value = '+503 ';
-                }
-            });
+        // Mantenemos la lógica de la máscara de teléfono que ya tenían
+        const phoneInput = document.getElementById('Telefono');
+        phoneInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.startsWith('503')) value = value.substring(3);
+            value = value.substring(0, 8);
+            if (value.length === 0) this.value = '';
+            else if (value.length <= 4) this.value = '+503 ' + value;
+            else this.value = '+503 ' + value.substring(0, 4) + '-' + value.substring(4);
+        });
     </script>
-
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 </body>
 </html>

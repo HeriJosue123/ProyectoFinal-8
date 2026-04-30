@@ -1,3 +1,4 @@
+using ContactManagerWeb.Services;
 using ContactManagerWeb.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace ContactManagerWeb
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ContactService>();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
