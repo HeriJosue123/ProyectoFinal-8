@@ -1,5 +1,5 @@
-using ContactManagerWeb.Services;
 using ContactManagerWeb.Data;
+using ContactManagerWeb.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContactManagerWeb
@@ -9,13 +9,17 @@ namespace ContactManagerWeb
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<ContactService>();
+
+            // --- CONFIGURACIÓN DE BASE DE DATOS ---
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Registro de la Capa de Servicios
-            builder.Services.AddScoped<ContactManagerWeb.Services.ContactService>();
+            // --- REGISTRO DE LA CAPA DE LÓGICA DE NEGOCIO (SERVICES / BLL) ---
+            // Indispensable para que los controladores puedan usar las validaciones
+            builder.Services.AddScoped<ContactService>();
+            builder.Services.AddScoped<CategoriaService>(); // Añadido para gestionar las reglas de categorías
 
             var app = builder.Build();
 
@@ -30,7 +34,8 @@ namespace ContactManagerWeb
             app.UseAuthorization();
             app.MapStaticAssets();
 
-            // Configuración para que abra la Agenda directo
+            // --- CONFIGURACIÓN DE RUTA INICIAL ---
+            // Abre la aplicación directamente en la agenda
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Contactos}/{action=Index}/{id?}")

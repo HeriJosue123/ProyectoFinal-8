@@ -1,9 +1,10 @@
 ﻿using ContactManagerWeb.Models;
-using ContactManagerWeb.Data; // Añadido para el DbContext
-using Microsoft.EntityFrameworkCore; // Añadido para AnyAsync
+using ContactManagerWeb.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Globalization;
-using System.Threading.Tasks; // Añadido para Task
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ContactManagerWeb.Services
 {
@@ -11,7 +12,6 @@ namespace ContactManagerWeb.Services
     {
         private readonly ApplicationDbContext _context;
 
-        // Inyectamos el contexto para poder consultar la base de datos
         public ContactService(ApplicationDbContext context)
         {
             _context = context;
@@ -19,33 +19,60 @@ namespace ContactManagerWeb.Services
 
         public async Task ValidarYNormalizar(Contacto contacto)
         {
-            // --- 1. VALIDACIÓN DE DUPLICADOS ---
-            // Buscamos si existe alguien con el mismo teléfono que NO sea el mismo contacto (para permitir edición)
+            // --- REGLA 1: Asignar categoría por defecto si viene vacía ---
+            if (string.IsNullOrWhiteSpace(contacto.Categoria))
+            {
+                contacto.Categoria = "General";
+            }
+
+            // --- REGLA 2: Evitar teléfonos duplicados ---
             var duplicado = await _context.Contactos
                 .FirstOrDefaultAsync(c => c.Telefono == contacto.Telefono && c.Id != contacto.Id);
 
             if (duplicado != null)
             {
-                throw new Exception($"Número ya registrado como \"{duplicado.Nombre}\"");
+                throw new Exception($"El número ya está registrado bajo el nombre \"{duplicado.Nombre}\".");
             }
 
-            // --- 2. VALIDACIONES DE CAMPOS ---
-            if (string.IsNullOrWhiteSpace(contacto.Nombre))
-                throw new Exception("¡Atención! El nombre del contacto no puede quedar vacío.");
-
-            if (string.IsNullOrWhiteSpace(contacto.Categoria))
-                throw new Exception("Por favor, selecciona una categoría para organizar tu contacto.");
-
+            // --- REGLA 3: Validación de formato y duplicidad de correo ---
             if (!string.IsNullOrWhiteSpace(contacto.Correo))
             {
                 var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$");
                 if (!emailRegex.IsMatch(contacto.Correo))
-                    throw new Exception("El correo electrónico ingresado no es válido. Asegúrate de incluir '@' y un dominio (ejemplo: .com).");
+                {
+                    throw new Exception("Formato de correo inválido. Asegúrate de incluir '@' y un dominio.");
+                }
+
+                var correoDuplicado = await _context.Contactos
+                    .AnyAsync(c => c.Correo == contacto.Correo && c.Id != contacto.Id);
+
+                if (correoDuplicado)
+                {
+                    throw new Exception("Esta dirección de correo ya pertenece a otro contacto.");
+                }
             }
 
-            // --- 3. NORMALIZACIÓN ---
-            var textInfo = new CultureInfo("es-ES", false).TextInfo;
+            // --- REGLA 4: Validación estricta de teléfono (8 dígitos) ---
+            if (!string.IsNullOrWhiteSpace(contacto.Telefono))
+            {
+                var soloNumeros = contacto.Telefono
+                    .Replace("+503", "")
+                    .Replace("-", "")
+                    .Replace(" ", "");
 
+                if (soloNumeros.Length != 8 || !soloNumeros.All(char.IsDigit))
+                {
+                    throw new Exception("El número de teléfono debe tener exactamente 8 dígitos numéricos.");
+                }
+            }
+
+            // --- REGLA 5: Normalización de textos (Mayúsculas iniciales) ---
+            if (string.IsNullOrWhiteSpace(contacto.Nombre))
+            {
+                throw new Exception("El nombre del contacto es obligatorio.");
+            }
+
+            var textInfo = new CultureInfo("es-ES", false).TextInfo;
             contacto.Nombre = textInfo.ToTitleCase(contacto.Nombre.Trim().ToLower());
 
             if (!string.IsNullOrWhiteSpace(contacto.Apellido))
@@ -55,28 +82,6 @@ namespace ContactManagerWeb.Services
             else
             {
                 contacto.Apellido = null;
-            }
-
-            // VALIDACIÓN DE TELÉFONO 
-            if (!string.IsNullOrWhiteSpace(contacto.Telefono))
-            {
-                // 1. Limpiamos el texto para dejar solo los números reales
-                var soloNumeros = contacto.Telefono
-                    .Replace("+503", "")
-                    .Replace("-", "")
-                    .Replace(" ", "");
-
-                // 2. Regla: Debe tener exactamente 8 dígitos
-                if (soloNumeros.Length != 8)
-                {
-                    throw new Exception("El número de teléfono debe tener exactamente 8 dígitos.");
-                }
-
-                // 3. Regla: No se permiten letras en este campo
-                if (!soloNumeros.All(char.IsDigit))
-                {
-                    throw new Exception("El número de teléfono solo puede contener dígitos numéricos.");
-                }
             }
         }
     }

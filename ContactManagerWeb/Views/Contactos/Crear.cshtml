@@ -1,10 +1,8 @@
 ﻿@model ContactManagerWeb.Models.Contacto
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,97 +21,18 @@
             --danger: #FF5555;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .glass-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 550px;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-            .form-header h2 {
-                font-family: 'DM Serif Display', serif;
-                font-size: 2.2rem;
-            }
-
-        .form-label {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 8px;
-            margin-top: 15px;
-        }
-
-        .dark-input {
-            width: 100%;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: #FFF;
-            border-radius: 12px;
-            padding: 12px 15px;
-            outline: none;
-        }
-
-            .dark-input:focus {
-                border-color: var(--accent);
-            }
-
-        .text-danger {
-            color: var(--danger);
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 6px;
-            display: block;
-            padding-left: 5px;
-        }
-
-        .row-inputs {
-            display: flex;
-            gap: 15px;
-        }
-
-            .row-inputs > div {
-                flex: 1;
-            }
-
-        .btn-gradient {
-            display: block;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent), #3E346B);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
+        body { background-color: var(--bg-body); color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .glass-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; width: 100%; max-width: 550px; }
+        .form-header { text-align: center; margin-bottom: 30px; }
+        .form-header h2 { font-family: 'DM Serif Display', serif; font-size: 2.2rem; }
+        .form-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 15px; }
+        .dark-input { width: 100%; background-color: var(--bg-input); border: 1px solid var(--border); color: #FFF; border-radius: 12px; padding: 12px 15px; outline: none; }
+        .dark-input:focus { border-color: var(--accent); }
+        .text-danger { color: var(--danger); font-size: 0.75rem; font-weight: 500; margin-top: 6px; display: block; padding-left: 5px; }
+        .row-inputs { display: flex; gap: 15px; }
+        .row-inputs > div { flex: 1; }
+        .btn-gradient { display: block; text-align: center; background: linear-gradient(135deg, var(--accent), #3E346B); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -144,22 +63,57 @@
                 </div>
                 <div>
                     <label class="form-label">Categoría</label>
-                    <select asp-for="Categoria" class="dark-input">
-                        <option value="General">General (Por defecto)</option>
-
+                    <select asp-for="Categoria" id="selectCategoria" class="dark-input" onchange="verificarNuevaCategoria()">
+                        <option value="General">📁 General (Por defecto)</option>
                         @if (ViewBag.Categorias != null)
                         {
                             foreach (var cat in (IEnumerable<ContactManagerWeb.Models.Categoria>)ViewBag.Categorias)
                             {
-                                // Evitamos duplicar "General" si ya existe en la base de datos
                                 if (cat.NombreCategoria != "General")
                                 {
                                     <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option>
                                 }
                             }
                         }
+                        <option value="NUEVA_CATEGORIA">➕ Crear nueva categoría...</option>
                     </select>
                     <span asp-validation-for="Categoria" class="text-danger"></span>
+
+                    <div id="nuevaCategoriaContainer" style="display: none; gap: 10px; margin-top: 10px;">
+                        <select name="NuevoEmoji" class="dark-input" style="width: 70px; padding: 10px 5px; cursor: pointer; font-size: 1.2rem; text-align: center;">
+                            <option value="📁">📁</option>
+                            <optgroup label="Caritas">
+                                <option value="😀">😀</option><option value="😂">😂</option><option value="🥰">🥰</option>
+                                <option value="😎">😎</option><option value="🥺">🥺</option><option value="🥳">🥳</option>
+                                <option value="😡">😡</option><option value="🤯">🤯</option><option value="👻">👻</option>
+                                <option value="🤡">🤡</option><option value="🤖">🤖</option><option value="👽">👽</option>
+                            </optgroup>
+                            <optgroup label="Amor y Parejas">
+                                <option value="❤️">❤️</option><option value="💖">💖</option><option value="👩‍❤️‍👨">👩‍❤️‍👨</option>
+                                <option value="👨‍❤️‍👨">👨‍❤️‍👨</option><option value="👩‍❤️‍👩">👩‍❤️‍👩</option><option value="💑">💑</option>
+                                <option value="👨‍👩‍👧">👨‍👩‍👧</option><option value="🤝">🤝</option>
+                            </optgroup>
+                            <optgroup label="Banderas">
+                                <option value="🏳️‍🌈">🏳️‍🌈</option><option value="🏳️‍⚧️">🏳️‍⚧️</option><option value="🇸🇻">🇸🇻</option>
+                                <option value="🇲🇽">🇲🇽</option><option value="🇺🇸">🇺🇸</option><option value="🇪🇸">🇪🇸</option>
+                                <option value="🏁">🏁</option><option value="🚩">🚩</option><option value="🏴‍☠️">🏴‍☠️</option>
+                            </optgroup>
+                            <optgroup label="Trabajo y Estilo">
+                                <option value="💼">💼</option><option value="💻">💻</option><option value="🎓">🎓</option>
+                                <option value="🏥">🏥</option><option value="✈️">✈️</option><option value="🛒">🛒</option>
+                                <option value="💰">💰</option><option value="🏋️">🏋️</option><option value="🎮">🎮</option>
+                                <option value="🍔">🍔</option><option value="🍕">🍕</option><option value="🎧">🎧</option>
+                                <option value="📚">📚</option>
+                            </optgroup>
+                            <optgroup label="Símbolos Extras">
+                                <option value="✨">✨</option><option value="🔥">🔥</option><option value="🌟">🌟</option>
+                                <option value="📌">📌</option><option value="💡">💡</option><option value="🔔">🔔</option>
+                                <option value="🚫">🚫</option><option value="⚡">⚡</option><option value="💎">💎</option>
+                                <option value="🎯">🎯</option>
+                            </optgroup>
+                        </select>
+                        <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre de categoría" style="flex: 1;" />
+                    </div>
                 </div>
             </div>
 
@@ -175,14 +129,28 @@
         </form>
     </div>
 
-    @* SCRIPTS DE VALIDACIÓN Y MÁSCARA *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-    @* Localización en español para jQuery Validate *@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/localization/messages_es.js"></script>
 
     <script>
+        // Muestra u oculta los campos para la nueva categoría
+        function verificarNuevaCategoria() {
+            var select = document.getElementById("selectCategoria");
+            var container = document.getElementById("nuevaCategoriaContainer");
+            var inputTexto = document.getElementById("inputNuevaCategoria");
+            
+            if (select.value === "NUEVA_CATEGORIA") {
+                container.style.display = "flex";
+                inputTexto.focus();
+            } else {
+                container.style.display = "none";
+                inputTexto.value = "";
+            }
+        }
+
+        /
         const phoneInput = document.getElementById('Telefono');
         phoneInput.addEventListener('input', function(e) {
             let value = this.value.replace(/\D/g, '');
@@ -194,4 +162,4 @@
         });
     </script>
 </body>
-</html>}
+</html>
