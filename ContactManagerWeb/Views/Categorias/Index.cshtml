@@ -1,47 +1,356 @@
 ﻿@model IEnumerable<ContactManagerWeb.Models.Categoria>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Lista de Categorías";
+    Layout = null;
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-white">Gestión de Categorías</h2>
-        <a asp-action="Crear" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nueva Categoría
-        </a>
-    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categorías — Agenda Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <div class="card bg-dark border-secondary">
-        <div class="card-body p-0">
-            <table class="table table-dark table-hover mb-0">
-                <thead>
-                    <tr class="border-secondary">
-                        <th>Nombre</th>
-                        <th class="text-center">Emoji</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
+    <style>
+        :root {
+            --bg-sidebar: rgba(15, 15, 20, 0.95);
+            --bg-main: #0B0B10; 
+            --bg-card: rgba(28, 28, 38, 0.6);
+            --text-white: #FFFFFF;
+            --text-muted: #8A8A9E;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent: #6B5BFF; 
+            --accent-glow: rgba(107, 91, 255, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-main); 
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(107, 91, 255, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(163, 150, 255, 0.05), transparent 25%);
+            color: var(--text-white); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+        }
+
+        /* --- ANIMACIONES --- */
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; min-width: 280px; background-color: var(--bg-sidebar); backdrop-filter: blur(20px); border-right: 1px solid var(--border-color); position: fixed; top: 0; left: 0; bottom: 0; z-index: 1000; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 5px 0 30px rgba(0,0,0,0.5); }
+        .sidebar.collapsed { transform: translateX(-280px); }
+        .sidebar-inner { width: 100%; height: 100%; padding: 25px 20px; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* --- BOTÓN HAMBURGUESA CORREGIDO --- */
+        .toggle-btn { 
+            position: absolute; 
+            top: 25px; 
+            right: 20px; 
+            width: 38px; 
+            height: 38px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-muted); 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            z-index: 1001; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .toggle-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.1); box-shadow: 0 0 15px var(--accent-glow); }
+        
+        /* Posición cuando el sidebar está cerrado (Lo saca hacia la derecha para que se vea) */
+        .sidebar.collapsed .toggle-btn { 
+            right: -55px; /* Se mueve fuera del sidebar */
+            background: rgba(28, 28, 38, 0.8); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid var(--border-color); 
+            color: white; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+        }
+
+        .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; flex-shrink: 0; }
+        .logo-dot { background: linear-gradient(135deg, #9D88FF, #6B5BFF); width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 15px var(--accent-glow); }
+        .logo-name { font-weight: 800; font-size: 1.25rem; letter-spacing: 0.5px; background: linear-gradient(135deg, #FFFFFF, #A396FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .search-side { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; transition: all 0.3s ease; }
+        .search-side input { background: transparent; border: none; color: white; width: 100%; font-size: 0.9rem; outline: none; }
+
+        .sec-label { font-size: 0.7rem; font-weight: 800; color: #5C5C77; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0 10px 5px; }
+
+        .nav-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 12px; color: var(--text-muted); text-decoration: none; transition: all 0.3s ease; margin-bottom: 4px; border: 1px solid transparent; cursor: pointer; }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: white; transform: translateX(4px); }
+        .nav-item.active { background: linear-gradient(90deg, rgba(107, 91, 255, 0.15) 0%, transparent 100%); color: white; border-left: 3px solid var(--accent); border-radius: 4px 12px 12px 4px; }
+        .nav-left { display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 0.95rem; }
+        .nav-count { background-color: rgba(255,255,255,0.05); font-size: 0.7rem; padding: 3px 8px; border-radius: 8px; font-weight: 700; color: #A396FF; }
+
+        .categories-container { flex: 1; overflow-y: auto; padding-right: 5px; margin-bottom: 15px; }
+        .categories-container::-webkit-scrollbar { width: 4px; }
+        .categories-container::-webkit-scrollbar-thumb { background: #3E3E54; border-radius: 4px; }
+
+        .sidebar-footer { margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .add-btn-premium { display: block; text-align: center; background: linear-gradient(135deg, var(--accent), #8375FF); color: white; text-decoration: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 8px 20px var(--accent-glow); }
+        .add-btn-premium:hover { transform: translateY(-3px); filter: brightness(1.1); color: white; box-shadow: 0 10px 25px var(--accent-glow); }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main { flex: 1; margin-left: 280px; padding: 30px 50px 60px 50px; transition: margin-left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); min-width: 0; }
+        .main.expanded { margin-left: 0; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; animation: fadeUp 0.6s ease-out forwards; }
+        
+        /* Ajuste de margen en el título para dejar espacio al botón cuando se expande el contenido */
+        .main.expanded .top-bar h1 {
+            margin-left: 50px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .top-bar h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; background: linear-gradient(135deg, #FFFFFF, #BDB2FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transition: margin-left 0.3s ease;}
+
+        .tab-row { display: flex; gap: 6px; background: rgba(0, 0, 0, 0.4); padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .tab { color: #8A8A9E; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 10px 18px; border-radius: 12px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .tab:hover { color: white; background: rgba(255,255,255,0.03); }
+        .tab.active { background: linear-gradient(135deg, var(--accent), #8375FF); color: white; box-shadow: 0 6px 20px rgba(107, 91, 255, 0.4); }
+
+        .header-desc { margin-bottom: 25px; animation: fadeUp 0.6s 0.1s ease-out both; }
+
+        /* --- GRILLA --- */
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; animation: fadeUp 0.6s 0.2s ease-out both; }
+        .cat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 22px; padding: 25px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; }
+        .cat-card:hover { transform: translateY(-8px); border-color: rgba(123, 107, 255, 0.8); background: rgba(35, 35, 50, 0.8); }
+
+        .cat-header { display: flex; align-items: center; gap: 15px; margin-bottom: 18px; }
+        .cat-emoji { font-size: 2.2rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 15px; }
+        .cat-name { font-size: 1.2rem; font-weight: 800; color: white; }
+        .cat-desc-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
+        .cat-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .btn-action { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; transition: 0.2s; outline: none; }
+        .btn-edit { background: rgba(255,255,255,0.05); color: white; }
+        .btn-edit:hover { background: rgba(107, 91, 255, 0.2); }
+        .btn-delete { background: rgba(255, 85, 85, 0.1); color: #FF5C5C; }
+        .btn-delete:hover { background: #FF5C5C; color: white; }
+
+        /* --- EMPTY STATE --- */
+        #emptyState { display: none; text-align: center; padding: 60px 20px; animation: fadeUp 0.3s ease-out; }
+        
+        /* --- MOBILE OVERLAY --- */
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 999; backdrop-filter: blur(5px); }
+        .mobile-overlay.show { display: block; }
+
+        @@media (max-width: 991.98px) {
+            .sidebar { transform: translateX(-280px); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main { margin-left: 0 !important; padding: 20px 15px; }
+            .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .main.expanded .top-bar h1 { margin-left: 0; padding-left: 45px;} /* Espacio para botón en móvil */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+
+        <aside class="sidebar" id="mainSidebar">
+            <button id="toggleBtn" class="toggle-btn">
+                <span id="toggleIcon">◀</span>
+            </button>
+
+            <div class="sidebar-inner">
+                <div class="logo-row">
+                    <div class="logo-dot">📒</div>
+                    <span class="logo-name">Agenda Web</span>
+                </div>
+
+                <div class="search-side">
+                    <span>🔍</span>
+                    <input type="text" id="liveSearchCat" placeholder="Buscar categoría..." autocomplete="off" />
+                </div>
+
+                <div class="sec-label">Vistas</div>
+                <a class="nav-item active filter-sidebar-btn" data-filter="all">
+                    <div class="nav-left"><span>📁</span><span class="nav-text">Todas las categorías</span></div>
+                    <span class="nav-count">@Model.Count()</span>
+                </a>
+
+                <div class="sec-label">Categorías</div>
+                
+                <div class="categories-container">
+                    @foreach (var cat in Model)
                     {
-                        <tr class="border-secondary">
-                            <td class="align-middle">@item.NombreCategoria</td>
-                            <td class="text-center align-middle" style="font-size: 1.5rem;">@item.Emoji</td>
-                            <td class="text-end">
-                                <a asp-action="Editar" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning me-2">Editar</a>
-                                <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                            </td>
-                        </tr>
+                        if (cat.NombreCategoria == "General") continue;
+                        
+                        <a class="nav-item filter-sidebar-btn" data-filter="@cat.Id">
+                            <div class="nav-left">
+                                <span>@(string.IsNullOrEmpty(cat.Emoji) ? "📁" : cat.Emoji)</span>
+                                <span class="nav-text">@cat.NombreCategoria</span>
+                            </div>
+                        </a>
                     }
-                </tbody>
-            </table>
-        </div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <a asp-action="Crear" class="add-btn-premium">✨ Nueva Categoría</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main" id="mainContent">
+            <header class="top-bar">
+                <h1>Gestión de Categorías</h1>
+                
+                <div class="tab-row">
+                    <a asp-controller="Contactos" asp-action="Index" class="tab"><span>👥</span> Contactos</a>
+                    <a asp-controller="Categorias" asp-action="Index" class="tab active"><span>📁</span> Categorías</a>
+                    <a asp-controller="Contactos" asp-action="Recientes" class="tab"><span>🕒</span> Recientes</a>
+                    <a asp-controller="Contactos" asp-action="Ayuda" class="tab"><span>❓</span> Ayuda</a>
+                </div>
+            </header>
+
+            <div class="header-desc">
+                <p style="color: var(--text-white); font-size: 1.1rem; font-weight: 700;">Panel Administrativo</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Organiza tus contactos en grupos personalizados (@Model.Count()/10)</p>
+            </div>
+
+            <div id="emptyState">
+                <div style="font-size: 4rem; margin-bottom: 10px;">🔍</div>
+                <h3 style="color: white; font-weight: bold;">No hay resultados</h3>
+                <p style="color: var(--text-muted);">No se encontraron categorías que coincidan con la búsqueda.</p>
+            </div>
+
+            <div class="cat-grid" id="catGrid">
+                @foreach (var item in Model)
+                {
+                    <div class="cat-card" data-cat-id="@item.Id">
+                        <div class="cat-header">
+                            <div class="cat-emoji">@item.Emoji</div>
+                            <div class="cat-info">
+                                <div class="cat-name searchable-title">@item.NombreCategoria</div>
+                            </div>
+                        </div>
+                        <p class="cat-desc-text">
+                            @(string.IsNullOrEmpty(item.Descripcion) ? "Sin descripción definida para esta categoría." : item.Descripcion)
+                        </p>
+                        <div class="cat-actions">
+                            @if (item.NombreCategoria.ToLower() != "general") {
+                                <a asp-action="Editar" asp-route-id="@item.Id" class="btn-action btn-edit">Editar</a>
+                                <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn-action btn-delete">Eliminar</a>
+                            } else {
+                                <div style="width:100%; text-align:center; font-size:0.7rem; color:var(--text-muted); font-weight:700; padding:10px;">SISTEMA</div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </main>
     </div>
 
-    <div class="mt-3">
-        <a asp-controller="Contactos" asp-action="Index" class="btn btn-link text-muted text-decoration-none">
-            ← Volver a la Agenda
-        </a>
-    </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LÓGICA DE COMPRESIÓN DEL SIDEBAR ---
+            const sidebar = document.getElementById('mainSidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+
+            // Determinar estado inicial según el tamaño de la pantalla
+            if (window.innerWidth < 992) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                toggleIcon.textContent = '☰';
+            }
+
+            function toggleSidebar() {
+                if (window.innerWidth < 992) {
+                    sidebar.classList.toggle('mobile-open');
+                    mobileOverlay.classList.toggle('show');
+                    toggleIcon.textContent = sidebar.classList.contains('mobile-open') ? '◀' : '☰';
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                    toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '☰' : '◀';
+                }
+            }
+
+            toggleBtn.addEventListener('click', toggleSidebar);
+            mobileOverlay.addEventListener('click', toggleSidebar);
+
+            // --- LÓGICA DE FILTRADO EN VIVO ---
+            const searchInput = document.getElementById('liveSearchCat');
+            const catCards = document.querySelectorAll('.cat-card');
+            const emptyState = document.getElementById('emptyState');
+            const filterBtns = document.querySelectorAll('.filter-sidebar-btn');
+
+            // 1. Filtrar por el input de texto
+            if(searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-filter="all"]').classList.add('active');
+
+                    catCards.forEach(card => {
+                        const title = card.querySelector('.searchable-title').textContent.toLowerCase();
+                        if (title.includes(query)) {
+                            card.style.display = "";
+                            visibleCount++;
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+
+                    emptyState.style.display = visibleCount === 0 ? "block" : "none";
+                });
+            }
+
+            // 2. Filtrar haciendo clic en el sidebar
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if(searchInput) searchInput.value = "";
+                    
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+                    let visibleCount = 0;
+
+                    catCards.forEach(card => {
+                        if (filterValue === 'all') {
+                            card.style.display = "";
+                            visibleCount++;
+                        } else {
+                            const cardId = card.getAttribute('data-cat-id');
+                            if (cardId === filterValue) {
+                                card.style.display = "";
+                                visibleCount++;
+                            } else {
+                                card.style.display = "none";
+                            }
+                        }
+                    });
+
+                    if (window.innerWidth < 992) {
+                        toggleSidebar();
+                    }
+
+                    emptyState.style.display = visibleCount === 0 ? "block" : "none";
+                });
+            });
+        });
+    </script>
+</body>
+</html>

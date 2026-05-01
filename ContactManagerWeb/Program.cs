@@ -35,10 +35,9 @@ namespace ContactManagerWeb
             app.MapStaticAssets();
 
             // --- CONFIGURACIÓN DE RUTA INICIAL ---
-            // Abre la aplicación directamente en la agenda
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Contactos}/{action=Index}/{id?}")
+                pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

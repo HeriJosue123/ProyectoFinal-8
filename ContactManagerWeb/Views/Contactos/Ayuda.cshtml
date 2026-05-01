@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Centro de Ayuda — Agenda</title>
+    <title>Centro de Ayuda — Agenda Web</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
@@ -34,7 +34,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- NAVBAR UNIFICADO (IGUAL AL INDEX Y RECIENTES) --- */
+        /* --- NAVBAR ACTUALIZADO Y UNIFICADO --- */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 50px; background: rgba(15, 15, 20, 0.8);
@@ -58,17 +58,19 @@
         }
 
         .tab-row { 
-            display: flex; gap: 6px; background: rgba(0, 0, 0, 0.4); 
-            padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); 
+            display: flex; gap: 6px; 
+            background: rgba(0, 0, 0, 0.4); 
+            padding: 6px; border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
             box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); 
+            flex-wrap: wrap; align-items: center;
         }
         
         .tab { 
             color: #8A8A9E; text-decoration: none; font-weight: 600; font-size: 0.9rem; 
-            padding: 10px 0; border-radius: 12px; 
+            padding: 10px 18px; border-radius: 12px; 
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            min-width: 130px; /* EL SECRETO PARA QUE NO SE NOTE EL CAMBIO */
+            display: flex; align-items: center; gap: 8px;
         }
         
         .tab:hover { color: white; background: rgba(255,255,255,0.03); transform: translateY(-2px); }
@@ -78,7 +80,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- TU DISEÑO ORIGINAL DE AYUDA --- */
+        /* --- TU DISEÑO ORIGINAL DE AYUDA INTACTO --- */
         .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 40px; position: relative; z-index: 1; }
         .ambient-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 800px; height: 500px; background: radial-gradient(ellipse at top, rgba(107, 91, 255, 0.1), transparent 60%); pointer-events: none; z-index: -1; }
 
@@ -125,14 +127,15 @@
 <body>
 
     <nav class="navbar">
-        <a asp-action="Index" class="nav-brand">
+        <a asp-controller="Contactos" asp-action="Index" class="nav-brand">
             <div class="brand-icon">📒</div>
             <span class="brand-name">Agenda Web</span>
         </a>
         <div class="tab-row">
-            <a href="@Url.Action("Index", "Contactos")" class="tab"><span>👥</span> Contactos</a>
-            <a href="@Url.Action("Recientes", "Contactos")" class="tab"><span>🕒</span> Recientes</a>
-            <a href="@Url.Action("Ayuda", "Contactos")" class="tab active"><span>❓</span> Ayuda</a>
+            <a asp-controller="Contactos" asp-action="Index" class="tab"><span>👥</span> Contactos</a>
+            <a asp-controller="Categorias" asp-action="Index" class="tab"><span>📁</span> Categorías</a> 
+            <a asp-controller="Contactos" asp-action="Recientes" class="tab"><span>🕒</span> Recientes</a>
+            <a asp-controller="Contactos" asp-action="Ayuda" class="tab active"><span>❓</span> Ayuda</a>
         </div>
     </nav>
 

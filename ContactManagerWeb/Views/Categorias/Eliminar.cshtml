@@ -1,4 +1,6 @@
 ﻿@model ContactManagerWeb.Models.Categoria
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
     Layout = null;
 }
@@ -8,118 +10,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eliminar Categoría</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <title>Eliminar Categoría — Agenda Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    
     <style>
-            :root {
-                --bg-body: #0F0F14;
-                --bg-card: #16161E;
-                --danger: #FF4D4D;
-                --danger-hover: #E63E3E;
-                --cancel-bg: #2A2A35;
-                --cancel-hover: #353542;
-                --text-muted: #8A8A9E;
-                --border: rgba(255, 255, 255, 0.05);
-                --warning-color: #F59E0B;
-                --warning-bg: rgba(245, 158, 11, 0.1);
-            }
+        :root {
+            --bg-body: #0B0B10;
+            --bg-card: rgba(28, 28, 38, 0.6);
+            --danger: #FF4D4D;
+            --danger-gradient: linear-gradient(135deg, #FF4D4D, #D32F2F);
+            --cancel-bg: rgba(255, 255, 255, 0.05);
+            --cancel-hover: rgba(255, 255, 255, 0.1);
+            --text-muted: #8A8A9E;
+            --border: rgba(255, 255, 255, 0.08);
+            --warning-color: #F59E0B;
+            --warning-bg: rgba(245, 158, 11, 0.15);
+        }
 
-            body {
-                background-color: var(--bg-body);
-                color: #FFF;
-                font-family: 'DM Sans', sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                margin: 0;
-                padding: 20px;
-            }
+        body {
+            background-color: var(--bg-body);
+            background-image: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.05), transparent 50%);
+            color: #FFF;
+            font-family: 'DM Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
 
-            .card {
-                background: var(--bg-card);
-                padding: 40px 30px;
-                border-radius: 20px;
-                border: 1px solid var(--border);
-                width: 100%;
-                max-width: 400px;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-                text-align: center;
-            }
+        @@keyframes cardPop {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
-            .warning-icon {
-                width: 60px;
-                height: 60px;
-                background: var(--warning-bg);
-                color: var(--warning-color);
-                border-radius: 50%;
-                display: grid;
-                place-items: center;
-                margin: 0 auto 20px auto;
-                font-size: 1.8rem;
-                border: 1px solid rgba(245, 158, 11, 0.2);
-                line-height: 1;
-            }
+        @@keyframes pulseWarning {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
 
-            h2 {
-                margin: 0 0 15px 0;
-                font-weight: 700;
-                font-size: 1.5rem;
-                color: #FFF;
-            }
-            
-            .item-name {
-                color: var(--warning-color);
-                font-weight: 700;
-                display: block;
-                margin: 10px 0;
-            }
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 45px 35px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            text-align: center;
+            animation: cardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .warning-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--warning-bg);
+            color: var(--warning-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px auto;
+            font-size: 2rem;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            animation: pulseWarning 2s infinite;
+            line-height: 1;
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            color: #FFF;
+        }
         
-            .warning-text {
-                color: var(--text-muted);
-                font-size: 0.95rem;
-                line-height: 1.6;
-                margin-bottom: 30px;
-            }
+        .item-name {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 12px;
+            border-radius: 8px;
+            color: var(--warning-color);
+            font-weight: 800;
+            margin: 10px 0;
+            border: 1px dashed rgba(245, 158, 11, 0.4);
+            font-size: 1.1rem;
+        }
 
-            .button-group {
-                display: flex;
-                gap: 15px;
-                justify-content: center;
-            }
+        .warning-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 35px;
+            padding: 0 10px;
+        }
 
-            .btn {
-                padding: 12px 24px;
-                border-radius: 10px;
-                font-family: 'DM Sans', sans-serif;
-                font-weight: 700;
-                font-size: 0.95rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                text-decoration: none;
-                flex: 1;
-                border: none;
-            }
+        .sub-warning {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #FF5C5C;
+            font-weight: 600;
+        }
 
-            .btn-cancel {
-                background: var(--cancel-bg);
-                color: #FFF;
-            }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
 
-                .btn-cancel:hover {
-                    background: var(--cancel-hover);
-                }
+        .btn {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            flex: 1; 
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-            .btn-danger {
-                background: var(--danger);
-                color: #FFF;
-            }
+        .btn-cancel {
+            background: var(--cancel-bg);
+            color: #E2E2E9;
+            border: 1px solid var(--border);
+        }
 
-                .btn-danger:hover {
-                    background: var(--danger-hover);
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
-                }
+        .btn-cancel:hover {
+            background: var(--cancel-hover);
+            color: #FFF;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: #FFF;
+            box-shadow: 0 8px 20px rgba(255, 77, 77, 0.25);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 77, 77, 0.4);
+            filter: brightness(1.1);
+        }
     </style>
 </head>
 <body>
@@ -128,12 +172,13 @@
         
         <h2>¿Eliminar categoría?</h2>
         <p class="warning-text">
-            ¿Estás seguro de que quieres eliminar <span class="item-name">@Model.NombreCategoria @Model.Emoji</span>?<br>
-            Esta acción podría afectar a los contactos que usan esta categoría.
+            Estás a punto de eliminar la categoría:<br>
+            <span class="item-name">@(string.IsNullOrEmpty(Model.Emoji) ? "📁" : Model.Emoji) @Model.NombreCategoria</span>
+            
+            <span class="sub-warning">Atención: Esta acción podría afectar a los contactos que están agrupados en esta categoría.</span>
         </p>
 
         <form asp-action="Eliminar" method="post">
-            @* Importante: Usar el Id de la categoría *@
             <input type="hidden" asp-for="Id" />
             
             <div class="button-group">

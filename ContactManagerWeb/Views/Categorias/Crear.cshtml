@@ -1,4 +1,6 @@
 ﻿@model ContactManagerWeb.Models.Categoria
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
     Layout = null;
 }
@@ -7,176 +9,210 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nueva Categoría — Agenda</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Categoría — Agenda Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet" />
     <style>
         :root {
             --bg-body: #0F0F14;
             --bg-card: #171721;
             --bg-input: #1C1C26;
-            --accent: #5A4FCF;
+            --accent: #6B5BFF;
+            --accent-hover: #8375FF;
             --text-muted: #8A8A9E;
             --border: rgba(255, 255, 255, 0.08);
             --danger: #FF5555;
+            --shadow-color: rgba(0, 0, 0, 0.6);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
 
         body { 
             background-color: var(--bg-body); 
+            background-image: radial-gradient(circle at 50% 0%, rgba(107, 91, 255, 0.05), transparent 50%);
             color: #FFF; 
-            font-family: 'DM Sans', sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            margin: 0; 
-            padding: 40px 20px 150px 20px;
-            box-sizing: border-box;
+            padding: 40px 20px;
+            overflow-x: hidden;
         }
 
+        /* --- Animaciones --- */
         @@keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
+        @@keyframes itemReveal {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tarjeta Principal */
         .card { 
-            background: var(--bg-card); 
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             padding: 40px; 
-            border-radius: 28px; 
+            border-radius: 24px; 
             border: 1px solid var(--border); 
             width: 100%; 
-            max-width: 420px; 
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6); 
-            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 450px; 
+            box-shadow: 0 25px 60px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,0.05); 
+            animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+
+        /* Stagger para los elementos hijos */
+        .header-content { opacity: 0; animation: itemReveal 0.5s ease-out 0.1s forwards; text-align: center; margin-bottom: 35px; }
+        .stagger-1 { opacity: 0; animation: itemReveal 0.5s ease-out 0.2s forwards; }
+        .stagger-2 { opacity: 0; animation: itemReveal 0.5s ease-out 0.3s forwards; }
+        .stagger-3 { opacity: 0; animation: itemReveal 0.5s ease-out 0.4s forwards; }
+        .stagger-4 { opacity: 0; animation: itemReveal 0.5s ease-out 0.5s forwards; }
+
+        .header-emoji {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(107, 91, 255, 0.2), rgba(163, 150, 255, 0.1));
+            width: 60px; height: 60px;
+            border-radius: 16px;
+            font-size: 2rem;
+            line-height: 60px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(107, 91, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(107, 91, 255, 0.2);
         }
 
         h2 { 
-            text-align: center; 
-            margin-bottom: 35px; 
-            font-weight: 700; 
-            letter-spacing: -1px; 
-            font-size: 1.8rem; 
-        }
-        h2 span {
-            display: block;
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem; 
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
         }
 
-        .form-group { margin-bottom: 25px; position: relative; }
-        label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .header-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Campos del Formulario */
+        .form-group { margin-bottom: 22px; position: relative; }
+        
+        label { 
+            display: block; margin-bottom: 8px; color: var(--text-muted); 
+            font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; 
+        }
         
         .dark-input { 
-            width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); 
-            background: var(--bg-input); color: white; outline: none; transition: 0.3s; box-sizing: border-box; font-size: 1rem;
+            width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--bg-input); color: white; outline: none; transition: 0.3s ease; 
+            font-size: 0.95rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
-        .dark-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(90, 79, 207, 0.15); }
+        
+        .dark-input:focus { 
+            border-color: var(--accent); 
+            background: rgba(28, 28, 38, 0.8);
+            box-shadow: 0 0 0 4px rgba(107, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.2); 
+        }
+        
+        textarea.dark-input { resize: vertical; min-height: 80px; }
 
-        .text-danger { color: var(--danger); font-size: 0.75rem; margin-top: 6px; display: block; }
+        .text-danger { color: var(--danger); font-size: 0.75rem; margin-top: 6px; display: block; font-weight: 500; }
 
+        /* Selector de Emojis */
         .custom-emoji-picker { position: relative; user-select: none; }
-        .emoji-trigger { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .emoji-trigger .current { display: flex; align-items: center; gap: 12px; }
+        
+        .emoji-trigger { 
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer; 
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px;
+            padding: 12px 16px; transition: all 0.3s ease;
+        }
+        .emoji-trigger:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.02); }
+        
+        .emoji-trigger .current { display: flex; align-items: center; gap: 12px; font-weight: 500;}
+        .emoji-trigger .current-emoji { font-size: 1.4rem; line-height: 1;}
 
         .emoji-dropdown {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            width: 100%;
-            background: #1C1C26;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 15px;
-            z-index: 1000;
-            display: none;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
-            max-height: 350px;
-            overflow-y: auto;
+            position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
+            background: rgba(20, 20, 28, 0.95); border: 1px solid var(--border); border-radius: 16px;
+            padding: 12px; z-index: 1000; display: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px);
+            max-height: 280px; overflow-y: auto;
         }
-
-        .emoji-dropdown.active { display: block; animation: scaleIn 0.2s ease-out; }
+        .emoji-dropdown.active { display: block; animation: itemReveal 0.2s ease-out; }
 
         .emoji-section-title {
-            font-size: 0.7rem;
-            color: var(--accent);
-            margin: 18px 0 10px 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 800;
+            font-size: 0.65rem; color: #A396FF; margin: 15px 0 8px 5px; 
+            text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800;
         }
-        .emoji-section-title:first-child { margin-top: 5px; }
+        .emoji-section-title:first-child { margin-top: 0; }
 
-        .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px; }
+        .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 4px; }
 
         .emoji-item {
-            aspect-ratio: 1;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; border-radius: 10px; cursor: pointer; transition: 0.2s;
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; border-radius: 10px; cursor: pointer; transition: 0.2s;
         }
-        .emoji-item:hover { background: rgba(255, 255, 255, 0.08); transform: scale(1.25); z-index: 2; position: relative;}
+        .emoji-item:hover { background: rgba(107, 91, 255, 0.2); transform: scale(1.15); z-index: 2; position: relative; }
 
-        .emoji-dropdown::-webkit-scrollbar { width: 6px; }
-        .emoji-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .emoji-dropdown::-webkit-scrollbar { width: 5px; }
+        .emoji-dropdown::-webkit-scrollbar-thumb { background: #3E3E54; border-radius: 10px; }
         .emoji-dropdown::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+        /* Botones */
         .btn-save { 
-            width: 100%; padding: 16px; background: var(--accent); color: white; border: none; 
-            border-radius: 15px; cursor: pointer; transition: 0.3s; margin-top: 15px; 
-            font-size: 1rem;
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #8375FF); 
+            color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; 
+            margin-top: 10px; font-size: 1rem; font-weight: 700; letter-spacing: -0.3px;
+            box-shadow: 0 8px 20px rgba(107, 91, 255, 0.25);
         }
-        .btn-save:hover { background: #6B5BFF; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(90, 79, 207, 0.3); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(107, 91, 255, 0.4); filter: brightness(1.1); }
         
         .btn-back { 
-            display: block; text-align: center; margin-top: 25px; color: var(--text-muted); text-decoration: none; 
-            font-size: 0.9rem; transition: 0.3s; 
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 700;
+            display: block; text-align: center; margin-top: 20px; color: var(--text-muted); text-decoration: none; 
+            font-size: 0.9rem; transition: 0.3s; font-weight: 600;
         }
-        .btn-back:hover { color: white; }
+        .btn-back:hover { color: white; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
 
         .validation-summary-errors {
-            background: rgba(255, 85, 85, 0.1);
-            border: 1px solid rgba(255, 85, 85, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background: rgba(255, 85, 85, 0.1); border: 1px solid rgba(255, 85, 85, 0.2);
+            border-radius: 12px; padding: 12px; margin-bottom: 20px;
         }
         .validation-summary-errors ul { list-style: none; padding: 0; margin: 0; }
         .validation-summary-errors li { color: var(--danger); font-size: 0.85rem; font-weight: 500; text-align: center; }
+
+        @@media (max-width: 480px) {
+            .card { padding: 30px 20px; border-radius: 20px; }
+            h2 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>
-            <span>✨</span>
-            Crear Categoría
-        </h2>
+        <div class="header-content">
+            <div class="header-emoji">✨</div>
+            <h2>Crear Categoría</h2>
+            <p class="header-subtitle">Organiza tus contactos fácilmente</p>
+        </div>
         
         <form asp-action="Crear" method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors stagger-1"></div>
             
-            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
-            
-            <div class="form-group">
-                <label>Nombre de la Categoría</label>
+            <div class="form-group stagger-1">
+                <label>Nombre de la Categoría *</label>
                 <input asp-for="NombreCategoria" class="dark-input" placeholder="Ej: Universidad, Gym, Familia..." autocomplete="off" />
                 <span asp-validation-for="NombreCategoria" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group stagger-2">
                 <label>Icono Representativo</label>
                 <input type="hidden" asp-for="Emoji" id="hiddenEmoji" value="📁" />
                 
                 <div class="custom-emoji-picker">
-                    <div class="dark-input emoji-trigger" onclick="toggleEmojiDropdown()">
+                    <div class="emoji-trigger" onclick="toggleEmojiDropdown()">
                         <div class="current">
-                            <span id="displayEmoji" style="font-size: 1.4rem;">📁</span>
+                            <span id="displayEmoji" class="current-emoji">📁</span>
                             <span id="displayText">Seleccionar Icono</span>
                         </div>
-                        <span style="font-size: 0.8rem; opacity: 0.5;">▼</span>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">▼</span>
                     </div>
 
                     <div class="emoji-dropdown" id="emojiDropdown">
@@ -377,14 +413,14 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group stagger-3">
                 <label>Descripción Breve (Opcional)</label>
-                <textarea asp-for="Descripcion" class="dark-input" rows="2" placeholder="Opcional..."></textarea>
+                <textarea asp-for="Descripcion" class="dark-input" rows="2" placeholder="Ej: Contactos de la oficina..."></textarea>
                 <span asp-validation-for="Descripcion" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn-save">Crear Categoría</button>
-            <a asp-action="Index" asp-controller="Contactos" class="btn-back">Cancelar y volver</a>
+            <button type="submit" class="btn-save stagger-4">Crear Categoría</button>
+            <a asp-action="Index" asp-controller="Categorias" class="btn-back stagger-4">Cancelar y volver</a>
         </form>
     </div>
 

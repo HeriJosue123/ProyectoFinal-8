@@ -27,16 +27,41 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
-        body { background-color: var(--bg-body); color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        body { background-color: var(--bg-body); color: #FFFFFF; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; overflow-x: hidden; }
         
-        .glass-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: max-width 0.3s ease; animation: fadeIn 0.4s ease-out; }
-        
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        /* --- NUEVAS ANIMACIONES DE ENTRADA --- */
+        @@keyframes cardReveal {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @@keyframes itemReveal {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .form-header { text-align: center; margin-bottom: 25px; }
+        /* Tarjeta con la animación principal */
+        .glass-card { 
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            padding: 30px; 
+            width: 100%; 
+            max-width: 500px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+            transition: max-width 0.3s ease; 
+            opacity: 0;
+            animation: cardReveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        
+        /* Clases para el efecto en cascada (Stagger) */
+        .form-header { text-align: center; margin-bottom: 25px; opacity: 0; animation: itemReveal 0.6s ease-out 0.1s forwards; }
+        .stagger-1 { opacity: 0; animation: itemReveal 0.6s ease-out 0.2s forwards; }
+        .stagger-2 { opacity: 0; animation: itemReveal 0.6s ease-out 0.3s forwards; }
+        .stagger-3 { opacity: 0; animation: itemReveal 0.6s ease-out 0.4s forwards; }
+        .stagger-4 { opacity: 0; animation: itemReveal 0.6s ease-out 0.5s forwards; }
+        .stagger-5 { opacity: 0; animation: itemReveal 0.6s ease-out 0.6s forwards; }
+
         .form-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 3px; }
         .form-header p { color: var(--text-muted); font-size: 0.9rem; }
         
@@ -112,12 +137,12 @@
         </div>
 
         <form asp-action="Editar" method="post" novalidate>
-            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors stagger-1"></div>
             
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="FechaCreacion" />
 
-            <div class="row gx-2">
+            <div class="row gx-2 stagger-1">
                 <div class="col-md-6 mb-2">
                     <label asp-for="Nombre" class="form-label">Nombre *</label>
                     <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" autocomplete="off" />
@@ -130,7 +155,7 @@
                 </div>
             </div>
 
-            <div class="row gx-2">
+            <div class="row gx-2 stagger-2">
                 <div class="col-md-6 mb-2">
                     <label asp-for="Telefono" class="form-label">Teléfono *</label>
                     <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
@@ -156,7 +181,7 @@
                 </div>
             </div>
 
-            <div id="nuevaCategoriaContainer" style="display: none; margin-top: 12px; background: rgba(90, 79, 207, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent);">
+            <div id="nuevaCategoriaContainer" class="stagger-2" style="display: none; margin-top: 12px; background: rgba(90, 79, 207, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent);">
                 <p style="font-size: 0.75rem; color: #A396FF; margin-bottom: 8px; font-weight: 600;">✨ CREAR CATEGORÍA RÁPIDA</p>
                 <div class="d-flex gap-2 gx-1">
                     
@@ -368,12 +393,12 @@
             </div>
 
             <input asp-for="EsFavorito" type="checkbox" class="fav-checkbox-hidden" id="favCheck" />
-            <label class="fav-box" for="favCheck">
+            <label class="fav-box stagger-3" for="favCheck">
                 <span class="fav-star">★</span>
                 <span class="fav-text" id="favLabelText">Marcar como favorito ⭐</span>
             </label>
 
-            <div class="row gx-2">
+            <div class="row gx-2 stagger-4">
                 <div class="col-md-6 mb-2">
                     <label asp-for="Correo" class="form-label">Correo (Opcional)</label>
                     <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" autocomplete="off" />
@@ -386,8 +411,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-gradient">Guardar Cambios</button>
-            <a asp-action="Index" style="display:block; text-align:center; color:var(--text-muted); margin-top:12px; text-decoration:none; transition: 0.3s; font-size: 0.85rem;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='var(--text-muted)'">Cancelar y volver</a>
+            <button type="submit" class="btn-gradient stagger-5">Guardar Cambios</button>
+            <a asp-action="Index" class="stagger-5" style="display:block; text-align:center; color:var(--text-muted); margin-top:12px; text-decoration:none; transition: 0.3s; font-size: 0.85rem;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='var(--text-muted)'">Cancelar y volver</a>
         </form>
     </div>
 

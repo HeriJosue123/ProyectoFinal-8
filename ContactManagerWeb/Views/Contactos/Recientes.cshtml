@@ -11,7 +11,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agregados Recientemente — Agenda Web</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <style>
         :root {
@@ -36,19 +36,21 @@
             overflow-x: hidden;
         }
 
+        /* CORRECCIÓN AQUÍ: doble arroba para Razor */
         @@keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- NAVBAR REPLICADO DEL INDEX --- */
+        /* --- NAVBAR CON DISEÑO Y EFECTOS DEL INDEX --- */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 50px; background: rgba(15, 15, 20, 0.7);
+            padding: 20px 50px; 
+            background: rgba(15, 15, 20, 0.7);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             position: sticky; top: 0; z-index: 100;
-            animation: fadeUp 0.6s ease-out forwards; /* Misma animación que el Index */
+            animation: fadeUp 0.6s ease-out forwards;
         }
 
         .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
@@ -64,7 +66,7 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* TABS (IGUALES AL INDEX) */
+        /* TABS CON EFECTOS Y COLORES DEL INDEX */
         .tab-row { 
             display: flex; gap: 6px; background: rgba(0, 0, 0, 0.4); 
             padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);
@@ -73,9 +75,8 @@
         
         .tab { 
             color: #8A8A9E; text-decoration: none; font-weight: 600; font-size: 0.9rem;
-            padding: 10px 0; border-radius: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            padding: 10px 20px; border-radius: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             display: flex; align-items: center; gap: 8px;
-            min-width: 130px; justify-content: center; /* Tamaño fijo para que no se note el cambio */
         }
         .tab:hover { color: white; background: rgba(255,255,255,0.03); transform: translateY(-2px); }
         .tab.active { 
@@ -84,7 +85,7 @@
             transform: translateY(-2px);
         }
 
-        /* --- TU DISEÑO ORIGINAL DE CONTENIDO --- */
+        /* --- CONTENIDO --- */
         .main-content { flex: 1; padding: 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; }
         .header-section { text-align: center; margin-bottom: 50px; }
         .page-title { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 15px; color: var(--text-white); animation: fadeUp 0.6s ease-out forwards; }
@@ -103,13 +104,11 @@
         .fav-card:hover, .c-card:hover { transform: translateY(-6px); }
         .avatar-box { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; flex-shrink: 0; }
         
-        /* ESTRELLA DE FAVORITOS */
         .star-fav { color: #FBBF24; font-size: 1.3rem; margin-left: auto; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
 
         .fav-name, .c-name { font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 4px; }
         .fav-detail, .c-phone { color: var(--text-muted); font-size: 0.9rem; }
 
-        /* Dropdowns */
         .dropdown { position: relative; display: inline-block; margin-left: 10px; }
         .dropdown-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; font-weight: bold; }
         .dropdown-content { display: none; position: absolute; right: 0; bottom: 100%; background-color: rgba(20, 20, 28, 0.98); min-width: 170px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; z-index: 1000; }
@@ -117,9 +116,10 @@
         .dropdown-content a { color: #E2E2E9; padding: 10px 16px; text-decoration: none; display: block; font-size: 0.85rem; }
         .dropdown-content a:hover { background: rgba(107, 91, 255, 0.1); color: white; }
 
+        /* CORRECCIÓN AQUÍ: doble arroba para Razor */
         @@media (max-width: 768px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .tab { min-width: 100px; font-size: 0.8rem; }
+            .tab { padding: 8px 12px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -132,6 +132,7 @@
         </a>
         <div class="tab-row">
             <a href="@Url.Action("Index", "Contactos")" class="tab"><span>👥</span> Contactos</a>
+            <a href="@Url.Action("Index", "Categorias")" class="tab"><span>📁</span> Categorías</a>
             <a href="@Url.Action("Recientes", "Contactos")" class="tab active"><span>🕒</span> Recientes</a>
             <a href="@Url.Action("Ayuda", "Contactos")" class="tab"><span>❓</span> Ayuda</a>
         </div>
@@ -147,7 +148,7 @@
 
         @if (!Model.Any())
         {
-            <div class="text-center p-5" style="background: rgba(28, 28, 38, 0.4); border-radius: 24px; border: 1px dashed rgba(107, 91, 255, 0.3);">
+            <div class="text-center p-5" style="background: rgba(28, 28, 38, 0.4); border-radius: 24px; border: 1px dashed rgba(107, 91, 255, 0.3); text-align: center; padding: 50px;">
                 <p style="color: #D1D1E0; font-size: 1.1rem;">Aún no has agregado contactos recientes.</p>
             </div>
         }
@@ -175,10 +176,7 @@
                                 <div class="fav-name">@contact.Nombre @contact.Apellido</div>
                                 <div class="fav-detail">@contact.Telefono</div>
                             </div>
-                            
-                            @* Estrellita para favoritos *@
                             <span class="star-fav">★</span>
-
                             <div class="dropdown">
                                 <button class="dropdown-btn">⋮</button>
                                 <div class="dropdown-content">

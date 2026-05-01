@@ -322,15 +322,9 @@
                 </h1>
                 
                 <div class="tab-row">
-                    <a asp-controller="Contactos" asp-action="Index" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
-                        <span style="font-size: 1.1rem;">👥</span> Contactos
-                    </a>
-                    <a asp-controller="Contactos" asp-action="Recientes" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Recientes" ? "active" : "")">
-                        <span style="font-size: 1.1rem;">🕒</span> Recientes
-                    </a>
-                    <a asp-controller="Contactos" asp-action="Ayuda" class="tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Ayuda" ? "active" : "")">
-                        <span style="font-size: 1.1rem;">❓</span> Ayuda
-                    </a>
+                    <a asp-controller="Contactos" asp-action="Index" class="tab active"><span>👥</span> Contactos</a>
+                    <a asp-controller="Categorias" asp-action="Index" class="tab"><span>📁</span> Categorías</a> <a asp-controller="Contactos" asp-action="Recientes" class="tab"><span>🕒</span> Recientes</a>
+                    <a asp-controller="Contactos" asp-action="Ayuda" class="tab"><span>❓</span> Ayuda</a>
                 </div>
             </div>
 
