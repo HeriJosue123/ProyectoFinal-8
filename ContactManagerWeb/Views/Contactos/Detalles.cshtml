@@ -10,15 +10,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalles — @Model.Nombre</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+    
     <style>
         :root {
             --bg-body: #0F0F14;
-            --bg-card: #171721;
-            --bg-accent: #1C1C26;
-            --accent: #5A4FCF;
+            --bg-card: rgba(23, 23, 33, 0.7);
+            --bg-accent: rgba(255, 255, 255, 0.02);
+            --accent: #6B5BFF;
             --text-muted: #8A8A9E;
-            --border: #2D2D3D;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow-color: rgba(0, 0, 0, 0.6);
         }
 
         * {
@@ -30,82 +32,138 @@
 
         body {
             background-color: var(--bg-body);
+            background-image: radial-gradient(circle at 50% 0%, rgba(107, 91, 255, 0.05), transparent 50%);
             color: #FFFFFF;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             padding: 15px;
+            overflow: hidden;
+        }
+
+        /* --- ANIMACIONES --- */
+        @@keyframes cardReveal {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @@keyframes itemReveal {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .glass-card {
-            background-color: var(--bg-card);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 24px;
+            padding: 35px 30px;
             width: 100%;
-            max-width: 400px; /* Más estrecha */
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+            max-width: 420px;
+            box-shadow: 0 25px 60px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,0.05);
+            opacity: 0;
+            animation: cardReveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             position: relative;
         }
 
+        /* Efecto Cascada */
+        .stagger-1 { opacity: 0; animation: itemReveal 0.4s ease-out 0.1s forwards; }
+        .stagger-2 { opacity: 0; animation: itemReveal 0.4s ease-out 0.2s forwards; }
+        .stagger-3 { opacity: 0; animation: itemReveal 0.4s ease-out 0.3s forwards; }
+        .stagger-4 { opacity: 0; animation: itemReveal 0.4s ease-out 0.4s forwards; }
+        .stagger-5 { opacity: 0; animation: itemReveal 0.4s ease-out 0.5s forwards; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
         .avatar-small {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #5A4FCF, #9D88FF);
-            border-radius: 15px;
-            margin: 0 auto 12px;
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, rgba(107, 91, 255, 0.2), rgba(163, 150, 255, 0.1));
+            border: 1px solid rgba(107, 91, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(107, 91, 255, 0.15);
+            border-radius: 20px;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: 700;
+            color: #FFF;
         }
 
         .header h2 {
             font-family: 'DM Serif Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 2px;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
 
-        .header .cat {
-            color: var(--accent);
-            font-weight: 700;
+        .cat-badge {
+            display: inline-block;
+            background: rgba(107, 91, 255, 0.15);
+            color: #A396FF;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
             text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
+            border: 1px dashed rgba(107, 91, 255, 0.3);
+        }
+
+        .fav-star {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1.5rem;
+            color: #FBBF24;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+            animation: itemReveal 0.5s ease-out 0.3s forwards;
+            opacity: 0;
         }
 
         .info-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
         .info-box {
             background: var(--bg-accent);
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 16px;
             border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s ease;
+        }
+
+        .info-box:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateX(5px);
+            border-color: rgba(107, 91, 255, 0.3);
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .info-text {
             display: flex;
             flex-direction: column;
         }
@@ -113,43 +171,57 @@
         .label {
             color: var(--text-muted);
             font-size: 0.65rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 2px;
         }
 
         .value {
             font-size: 0.95rem;
-            font-weight: 500;
-            color: #DDD;
+            font-weight: 600;
+            color: #E2E2E9;
+            word-break: break-word;
+        }
+
+        .empty-value {
+            color: #66667A;
+            font-style: italic;
+            font-weight: 400;
         }
 
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn {
             flex: 1;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             text-align: center;
             text-decoration: none;
             font-weight: 700;
-            font-size: 0.85rem;
-            transition: 0.2s;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-edit {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #8375FF);
             color: white;
             border: none;
+            box-shadow: 0 8px 20px rgba(107, 91, 255, 0.25);
         }
 
-            .btn-edit:hover {
-                background: #6B5BFF;
-                transform: translateY(-2px);
-            }
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(107, 91, 255, 0.4);
+            filter: brightness(1.1);
+        }
 
         .btn-back {
             background: transparent;
@@ -157,58 +229,89 @@
             border: 1px solid var(--border);
         }
 
-            .btn-back:hover {
-                color: white;
-                border-color: white;
-            }
+        .btn-back:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
 
-        .fav-star {
-            position: absolute;
-            top: 0;
-            right: 0;
-            font-size: 1.2rem;
-            color: #FBBF24;
+        .date-text {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        @@media (max-width: 480px) {
+            .glass-card { padding: 25px 20px; border-radius: 20px; }
+            .header h2 { font-size: 1.8rem; }
+            .avatar-small { width: 65px; height: 65px; font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="glass-card">
-        <div class="header">
-            @if (Model.EsFavorito)
-            {
-                <span class="fav-star">⭐</span>
-            }
+        @if (Model.EsFavorito)
+        {
+            <div class="fav-star" title="Contacto Favorito">⭐</div>
+        }
+        
+        <div class="header stagger-1">
             <div class="avatar-small">
                 @(Model.Nombre.Length >= 1 ? Model.Nombre.Substring(0, 1).ToUpper() : "?")
             </div>
             <h2>@Model.Nombre @Model.Apellido</h2>
-            <span class="cat">@Model.Categoria</span>
+            <span class="cat-badge">@Model.Categoria</span>
         </div>
 
         <div class="info-list">
-            <div class="info-box">
-                <span class="label">Teléfono</span>
-                <span class="value">@Model.Telefono</span>
+            <div class="info-box stagger-2">
+                <div class="info-icon">📞</div>
+                <div class="info-text">
+                    <span class="label">Teléfono</span>
+                    <span class="value">@Model.Telefono</span>
+                </div>
             </div>
 
-            <div class="info-box">
-                <span class="label">Email</span>
-                <span class="value">@(string.IsNullOrEmpty(Model.Correo) ? "—" : Model.Correo)</span>
+            <div class="info-box stagger-3">
+                <div class="info-icon">✉️</div>
+                <div class="info-text">
+                    <span class="label">Correo Electrónico</span>
+                    @if (string.IsNullOrEmpty(Model.Correo))
+                    {
+                        <span class="value empty-value">No registrado</span>
+                    }
+                    else
+                    {
+                        <span class="value">@Model.Correo</span>
+                    }
+                </div>
             </div>
 
-            <div class="info-box">
-                <span class="label">Dirección</span>
-                <span class="value">@(string.IsNullOrEmpty(Model.Direccion) ? "No registrada" : Model.Direccion)</span>
+            <div class="info-box stagger-4">
+                <div class="info-icon">📍</div>
+                <div class="info-text">
+                    <span class="label">Dirección</span>
+                    @if (string.IsNullOrEmpty(Model.Direccion))
+                    {
+                        <span class="value empty-value">No registrada</span>
+                    }
+                    else
+                    {
+                        <span class="value">@Model.Direccion</span>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="actions">
-            <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-edit">Editar</a>
+        <div class="actions stagger-5">
             <a asp-action="Index" class="btn btn-back">Volver</a>
+            <a asp-action="Editar" asp-route-id="@Model.Id" class="btn btn-edit"><span>✏️</span> Editar</a>
         </div>
 
-        <p style="text-align: center; font-size: 0.65rem; color: var(--text-muted); margin-top: 15px;">
+        <p class="date-text stagger-5">
             Registrado el @Model.FechaCreacion.ToString("dd/MM/yyyy")
         </p>
     </div>
