@@ -15,252 +15,140 @@
 
     <style>
         :root {
-            --bg-main: #0F0F14;
-            --bg-nav: rgba(15, 15, 20, 0.8);
-            --bg-card: #171721;
+            --bg-main: #0B0B10;
+            --bg-card: rgba(28, 28, 38, 0.5);
             --text-white: #FFFFFF;
             --text-muted: #8A8A9E;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --accent: #5A4FCF;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent: #6B5BFF;
+            --accent-glow: rgba(107, 91, 255, 0.35);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
         
         body { 
             background-color: var(--bg-main); 
+            background-image: radial-gradient(circle at 50% 50%, rgba(107, 91, 255, 0.05), transparent 50%);
             color: var(--text-white); 
             min-height: 100vh; 
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
         @@keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- NAVBAR SUPERIOR PREMIUM --- */
+        /* --- NAVBAR REPLICADO DEL INDEX --- */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 50px; background: var(--bg-nav);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 20px 50px; background: rgba(15, 15, 20, 0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
-            height: 70px; position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0; z-index: 100;
+            animation: fadeUp 0.6s ease-out forwards; /* Misma animación que el Index */
         }
 
-        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-white); }
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .brand-icon {
             background: linear-gradient(135deg, #9D88FF, #6B5BFF);
-            width: 32px; height: 32px; border-radius: 8px;
+            width: 32px; height: 32px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center; font-size: 16px;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
-        .brand-name { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
+        .brand-name { 
+            font-weight: 800; font-size: 1.25rem; letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #FFFFFF, #A396FF);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
 
-        .tab-row { display: flex; gap: 30px; align-items: center; }
+        /* TABS (IGUALES AL INDEX) */
+        .tab-row { 
+            display: flex; gap: 6px; background: rgba(0, 0, 0, 0.4); 
+            padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+        }
+        
         .tab { 
-            color: var(--text-muted); text-decoration: none; font-weight: 500; 
-            font-size: 0.95rem; transition: 0.3s; position: relative; padding-bottom: 5px; 
+            color: #8A8A9E; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            padding: 10px 0; border-radius: 12px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; align-items: center; gap: 8px;
+            min-width: 130px; justify-content: center; /* Tamaño fijo para que no se note el cambio */
         }
-        .tab.active { color: white; }
-        .tab.active::after { 
-            content: ''; position: absolute; bottom: -2px; left: 0; 
-            width: 100%; height: 2px; background-color: var(--accent); border-radius: 2px; 
-        }
-        .tab:hover { color: white; }
-
-        /* --- CONTENIDO PRINCIPAL --- */
-        .main-content {
-            flex: 1; padding: 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%;
-            position: relative; z-index: 1;
+        .tab:hover { color: white; background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+        .tab.active { 
+            background: linear-gradient(135deg, var(--accent), #8375FF); 
+            color: white; box-shadow: 0 6px 20px rgba(107, 91, 255, 0.4); 
+            transform: translateY(-2px);
         }
 
-        /* Centrado de Título y Subtítulo */
-        .header-section {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+        /* --- TU DISEÑO ORIGINAL DE CONTENIDO --- */
+        .main-content { flex: 1; padding: 60px 40px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .page-title { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 15px; color: var(--text-white); animation: fadeUp 0.6s ease-out forwards; }
+        .page-subtitle { color: #D1D1E0; font-size: 1.1rem; line-height: 1.6; max-width: 700px; margin: 0 auto; animation: fadeUp 0.7s ease-out forwards; opacity: 0; }
 
-        .page-title { 
-            font-size: 2.8rem; font-weight: 700; letter-spacing: -1px;
-            margin-bottom: 15px; color: var(--text-white); animation: fadeUp 0.6s ease-out forwards;
-        }
-        .page-subtitle {
-            color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;
-            max-width: 700px; margin: 0 auto; animation: fadeUp 0.7s ease-out forwards; opacity: 0;
-        }
+        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
 
-        /* --- GRID Y TARJETAS --- */
-        .contacts-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; 
+        .fav-card, .c-card { 
+            position: relative; border-radius: 18px; padding: 20px; display: flex; align-items: center; gap: 15px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; 
+            animation: fadeUp 0.6s ease-out forwards; backdrop-filter: blur(12px);
         }
+        .fav-card { background: linear-gradient(145deg, rgba(42, 35, 82, 0.7), var(--bg-card)); border: 1px solid rgba(123, 107, 255, 0.2); }
+        .c-card { background-color: var(--bg-card); border: 1px solid var(--border-color); }
 
-        .avatar-box {
-            width: 50px; height: 50px; border-radius: 12px; display: flex; 
-            align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; flex-shrink: 0;
-        }
+        .fav-card:hover, .c-card:hover { transform: translateY(-6px); }
+        .avatar-box { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; flex-shrink: 0; }
+        
+        /* ESTRELLA DE FAVORITOS */
+        .star-fav { color: #FBBF24; font-size: 1.3rem; margin-left: auto; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
 
-        .fav-card {
-            position: relative; z-index: 1; background: linear-gradient(135deg, #2D2554 0%, var(--bg-card) 100%); 
-            border: 1px solid #4B3F85; border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; opacity: 0; animation: fadeUp 0.6s ease-out forwards;
-        }
-        .fav-card:hover { z-index: 100; transform: translateY(-4px) scale(1.02); border-color: #6B5BFF; }
-
-        .c-card {
-            position: relative; z-index: 1; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.06); 
-            border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; 
-            opacity: 0; animation: fadeUp 0.6s ease-out forwards;
-        }
-        .c-card:hover { z-index: 100; border-color: rgba(255,255,255,0.15); transform: translateY(-4px) scale(1.02); }
-
-        .fav-info, .c-info { flex: 1; min-width: 0; }
-        .fav-name, .c-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white;}
+        .fav-name, .c-name { font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 4px; }
         .fav-detail, .c-phone { color: var(--text-muted); font-size: 0.9rem; }
 
-        /* --- DROPDOWNS Y BOTONES --- */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; font-weight: bold; line-height: 1; padding: 0 5px; transition: color 0.3s; }
+        /* Dropdowns */
+        .dropdown { position: relative; display: inline-block; margin-left: 10px; }
+        .dropdown-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; font-weight: bold; }
+        .dropdown-content { display: none; position: absolute; right: 0; bottom: 100%; background-color: rgba(20, 20, 28, 0.98); min-width: 170px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; z-index: 1000; }
         .dropdown:hover .dropdown-content { display: block; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #1C1C26; min-width: 170px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; padding: 5px 0; animation: fadeUp 0.2s ease-out forwards; z-index: 1000; }
-        .dropdown-content a, .dropdown-content .btn-delete { color: #E2E2E9; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font-size: 0.9rem; font-weight: 500; background: transparent; border: none; cursor: pointer; transition: 0.2s; }
-        .dropdown-content a:hover, .dropdown-content .btn-delete:hover { background-color: #2A254D; color: white; }
-        .dropdown-content .btn-delete { color: #FF5C5C; }
-        .dropdown-content .btn-delete:hover { color: #FF7070; }
+        .dropdown-content a { color: #E2E2E9; padding: 10px 16px; text-decoration: none; display: block; font-size: 0.85rem; }
+        .dropdown-content a:hover { background: rgba(107, 91, 255, 0.1); color: white; }
 
-        .star-toggle-btn { background: none; border: none; padding: 0; cursor: pointer; outline: none; transition: transform 0.2s; }
-        .star-toggle-btn:hover { transform: scale(1.2); }
-
-        /* --- MODAL DE ELIMINAR PREMIUM --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 15, 20, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-box {
-            background: linear-gradient(160deg, #1C1C26 0%, #171721 100%);
-            border: 1px solid rgba(255, 92, 92, 0.2);
-            border-radius: 24px;
-            padding: 40px 30px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transform: scale(0.9) translateY(20px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-overlay.active .modal-box {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-icon {
-            width: 60px; height: 60px;
-            background: rgba(255, 92, 92, 0.1);
-            border: 1px solid rgba(255, 92, 92, 0.3);
-            color: #FF5C5C;
-            font-size: 1.8rem;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px auto;
-            box-shadow: 0 0 20px rgba(255, 92, 92, 0.2);
-        }
-
-        .modal-title {
-            color: #FFFFFF;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .modal-text {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .btn-cancelar {
-            background: rgba(255, 255, 255, 0.05);
-            color: #E2E2E9;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-cancelar:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #FFF;
-        }
-
-        .btn-confirmar-eliminar {
-            background: #FF5C5C;
-            color: #FFF;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 92, 92, 0.3);
-        }
-
-        .btn-confirmar-eliminar:hover {
-            background: #FF4242;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 92, 92, 0.5);
+        @@media (max-width: 768px) {
+            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .tab { min-width: 100px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a asp-action="Index" class="nav-brand">
+        <a asp-controller="Contactos" asp-action="Index" class="nav-brand">
             <div class="brand-icon">📒</div>
             <span class="brand-name">Agenda Web</span>
         </a>
-
         <div class="tab-row">
-            <a href="@Url.Action("Index", "Contactos")" class="tab">Todos los Contactos</a>
-            <a href="@Url.Action("Recientes", "Contactos")" class="tab active">Agregados Recientemente</a>
-            <a href="@Url.Action("Ayuda", "Contactos")" class="tab">Centro de Ayuda</a>
+            <a href="@Url.Action("Index", "Contactos")" class="tab"><span>👥</span> Contactos</a>
+            <a href="@Url.Action("Recientes", "Contactos")" class="tab active"><span>🕒</span> Recientes</a>
+            <a href="@Url.Action("Ayuda", "Contactos")" class="tab"><span>❓</span> Ayuda</a>
         </div>
     </nav>
 
     <main class="main-content">
-        
         <div class="header-section">
             <h1 class="page-title">Agregados Recientemente</h1>
             <p class="page-subtitle">
-                Aquí encontrarás los últimos contactos que has integrado a tu agenda. Esta vista rápida está diseñada para ayudarte a retomar conversaciones recientes o completar información pendiente, sin necesidad de buscar en toda tu lista.
+                Aquí encontrarás los últimos contactos que has integrado a tu agenda. Esta vista rápida está diseñada para ayudarte a retomar conversaciones recientes.
             </p>
         </div>
 
         @if (!Model.Any())
         {
-            <div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); padding: 40px; border-radius: 16px; text-align: center; margin-top: 40px; color: var(--text-muted); animation: fadeUp 0.8s ease forwards; opacity: 0;">
-                Aún no has agregado contactos. ¡Empieza a llenar tu agenda para verlos aquí!
+            <div class="text-center p-5" style="background: rgba(28, 28, 38, 0.4); border-radius: 24px; border: 1px dashed rgba(107, 91, 255, 0.3);">
+                <p style="color: #D1D1E0; font-size: 1.1rem;">Aún no has agregado contactos recientes.</p>
             </div>
         }
         else
@@ -270,78 +158,52 @@
                     int delay = 1;
                     int countFav = 0;
                     int countOtros = 0;
-
-                    var favGradients = new[] {
-                        "linear-gradient(135deg, #6366f1, #a855f7)", "linear-gradient(135deg, #3b82f6, #2dd4bf)",
-                        "linear-gradient(135deg, #f43f5e, #fb923c)", "linear-gradient(135deg, #22c55e, #84cc16)",
-                        "linear-gradient(135deg, #8b5cf6, #d946ef)", "linear-gradient(135deg, #f59e0b, #eab308)"
-                    };
-
-                    var neonPalette = new (string Bg, string Text)[] {
-                        ("rgba(99, 102, 241, 0.12)", "#818cf8"), ("rgba(16, 185, 129, 0.12)", "#34d399"),
-                        ("rgba(244, 63, 94, 0.12)", "#fb7185"), ("rgba(234, 179, 8, 0.12)", "#facc15"),
-                        ("rgba(168, 85, 247, 0.12)", "#c084fc"), ("rgba(6, 182, 212, 0.12)", "#22d3ee")
-                    };
+                    var favGradients = new[] { "linear-gradient(135deg, #6366f1, #a855f7)", "linear-gradient(135deg, #3b82f6, #2dd4bf)", "linear-gradient(135deg, #f43f5e, #fb923c)", "linear-gradient(135deg, #22c55e, #84cc16)", "linear-gradient(135deg, #8b5cf6, #d946ef)", "linear-gradient(135deg, #f59e0b, #eab308)" };
+                    var neonPalette = new (string Bg, string Text)[] { ("rgba(99, 102, 241, 0.12)", "#818cf8"), ("rgba(16, 185, 129, 0.12)", "#34d399"), ("rgba(244, 63, 94, 0.12)", "#fb7185"), ("rgba(234, 179, 8, 0.12)", "#facc15"), ("rgba(168, 85, 247, 0.12)", "#c084fc"), ("rgba(6, 182, 212, 0.12)", "#22d3ee") };
                 }
 
                 @foreach (var contact in Model)
                 {
                     if (contact.EsFavorito)
                     {
-                        var grad = favGradients[countFav % 6];
-                        countFav++;
-
+                        var grad = favGradients[countFav % 6]; countFav++;
                         <div class="fav-card" style="animation-delay: @(delay * 0.1)s;">
-                            <div class="avatar-box" style="background: @grad; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                            <div class="avatar-box" style="background: @grad; color: white;">
                                 @(string.IsNullOrEmpty(contact.Nombre) ? "?" : contact.Nombre.Substring(0, 1).ToUpper())
                             </div>
-                            <div class="fav-info">
-                                <div class="fav-name" title="@contact.Nombre @contact.Apellido">@contact.Nombre @contact.Apellido</div>
+                            <div style="flex:1;">
+                                <div class="fav-name">@contact.Nombre @contact.Apellido</div>
                                 <div class="fav-detail">@contact.Telefono</div>
                             </div>
-                            <div style="display: flex; gap: 12px; align-items: center; flex-shrink: 0;">
-                                <form asp-action="ToggleFavorito" asp-route-id="@contact.Id" method="post">
-                                    <button type="submit" class="star-toggle-btn"><span style="color: #FBBF24; font-size: 1.3rem;">★</span></button>
-                                </form>
-                                <div class="dropdown">
-                                    <button class="dropdown-btn">⋮</button>
-                                    <div class="dropdown-content">
-                                        <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
-                                        <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
-                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="mostrarAlertaEliminar(event, this);">
-                                            <button type="submit" class="btn-delete">🗑️ Eliminar</button>
-                                        </form>
-                                    </div>
+                            
+                            @* Estrellita para favoritos *@
+                            <span class="star-fav">★</span>
+
+                            <div class="dropdown">
+                                <button class="dropdown-btn">⋮</button>
+                                <div class="dropdown-content">
+                                    <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Detalles</a>
+                                    <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
                                 </div>
                             </div>
                         </div>
                     }
                     else
                     {
-                        var style = neonPalette[countOtros % 6];
-                        countOtros++;
-
+                        var style = neonPalette[countOtros % 6]; countOtros++;
                         <div class="c-card" style="animation-delay: @(delay * 0.1)s;">
                             <div class="avatar-box" style="background-color: @style.Bg; border: 1.5px solid @style.Text; color: @style.Text;">
                                 @(string.IsNullOrEmpty(contact.Nombre) ? "?" : contact.Nombre.Substring(0, 1).ToUpper())
                             </div>
-                            <div class="c-info">
-                                <div class="c-name" title="@contact.Nombre @contact.Apellido">@contact.Nombre @contact.Apellido</div>
+                            <div style="flex:1;">
+                                <div class="c-name">@contact.Nombre @contact.Apellido</div>
                                 <div class="c-phone">@contact.Telefono</div>
                             </div>
-                            <div style="display: flex; gap: 12px; align-items: center; flex-shrink: 0;">
-                                <form asp-action="ToggleFavorito" asp-route-id="@contact.Id" method="post">
-                                    <button type="submit" class="star-toggle-btn"><span style="color: #444; font-size: 1.3rem;">★</span></button>
-                                </form>
-                                <div class="dropdown">
-                                    <button class="dropdown-btn">⋮</button>
-                                    <div class="dropdown-content">
-                                        <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Ver Detalles</a>
-                                        <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
-                                        <form asp-action="Eliminar" asp-route-id="@contact.Id" method="post" onsubmit="mostrarAlertaEliminar(event, this);">
-                                            <button type="submit" class="btn-delete">🗑️ Eliminar</button>
-                                        </form>
-                                    </div>
+                            <div class="dropdown">
+                                <button class="dropdown-btn">⋮</button>
+                                <div class="dropdown-content">
+                                    <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Detalles</a>
+                                    <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
                                 </div>
                             </div>
                         </div>
@@ -351,38 +213,5 @@
             </div>
         }
     </main>
-
-    <div class="modal-overlay" id="deleteModal">
-        <div class="modal-box">
-            <div class="modal-icon">⚠️</div>
-            <h3 class="modal-title">¿Eliminar contacto?</h3>
-            <p class="modal-text">Esta acción no se puede deshacer. El contacto será borrado permanentemente de tu agenda.</p>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancelar" onclick="cerrarAlerta()">Cancelar</button>
-                <button type="button" class="btn-confirmar-eliminar" onclick="confirmarEliminacion()">Sí, eliminar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let formularioAEliminar = null;
-
-        function mostrarAlertaEliminar(evento, formulario) {
-            evento.preventDefault(); 
-            formularioAEliminar = formulario; 
-            document.getElementById('deleteModal').classList.add('active'); 
-        }
-
-        function cerrarAlerta() {
-            formularioAEliminar = null;
-            document.getElementById('deleteModal').classList.remove('active'); 
-        }
-
-        function confirmarEliminacion() {
-            if (formularioAEliminar) {
-                formularioAEliminar.submit(); 
-            }
-        }
-    </script>
 </body>
 </html>

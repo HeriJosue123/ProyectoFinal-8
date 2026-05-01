@@ -2,6 +2,7 @@
 using ContactManagerWeb.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +17,33 @@ namespace ContactManagerWeb.Services
             _context = context;
         }
 
-        // --- REGLA 1: Límite de 10 categorías ---
+        // --- REGLA: Normalización y Validación de Nombre ---
+        public void ValidarYNormalizar(Categoria categoria)
+        {
+            if (string.IsNullOrWhiteSpace(categoria.NombreCategoria))
+            {
+                throw new Exception("El nombre de la categoría es obligatorio.");
+            }
+
+            var textInfo = new CultureInfo("es-ES", false).TextInfo;
+            string nombreLimpio = textInfo.ToTitleCase(categoria.NombreCategoria.Trim().ToLower());
+
+            // REGLA DE NEGOCIO: Evitar categorías duplicadas
+            bool existe = _context.Categorias.Any(c => c.NombreCategoria.ToLower() == nombreLimpio.ToLower() && c.Id != categoria.Id);
+
+            if (existe)
+            {
+                throw new Exception($"La categoría '{nombreLimpio}' ya existe en tu agenda.");
+            }
+
+            categoria.NombreCategoria = nombreLimpio;
+
+            if (string.IsNullOrWhiteSpace(categoria.Emoji))
+            {
+                categoria.Emoji = "📁";
+            }
+        }
+
         public async Task ValidarLimiteCategorias()
         {
             var total = await _context.Categorias.CountAsync();
@@ -26,24 +53,20 @@ namespace ContactManagerWeb.Services
             }
         }
 
-        // --- REGLA 2 y 3: Proteger "General" y Reasignar contactos al eliminar ---
         public async Task EliminarYReasignar(int idCategoria)
         {
             var categoria = await _context.Categorias.FindAsync(idCategoria);
             if (categoria == null) throw new Exception("La categoría no existe.");
 
-            // REGLA: No permitir borrar la categoría "General"
             if (categoria.NombreCategoria.Trim().ToLower() == "general")
             {
                 throw new Exception("La categoría 'General' es la predeterminada del sistema y no puede ser eliminada.");
             }
 
-            // Buscar todos los contactos que están en la categoría que vamos a borrar
             var contactosAfectados = await _context.Contactos
                 .Where(c => c.Categoria == categoria.NombreCategoria)
                 .ToListAsync();
 
-            // Garantizar que la categoría "General" exista en la base de datos
             bool existeGeneral = await _context.Categorias.AnyAsync(c => c.NombreCategoria == "General");
             if (!existeGeneral)
             {
@@ -51,14 +74,12 @@ namespace ContactManagerWeb.Services
                 await _context.SaveChangesAsync();
             }
 
-            // REGLA: Reasignar los contactos afectados a "General"
             foreach (var contacto in contactosAfectados)
             {
                 contacto.Categoria = "General";
                 _context.Update(contacto);
             }
 
-            // Finalmente, eliminamos la categoría original
             _context.Categorias.Remove(categoria);
             await _context.SaveChangesAsync();
         }

@@ -50,7 +50,7 @@ namespace ContactManagerWeb.Controllers
             return View(await query.OrderBy(c => c.Nombre).ToListAsync());
         }
 
-        // --- 2. RECIENTES (LA PUERTA) ---
+        // --- 2. RECIENTES ---
         public async Task<IActionResult> Recientes()
         {
             var lista = await _context.Contactos
@@ -60,10 +60,10 @@ namespace ContactManagerWeb.Controllers
             return View(lista);
         }
 
-        // --- 3. AYUDA (LA PUERTA) ---
+        // --- 3. AYUDA ---
         public IActionResult Ayuda() => View();
 
-        // --- 4. DETALLES (LA PUERTA) ---
+        // --- 4. DETALLES ---
         public async Task<IActionResult> Detalles(int? id)
         {
             if (id == null) return NotFound();
@@ -89,23 +89,60 @@ namespace ContactManagerWeb.Controllers
                     ModelState.Remove("NuevaCategoriaTexto");
                     ModelState.Remove("NuevoEmoji");
                 }
+
+                // REGLA DE NEGOCIO: Validamos y normalizamos (Devuelve lista de errores)
+                var erroresValidacion = await _contactService.ValidarYNormalizar(contacto);
+
+                // Si hay errores, los agregamos todos juntos al ModelState
+                if (erroresValidacion.Any())
+                {
+                    foreach (var error in erroresValidacion)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+                }
+
+                // Si el ModelState es válido (No hubo errores de validación)
                 if (ModelState.IsValid)
                 {
                     contacto.FechaCreacion = DateTime.Now;
+
+                    // Creación de Categoría al vuelo
                     if (contacto.Categoria == "NUEVA_CATEGORIA" && !string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
                     {
-                        var nuevaCat = new Categoria { NombreCategoria = NuevaCategoriaTexto, Emoji = NuevoEmoji ?? "📁" };
-                        _context.Categorias.Add(nuevaCat);
-                        await _context.SaveChangesAsync();
-                        contacto.Categoria = NuevaCategoriaTexto;
+                        var catNombreLimpio = NuevaCategoriaTexto.Trim();
+                        var categoriaExistente = await _context.Categorias
+                            .FirstOrDefaultAsync(c => c.NombreCategoria.ToLower() == catNombreLimpio.ToLower());
+
+                        if (categoriaExistente == null)
+                        {
+                            var nuevaCat = new Categoria { NombreCategoria = catNombreLimpio, Emoji = NuevoEmoji ?? "📁" };
+                            _context.Categorias.Add(nuevaCat);
+                            await _context.SaveChangesAsync();
+                            contacto.Categoria = nuevaCat.NombreCategoria;
+                        }
+                        else
+                        {
+                            contacto.Categoria = categoriaExistente.NombreCategoria;
+                        }
                     }
-                    await _contactService.ValidarYNormalizar(contacto);
+                    else if (contacto.Categoria == "NUEVA_CATEGORIA" && string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
+                    {
+                        // Failsafe por si eligen "Nueva Categoría" pero la dejan en blanco
+                        contacto.Categoria = "General";
+                    }
+
                     _context.Add(contacto);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
-            catch (Exception ex) { CapturarErrores(ex); }
+            catch (Exception ex)
+            {
+                CapturarErrores(ex);
+            }
+
+            // Recargar el ViewBag en caso de error para que el Select funcione
             ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View(contacto);
         }
@@ -121,25 +158,72 @@ namespace ContactManagerWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editar(int id, Contacto contacto)
+        public async Task<IActionResult> Editar(int id, Contacto contacto, string? NuevaCategoriaTexto, string? NuevoEmoji)
         {
             if (id != contacto.Id) return NotFound();
+
             try
             {
-                await _contactService.ValidarYNormalizar(contacto);
+                if (contacto.Categoria != "NUEVA_CATEGORIA")
+                {
+                    ModelState.Remove("NuevaCategoriaTexto");
+                    ModelState.Remove("NuevoEmoji");
+                }
+
+                // REGLA DE NEGOCIO: Validamos y normalizamos (Devuelve lista de errores)
+                var erroresValidacion = await _contactService.ValidarYNormalizar(contacto);
+
+                // Si hay errores, los agregamos todos juntos al ModelState
+                if (erroresValidacion.Any())
+                {
+                    foreach (var error in erroresValidacion)
+                    {
+                        ModelState.AddModelError(string.Empty, error);
+                    }
+                }
+
+                // Si el ModelState es válido
                 if (ModelState.IsValid)
                 {
+                    // Creación de Categoría al vuelo
+                    if (contacto.Categoria == "NUEVA_CATEGORIA" && !string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
+                    {
+                        var catNombreLimpio = NuevaCategoriaTexto.Trim();
+                        var categoriaExistente = await _context.Categorias
+                            .FirstOrDefaultAsync(c => c.NombreCategoria.ToLower() == catNombreLimpio.ToLower());
+
+                        if (categoriaExistente == null)
+                        {
+                            var nuevaCat = new Categoria { NombreCategoria = catNombreLimpio, Emoji = NuevoEmoji ?? "📁" };
+                            _context.Categorias.Add(nuevaCat);
+                            await _context.SaveChangesAsync();
+                            contacto.Categoria = nuevaCat.NombreCategoria;
+                        }
+                        else
+                        {
+                            contacto.Categoria = categoriaExistente.NombreCategoria;
+                        }
+                    }
+                    else if (contacto.Categoria == "NUEVA_CATEGORIA" && string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
+                    {
+                        contacto.Categoria = "General";
+                    }
+
                     _context.Update(contacto);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
-            catch (Exception ex) { CapturarErrores(ex); }
+            catch (Exception ex)
+            {
+                CapturarErrores(ex);
+            }
+
             ViewBag.Categorias = await _context.Categorias.ToListAsync();
             return View(contacto);
         }
 
-        // --- 7. ELIMINAR (ESTE TE FALTABA, LA PUERTA GET) ---
+        // --- 7. ELIMINAR ---
         public async Task<IActionResult> Eliminar(int? id)
         {
             if (id == null) return NotFound();
@@ -152,7 +236,12 @@ namespace ContactManagerWeb.Controllers
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
             var c = await _context.Contactos.FindAsync(id);
-            if (c != null) { _context.Contactos.Remove(c); await _context.SaveChangesAsync(); }
+            if (c != null)
+            {
+                _context.Contactos.Remove(c);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Contacto eliminado correctamente.";
+            }
             return RedirectToAction(nameof(Index));
         }
 

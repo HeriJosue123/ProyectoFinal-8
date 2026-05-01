@@ -8,7 +8,6 @@ namespace ContactManagerWeb.Models
         [Key]
         public int Id { get; set; }
 
-        // Aquí agregas el Required con el mensaje en español
         [Required(ErrorMessage = "El nombre es obligatorio")]
         [Display(Name = "Nombre")]
         public string Nombre { get; set; } = string.Empty;
@@ -16,20 +15,18 @@ namespace ContactManagerWeb.Models
         [Display(Name = "Apellido (Opcional)")]
         public string? Apellido { get; set; }
 
-        // Lo mismo para el teléfono
         [Required(ErrorMessage = "El número de teléfono es requerido")]
         [Display(Name = "Número de Teléfono")]
         public string Telefono { get; set; } = string.Empty;
 
-        // Para el correo, usamos EmailAddress para que valide el @
-        [EmailAddress(ErrorMessage = "Ingresa una dirección de correo válida")]
+        // Como le pusimos "novalidate" a tus formularios HTML, el navegador respetará este mensaje.
+        [EmailAddress(ErrorMessage = "Dirección de correo inválida: debe llevar obligatoriamente una '@' y un dominio válido.")]
         [Display(Name = "Correo Electrónico")]
         public string? Correo { get; set; }
 
         [Display(Name = "Dirección Física")]
         public string? Direccion { get; set; }
 
-        // Importante para el Select de categorías
         [Required(ErrorMessage = "Debes seleccionar una categoría")]
         [Display(Name = "Categoría")]
         public string Categoria { get; set; } = "General";

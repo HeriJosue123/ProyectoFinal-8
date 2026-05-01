@@ -3,7 +3,6 @@
     ViewData["Title"] = "Centro de Ayuda";
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,202 +13,112 @@
 
     <style>
         :root {
-            --bg-main: #0F0F14;
-            --bg-nav: rgba(15, 15, 20, 0.8);
-            --bg-card: #171721;
+            --bg-main: #0B0B10;
+            --bg-card: rgba(28, 28, 38, 0.5);
             --text-white: #FFFFFF;
             --text-muted: #8A8A9E;
-            --border-color: rgba(255, 255, 255, 0.06);
-            --accent: #5A4FCF;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent: #6B5BFF;
+            --accent-glow: rgba(107, 91, 255, 0.35);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
         
-        /* BLOQUEAMOS EL SCROLL Y FIJAMOS EL ALTO AL 100% DE LA PANTALLA */
         body { 
-            background-color: var(--bg-main); 
-            color: var(--text-white); 
-            height: 100vh; 
-            overflow: hidden; /* Elimina cualquier barra de scroll */
-            display: flex;
-            flex-direction: column;
+            background-color: var(--bg-main); color: var(--text-white); 
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- ANIMACIONES --- */
         @@keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- NAVBAR SUPERIOR --- */
+        /* --- NAVBAR UNIFICADO (IGUAL AL INDEX Y RECIENTES) --- */
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 50px;
-            background: var(--bg-nav);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 50px; background: rgba(15, 15, 20, 0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
-            height: 70px; /* Alto fijo para el navbar */
+            height: 90px; position: sticky; top: 0; z-index: 100;
+            animation: fadeUp 0.6s ease-out forwards;
         }
 
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text-white);
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-white); }
+        .brand-icon { 
+            background: linear-gradient(135deg, #9D88FF, #6B5BFF); 
+            width: 35px; height: 35px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; font-size: 18px; 
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        .brand-name { 
+            font-weight: 800; font-size: 1.3rem; letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #FFFFFF, #BDB2FF); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         }
 
-        .brand-icon {
-            background: linear-gradient(135deg, #9D88FF, #6B5BFF);
-            width: 32px; height: 32px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px;
+        .tab-row { 
+            display: flex; gap: 6px; background: rgba(0, 0, 0, 0.4); 
+            padding: 6px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5); 
         }
-
-        .brand-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* Pestañas de Navegación */
-        .tab-row { display: flex; gap: 30px; align-items: center; }
         
         .tab { 
-            color: var(--text-muted); 
-            text-decoration: none; 
-            font-weight: 500; 
-            font-size: 0.95rem;
-            transition: 0.3s; 
-            position: relative;
-            padding-bottom: 5px;
+            color: #8A8A9E; text-decoration: none; font-weight: 600; font-size: 0.9rem; 
+            padding: 10px 0; border-radius: 12px; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            min-width: 130px; /* EL SECRETO PARA QUE NO SE NOTE EL CAMBIO */
         }
         
-        .tab.active { color: white; }
-        .tab.active::after { 
-            content: ''; position: absolute; bottom: -2px; left: 0; 
-            width: 100%; height: 2px; 
-            background-color: var(--accent); border-radius: 2px; 
-        }
-        .tab:hover { color: white; }
-
-        /* --- CONTENIDO PRINCIPAL --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centra todo verticalmente */
-            align-items: center;     /* Centra todo horizontalmente */
-            padding: 0 40px;
-            position: relative;
-            z-index: 1;
+        .tab:hover { color: white; background: rgba(255,255,255,0.03); transform: translateY(-2px); }
+        .tab.active { 
+            background: linear-gradient(135deg, var(--accent), #8375FF); 
+            color: white; box-shadow: 0 6px 20px rgba(107, 91, 255, 0.4); 
+            transform: translateY(-2px);
         }
 
-        /* Luz ambiental de fondo */
-        .ambient-glow {
-            position: absolute;
-            top: -10%; left: 50%;
-            transform: translateX(-50%);
-            width: 800px; height: 500px;
-            background: radial-gradient(ellipse at top, rgba(90, 79, 207, 0.15), transparent 60%);
-            pointer-events: none;
-            z-index: -1;
+        /* --- TU DISEÑO ORIGINAL DE AYUDA --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 40px; position: relative; z-index: 1; }
+        .ambient-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 800px; height: 500px; background: radial-gradient(ellipse at top, rgba(107, 91, 255, 0.1), transparent 60%); pointer-events: none; z-index: -1; }
+
+        .hero-section { text-align: center; max-width: 800px; margin-bottom: 50px; animation: fadeUp 0.6s ease-out forwards; }
+        .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 15px; color: var(--text-white); }
+        .hero-subtitle { font-size: 1.1rem; color: #D1D1E0; line-height: 1.6; }
+
+        .help-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; max-width: 1300px; }
+
+        .help-card { 
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px 25px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; 
+            position: relative; overflow: hidden; animation: fadeUp 0.6s ease-out forwards; backdrop-filter: blur(10px);
         }
 
-        .hero-section {
-            text-align: center;
-            max-width: 800px;
-            margin-bottom: 45px;
-            animation: fadeUp 0.6s ease-out forwards;
+        .help-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--color); opacity: 0.4; transition: 0.4s; }
+        .help-card:nth-child(1) { --color: #3b82f6; animation-delay: 0.1s; } 
+        .help-card:nth-child(2) { --color: #f59e0b; animation-delay: 0.2s; } 
+        .help-card:nth-child(3) { --color: #8b5cf6; animation-delay: 0.3s; } 
+        .help-card:nth-child(4) { --color: #ec4899; animation-delay: 0.4s; } 
+
+        .help-card:hover { transform: translateY(-10px); border-color: var(--color); background: rgba(28, 28, 38, 0.8); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .help-card:hover::before { opacity: 1; box-shadow: 0 0 15px var(--color); }
+
+        .icon-box { 
+            width: 54px; height: 54px; border-radius: 16px; background: rgba(255,255,255,0.03); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.6rem; 
+            margin-bottom: 20px; transition: 0.4s; 
         }
+        .help-card:hover .icon-box { transform: scale(1.1) rotate(10deg); background: var(--color); color: white; }
 
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 15px;
-            color: var(--text-white);
-        }
+        .help-card h3 { font-size: 1.2rem; font-weight: 800; color: #FFFFFF; margin-bottom: 12px; }
+        .help-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
 
-        .hero-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        /* --- GRID DE TARJETAS HORIZONTALES --- */
-        .help-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 1300px;
-        }
-
-        .help-card {
-            background: linear-gradient(160deg, rgba(28,28,38,0.7) 0%, rgba(20,20,28,0.4) 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 25px 20px; /* Reducido para que quepa bien en pantalla */
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0;
-            position: relative;
-            overflow: hidden;
-            animation: fadeUp 0.6s ease-out forwards;
-        }
-
-        /* Línea superior de color */
-        .help-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--accent-color); opacity: 0.5; transition: opacity 0.4s, box-shadow 0.4s;
-        }
-
-        /* Variables de color */
-        .help-card:nth-child(1) { --accent-color: #3b82f6; animation-delay: 0.1s; } 
-        .help-card:nth-child(2) { --accent-color: #f59e0b; animation-delay: 0.2s; } 
-        .help-card:nth-child(3) { --accent-color: #8b5cf6; animation-delay: 0.3s; } 
-        .help-card:nth-child(4) { --accent-color: #ec4899; animation-delay: 0.4s; } 
-
-        .help-card:hover {
-            transform: translateY(-8px);
-            background: rgba(30, 30, 40, 0.9);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .help-card:hover::before { opacity: 1; box-shadow: 0 0 15px var(--accent-color); }
-
-        .icon-box {
-            width: 48px; height: 48px; border-radius: 14px;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; margin-bottom: 20px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Colores de iluminación del ícono */
-        .help-card:nth-child(1):hover .icon-box { background: rgba(59, 130, 246, 0.15); border-color: #3b82f6; color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); transform: scale(1.1) rotate(-5deg); }
-        .help-card:nth-child(2):hover .icon-box { background: rgba(251, 191, 36, 0.15); border-color: #f59e0b; color: #f59e0b; box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); transform: scale(1.1) rotate(5deg); }
-        .help-card:nth-child(3):hover .icon-box { background: rgba(139, 92, 246, 0.15); border-color: #8b5cf6; color: #8b5cf6; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); transform: scale(1.1) rotate(-5deg); }
-        .help-card:nth-child(4):hover .icon-box { background: rgba(236, 72, 153, 0.15); border-color: #ec4899; color: #ec4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); transform: scale(1.1) rotate(5deg); }
-
-        .help-card h3 {
-            font-size: 1.15rem; font-weight: 700; color: #FFFFFF;
-            margin-bottom: 10px; letter-spacing: -0.3px;
-        }
-
-        .help-card p {
-            font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;
-        }
-
-        /* Responsive Breakpoints */
-        @@media (max-width: 1100px) {
-            .help-grid { grid-template-columns: repeat(2, 1fr); }
-            body { overflow-y: auto; } /* Permite scroll solo si la pantalla es muy pequeña */
-            .main-content { padding: 40px 20px; justify-content: flex-start; }
+        @@media (max-width: 1100px) { 
+            .navbar { padding: 0 20px; flex-direction: column; height: auto; padding-bottom: 15px; }
+            .nav-brand { margin: 15px 0; }
+            .help-grid { grid-template-columns: repeat(2, 1fr); } 
+            body { overflow-y: auto; } 
+            .main-content { padding: 40px 20px; } 
         }
     </style>
 </head>
@@ -220,52 +129,41 @@
             <div class="brand-icon">📒</div>
             <span class="brand-name">Agenda Web</span>
         </a>
-
         <div class="tab-row">
-            <a href="@Url.Action("Index", "Contactos")" class="tab">Todos los Contactos</a>
-            <a href="@Url.Action("Recientes", "Contactos")" class="tab">Agregados Recientemente</a>
-            <a href="@Url.Action("Ayuda", "Contactos")" class="tab active">Centro de Ayuda</a>
+            <a href="@Url.Action("Index", "Contactos")" class="tab"><span>👥</span> Contactos</a>
+            <a href="@Url.Action("Recientes", "Contactos")" class="tab"><span>🕒</span> Recientes</a>
+            <a href="@Url.Action("Ayuda", "Contactos")" class="tab active"><span>❓</span> Ayuda</a>
         </div>
     </nav>
 
     <main class="main-content">
         <div class="ambient-glow"></div>
-
         <div class="hero-section">
             <h1 class="hero-title">Centro de Ayuda</h1>
-            <p class="hero-subtitle">
-                Bienvenido al soporte de tu agenda. Encuentra respuestas rápidas y descubre cómo gestionar, buscar y organizar tus contactos de manera eficiente.
-            </p>
+            <p class="hero-subtitle">Bienvenido al soporte de tu agenda. Encuentra respuestas rápidas y descubre cómo gestionar tus contactos de manera eficiente.</p>
         </div>
-
         <div class="help-grid">
-            
             <div class="help-card">
                 <div class="icon-box">🔍</div>
-                <h3>Búsqueda de Contactos</h3>
-                <p>Encuentra personas al instante. Escribe un nombre o apellido en la barra de búsqueda de la pestaña "Todos" para filtrar tu agenda en tiempo real.</p>
+                <h3>Búsqueda</h3>
+                <p>Encuentra personas al instante. Escribe un nombre en la barra de búsqueda para filtrar tu agenda en tiempo real.</p>
             </div>
-
             <div class="help-card">
                 <div class="icon-box">⭐</div>
-                <h3>Gestión de Favoritos</h3>
-                <p>Marca la estrella (★) en un contacto para anclarlo. Tus favoritos siempre aparecerán en la parte superior con un diseño destacado para fácil acceso.</p>
+                <h3>Favoritos</h3>
+                <p>Marca la estrella (★) en un contacto para anclarlo. Tus favoritos siempre aparecerán destacados.</p>
             </div>
-
             <div class="help-card">
                 <div class="icon-box">📁</div>
-                <h3>Uso de Categorías</h3>
-                <p>Filtra tu agenda seleccionando Trabajo, Amigos o Familia en el menú lateral. Mantén tu red organizada y visualiza solo el grupo que necesitas.</p>
+                <h3>Categorías</h3>
+                <p>Filtra tu agenda por grupos. Mantén tu red organizada y visualiza solo lo que necesitas en cada momento.</p>
             </div>
-
             <div class="help-card">
                 <div class="icon-box">⚙️</div>
-                <h3>Edición y Eliminación</h3>
-                <p>Usa el menú de opciones (⋮) en cualquier tarjeta. Podrás actualizar números telefónicos, ver información completa o eliminar un contacto de tu red.</p>
+                <h3>Gestión</h3>
+                <p>Usa el menú (⋮) para actualizar números telefónicos o eliminar contactos de tu red de forma rápida.</p>
             </div>
-
         </div>
     </main>
-
 </body>
 </html>
