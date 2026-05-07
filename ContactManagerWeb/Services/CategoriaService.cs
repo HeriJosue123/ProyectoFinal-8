@@ -64,7 +64,7 @@ namespace ContactManagerWeb.Services
             }
 
             var contactosAfectados = await _context.Contactos
-                .Where(c => c.Categoria == categoria.NombreCategoria)
+                .Where(c => c.Categoria != null && c.Categoria.NombreCategoria == categoria.NombreCategoria)
                 .ToListAsync();
 
             bool existeGeneral = await _context.Categorias.AnyAsync(c => c.NombreCategoria == "General");
@@ -76,7 +76,6 @@ namespace ContactManagerWeb.Services
 
             foreach (var contacto in contactosAfectados)
             {
-                contacto.Categoria = "General";
                 _context.Update(contacto);
             }
 

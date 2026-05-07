@@ -174,7 +174,7 @@
                             </div>
                             <div style="flex:1;">
                                 <div class="fav-name">@contact.Nombre @contact.Apellido</div>
-                                <div class="fav-detail">@contact.Telefono</div>
+                                <div class="fav-detail">@(contact.Telefonos.FirstOrDefault()?.Numero ?? "Sin teléfono")</div>
                             </div>
                             <span class="star-fav">★</span>
                             <div class="dropdown">
@@ -195,7 +195,7 @@
                             </div>
                             <div style="flex:1;">
                                 <div class="c-name">@contact.Nombre @contact.Apellido</div>
-                                <div class="c-phone">@contact.Telefono</div>
+                                <div class="c-phone">@(contact.Telefonos.FirstOrDefault()?.Numero ?? "Sin teléfono")</div>
                             </div>
                             <div class="dropdown">
                                 <button class="dropdown-btn">⋮</button>

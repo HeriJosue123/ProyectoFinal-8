@@ -13,45 +13,57 @@
             --bg: #0B0B10;
             --bg-card: rgba(28, 28, 38, 0.5);
             --accent: #6B5BFF;
-            --accent-glow: rgba(107, 91, 255, 0.3);
+            --accent-hover: #8375FF;
+            --accent-glow: rgba(107, 91, 255, 0.4);
             --text-muted: #8A8A9E;
             --border: rgba(255, 255, 255, 0.08);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
-        
-        body { 
-            background-color: var(--bg); 
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(107, 91, 255, 0.08), transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(163, 150, 255, 0.05), transparent 40%);
-            color: white; 
-            height: 100vh; 
-            display: flex; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 10% 10%, rgba(107, 91, 255, 0.1), transparent 40%), radial-gradient(circle at 90% 90%, rgba(163, 150, 255, 0.08), transparent 40%);
+            color: white;
+            height: 100vh;
+            display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* --- NAVBAR SIMPLE PARA EL HOME --- */
+        /* --- NAVBAR --- */
         .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 25px 60px; position: absolute; top: 0; width: 100%; z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 60px;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 100;
         }
 
-        .brand-name { 
-            font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px;
-            color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;
-        }
-        
-        .brand-name span { color: var(--accent); }
-
-        .team-badge {
-            background: rgba(255,255,255,0.05); padding: 8px 20px; border-radius: 20px;
-            border: 1px solid var(--border); font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
-            letter-spacing: 1px;
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* --- CONTENEDOR PRINCIPAL (HERO SECTION) --- */
+            .brand-name span {
+                color: var(--accent);
+            }
+
+        /* --- HERO SECTION --- */
         .hero-container {
             display: flex;
             align-items: center;
@@ -63,127 +75,204 @@
             gap: 60px;
         }
 
-        /* Lado Izquierdo (Texto y Botones) */
         .hero-text {
-            flex: 1;
+            flex: 1.2;
             animation: slideInLeft 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        .pill-badge {
-            display: inline-block; background: rgba(107, 91, 255, 0.15); color: #BDB2FF;
-            padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(107, 91, 255, 0.3);
-            font-size: 0.85rem; font-weight: 700; margin-bottom: 25px; letter-spacing: 0.5px;
+        h1 {
+            font-size: 4.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 25px;
         }
 
-        h1 { 
-            font-size: 4.2rem; font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 25px; 
-        }
-        
-        h1 .highlight {
-            background: linear-gradient(135deg, #BDB2FF, var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            h1 .highlight {
+                background: linear-gradient(135deg, #BDB2FF, var(--accent));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 45px;
+            line-height: 1.6;
+            max-width: 500px;
         }
 
-        p { 
-            color: var(--text-muted); font-size: 1.2rem; margin-bottom: 45px; line-height: 1.6; max-width: 500px;
+        /* --- BOTONES MEJORADOS --- */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
         }
-
-        .action-buttons { display: flex; gap: 20px; }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #8375FF); color: white; text-decoration: none;
-            padding: 16px 32px; border-radius: 16px; font-weight: 700; font-size: 1.1rem;
-            display: flex; align-items: center; gap: 12px; transition: 0.3s;
-            box-shadow: 0 10px 25px var(--accent-glow);
+            background: linear-gradient(135deg, var(--accent), #5A4FCF);
+            color: white;
+            text-decoration: none;
+            padding: 18px 38px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px var(--accent-glow);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-primary:hover { transform: translateY(-5px); filter: brightness(1.15); box-shadow: 0 15px 35px rgba(107, 91, 255, 0.5); }
-        .btn-primary .icon { font-size: 1.3rem; }
+
+            .btn-primary:hover {
+                transform: scale(1.05) translateY(-5px);
+                box-shadow: 0 20px 40px rgba(107, 91, 255, 0.6);
+                filter: brightness(1.1);
+            }
+
+            .btn-primary:active {
+                transform: scale(0.98);
+            }
 
         .btn-secondary {
-            background: var(--bg-card); color: white; text-decoration: none; border: 1px solid var(--border);
-            padding: 16px 32px; border-radius: 16px; font-weight: 700; font-size: 1.1rem;
-            display: flex; align-items: center; gap: 12px; transition: 0.3s; backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+            text-decoration: none;
+            padding: 18px 32px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
 
-        /* Lado Derecho (Imagen/Ilustración Decorativa) */
+            .btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(255,255,255,0.3);
+                transform: translateY(-3px);
+            }
+
+        /* --- EFECTO TARJETA (GIGANTE AL HOVER) --- */
         .hero-visual {
-            flex: 1;
+            flex: 0.8;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            animation: fadeInRight 1.2s ease-out forwards;
-        }
-
-        /* Círculos decorativos de fondo */
-        .circle-bg {
-            position: absolute; width: 450px; height: 450px;
-            background: radial-gradient(circle, rgba(107, 91, 255, 0.15) 0%, transparent 70%);
-            border-radius: 50%; z-index: 1;
-            animation: pulseBg 4s infinite alternate;
+            perspective: 1000px;
         }
 
         .glass-panel {
-            position: relative; z-index: 2;
-            background: rgba(28, 28, 38, 0.6); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px; padding: 40px; backdrop-filter: blur(20px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 400px;
-            transform: rotate(-2deg); transition: 0.5s;
+            background: rgba(28, 28, 38, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 40px;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 380px;
+            transform: rotateY(-10deg) rotateX(5deg);
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: pointer;
         }
-        
-        .glass-panel:hover { transform: rotate(0deg) scale(1.02); }
 
-        /* Mockup de tarjetas de contacto dentro del panel */
+            /* ESTE ES EL EFECTO QUE PEDISTE: SE HACE GRANDE */
+            .glass-panel:hover {
+                transform: scale(1.1) rotateY(0deg) rotateX(0deg);
+                box-shadow: 0 50px 100px rgba(107, 91, 255, 0.2);
+                border-color: var(--accent);
+            }
+
         .mockup-card {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 15px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
         }
-        
-        .mockup-avatar {
-            width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.2rem;
-        }
-        
-        .c1 { background: rgba(107, 91, 255, 0.2); color: #BDB2FF; }
-        .c2 { background: rgba(255, 191, 36, 0.2); color: #FBBF24; }
-        .c3 { background: rgba(85, 255, 170, 0.2); color: #55FFAA; }
 
-        .mockup-info div:first-child { height: 12px; width: 120px; background: rgba(255,255,255,0.8); border-radius: 6px; margin-bottom: 8px; }
-        .mockup-info div:last-child { height: 8px; width: 80px; background: rgba(255,255,255,0.3); border-radius: 4px; }
+        .mockup-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .c1 {
+            background: #6B5BFF;
+            color: white;
+        }
+
+        .c2 {
+            background: #FBBF24;
+            color: white;
+        }
+
+        .c3 {
+            background: #10B981;
+            color: white;
+        }
+
+        .mockup-info div:first-child {
+            height: 12px;
+            width: 110px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .mockup-info div:last-child {
+            height: 8px;
+            width: 70px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
 
         /* Animaciones */
         @@keyframes slideInLeft {
-            0% { opacity: 0; transform: translateX(-50px); }
-            100% { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
-        @@keyframes fadeInRight {
-            0% { opacity: 0; transform: translateX(50px) scale(0.9); }
-            100% { opacity: 1; transform: translateX(0) scale(1); }
-        }
-
-        @@keyframes pulseBg {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* Responsivo */
         @@media (max-width: 900px) {
-            .hero-container { flex-direction: column; text-align: center; justify-content: center; gap: 40px; }
-            .hero-text { animation: slideUp 1s forwards; }
-            .hero-visual { display: none; /* Ocultamos la imagen en celulares para que no estorbe */ }
-            h1 { font-size: 3rem; }
-            p { margin: 0 auto 30px auto; }
-            .action-buttons { justify-content: center; flex-direction: column; }
-            .navbar { padding: 20px; justify-content: center; }
-            .team-badge { display: none; }
-        }
+            .hero-container {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 120px;
+                overflow-y: auto;
+            }
 
-        @@keyframes slideUp {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
+            h1 {
+                font-size: 3rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .hero-visual {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -191,47 +280,64 @@
 
     <nav class="navbar">
         <a href="#" class="brand-name">
-            <span style="font-size:1.6rem;">📒</span> ContactManager<span>.</span>
+            <span style="font-size:1.8rem;">📒</span> ContactManager<span>.</span>
         </a>
-        <div class="team-badge">EQUIPO 8 — 2026</div>
+        <div style="font-weight: 700; color: var(--text-muted); font-size: 0.8rem; letter-spacing: 2px;">EQUIPO 8 — 2026</div>
     </nav>
 
     <div class="hero-container">
-        
         <div class="hero-text">
-            <h1>Organiza tu red <br> de contactos con <span class="highlight">inteligencia</span>.</h1>
-            <p>Un espacio unificado para gestionar tu agenda, administrar categorías y tener a tu equipo, amigos y clientes a un clic de distancia.</p>
-            
+            <h1>Gestiona tus contactos <br> de forma <span class="highlight">profesional</span>.</h1>
+            <p>Normalización inteligente de datos, múltiples teléfonos por contacto y una interfaz diseñada para la velocidad.</p>
+
             <div class="action-buttons">
-                <a href="@Url.Action("Index", "Contactos")" class="btn-primary">
-                    <span class="icon">👥</span> Abrir Agenda
+                <a href="@Url.Action("Index", "Contactos")" class="btn-primary" id="btnEntrar">
+                    <span id="btnIcon" style="font-size: 1.4rem;">👥</span>
+                    <span id="btnText">Abrir Agenda</span>
                 </a>
+
                 <a href="@Url.Action("Index", "Categorias")" class="btn-secondary">
-                    <span class="icon">📁</span> Categorías
+                    <span>📁 Categorías</span>
                 </a>
             </div>
         </div>
 
         <div class="hero-visual">
-            <div class="circle-bg"></div>
-            
             <div class="glass-panel">
                 <div class="mockup-card">
                     <div class="mockup-avatar c1">L</div>
                     <div class="mockup-info"><div></div><div></div></div>
                 </div>
                 <div class="mockup-card">
-                    <div class="mockup-avatar c2">J</div>
+                    <div class="mockup-avatar c2">Y</div>
                     <div class="mockup-info"><div></div><div></div></div>
                 </div>
                 <div class="mockup-card">
-                    <div class="mockup-avatar c3">D</div>
+                    <div class="mockup-avatar c3">A</div>
                     <div class="mockup-info"><div></div><div></div></div>
                 </div>
             </div>
         </div>
-
     </div>
+
+    <script>
+        // Script para manejar el estado de carga y evitar clics múltiples
+        document.getElementById('btnEntrar').addEventListener('click', function (e) {
+            const btn = this;
+            const icon = document.getElementById('btnIcon');
+            const text = document.getElementById('btnText');
+
+            // Feedback visual inmediato
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
+            btn.style.transform = 'scale(0.98)';
+
+            icon.innerHTML = '⏳';
+            text.innerText = 'Iniciando sistema...';
+
+            // La redirección ocurre automáticamente por el href del <a>
+        });
+    </script>
 
 </body>
 </html>

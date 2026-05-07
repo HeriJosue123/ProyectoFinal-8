@@ -1,4 +1,4 @@
-﻿@model ContactManagerWeb.Models.Contacto
+﻿@model ContactManagerWeb.ViewModels.ContactoViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
@@ -12,9 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nuevo Contacto — Agenda Web</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <style>
         :root {
             --bg-body: #0F0F14;
@@ -28,61 +28,101 @@
             --shadow-color: rgba(0, 0, 0, 0.6);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
-        
-        body { 
-            background-color: var(--bg-body); 
-            background-image: radial-gradient(circle at 50% 0%, rgba(107, 91, 255, 0.05), transparent 50%);
-            color: #FFFFFF; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; /* Fija la altura exacta a la pantalla */
-            margin: 0; /* Evita desbordamientos */
-            padding: 10px; /* Padding reducido para evitar forzar el scroll */
-            overflow: hidden; /* Desactiva el scroll vertical y horizontal por completo */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
         }
-        
-        /* --- ANIMACIONES DE ENTRADA --- */
+
+        body {
+            background-color: var(--bg-body);
+            background-image: radial-gradient(circle at 50% 0%, rgba(107, 91, 255, 0.05), transparent 50%);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
         @@keyframes cardReveal {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         @@keyframes itemReveal {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Tarjeta principal */
-        .glass-card { 
+        .glass-card {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border); 
-            border-radius: 24px; 
-            padding: 20px; 
-            width: 100%; 
-            max-width: 500px; 
-            box-shadow: 0 25px 60px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,0.05); 
-            transition: max-width 0.3s ease; 
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 25px 60px var(--shadow-color), inset 0 1px 0 rgba(255,255,255,0.05);
             opacity: 0;
             animation: cardReveal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
-        /* Clases para el efecto en cascada (Stagger) */
-        .header-content { text-align: center; margin-bottom: 35px; opacity: 0; animation: itemReveal 0.5s ease-out 0.1s forwards; }
-        .stagger-1 { opacity: 0; animation: itemReveal 0.5s ease-out 0.2s forwards; }
-        .stagger-2 { opacity: 0; animation: itemReveal 0.5s ease-out 0.3s forwards; }
-        .stagger-3 { opacity: 0; animation: itemReveal 0.5s ease-out 0.4s forwards; }
-        .stagger-4 { opacity: 0; animation: itemReveal 0.5s ease-out 0.5s forwards; }
-        .stagger-5 { opacity: 0; animation: itemReveal 0.5s ease-out 0.6s forwards; }
 
-        /* Estilos del Encabezado (Como en Crear Categoría) */
+        .header-content {
+            text-align: center;
+            margin-bottom: 35px;
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.1s forwards;
+        }
+
+        .stagger-1 {
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.2s forwards;
+        }
+
+        .stagger-2 {
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.3s forwards;
+        }
+
+        .stagger-3 {
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.4s forwards;
+        }
+
+        .stagger-4 {
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.5s forwards;
+        }
+
+        .stagger-5 {
+            opacity: 0;
+            animation: itemReveal 0.5s ease-out 0.6s forwards;
+        }
+
         .header-emoji {
             display: inline-block;
             background: linear-gradient(135deg, rgba(107, 91, 255, 0.2), rgba(163, 150, 255, 0.1));
-            width: 60px; height: 60px;
+            width: 60px;
+            height: 60px;
             border-radius: 16px;
             font-size: 2rem;
             line-height: 60px;
@@ -91,101 +131,265 @@
             box-shadow: 0 8px 20px rgba(107, 91, 255, 0.2);
         }
 
-        h2 { 
-            font-family: 'DM Serif Display', serif; 
-            font-size: 2rem; 
+        h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
             letter-spacing: -0.5px;
-            margin-bottom: 5px; 
-        }
-        
-        .header-subtitle { color: var(--text-muted); font-size: 0.95rem; }
-        
-        /* Formulario */
-        .form-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 8px; margin-top: 8px; letter-spacing: 1px; }
-        
-        .dark-input { 
-            width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border); 
-            background: var(--bg-input); color: white; outline: none; transition: 0.3s ease; 
-            font-size: 0.95rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .dark-input:focus { 
-            border-color: var(--accent); 
-            background: rgba(28, 28, 38, 0.8);
-            box-shadow: 0 0 0 4px rgba(107, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.2); 
+            margin-bottom: 5px;
         }
 
-        .text-danger { color: var(--danger); font-size: 0.75rem; font-weight: 500; margin-top: 6px; display: block; padding-left: 3px; }
-        
-        .btn-gradient { 
-            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #8375FF); 
-            color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; 
-            margin-top: 18px; font-size: 1rem; font-weight: 700; letter-spacing: -0.3px;
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .dark-input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: white;
+            outline: none;
+            transition: 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+            .dark-input:focus {
+                border-color: var(--accent);
+                background: rgba(28, 28, 38, 0.8);
+                box-shadow: 0 0 0 4px rgba(107, 91, 255, 0.15), inset 0 2px 4px rgba(0,0,0,0.2);
+            }
+
+        .text-danger {
+            color: var(--danger);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 6px;
+            display: block;
+            padding-left: 3px;
+        }
+
+        .btn-gradient {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), #8375FF);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
             box-shadow: 0 8px 20px rgba(107, 91, 255, 0.25);
         }
-        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(107, 91, 255, 0.4); filter: brightness(1.1); }
-        
-        .validation-summary-errors { background: rgba(255, 85, 85, 0.1); border: 1px solid rgba(255, 85, 85, 0.2); color: var(--danger); padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; }
-        .validation-summary-errors ul { list-style: none; margin: 0; padding: 0; }
-        .validation-summary-errors li { text-align: center; font-weight: 500;}
 
-        /* --- FAVORITOS --- */
-        .fav-checkbox-hidden { display: none; }
+            .btn-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 25px rgba(107, 91, 255, 0.4);
+                filter: brightness(1.1);
+            }
+
+        .validation-summary-errors {
+            background: rgba(255, 85, 85, 0.1);
+            border: 1px solid rgba(255, 85, 85, 0.2);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+            .validation-summary-errors ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+        .fav-checkbox-hidden {
+            display: none;
+        }
+
         .fav-box {
-            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border);
-            border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s ease; margin-top: 12px; margin-bottom: 4px; width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            width: 100%;
         }
-        .fav-box:hover { background: rgba(255,255,255,0.04); border-color: #4A4A63; }
-        .fav-star { font-size: 1.5rem; color: #3E3E54; transition: all 0.3s ease; line-height: 1; margin-top: -3px; }
-        .fav-text { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; }
-        
-        .fav-checkbox-hidden:checked + .fav-box { border-style: solid; border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05); }
-        .fav-checkbox-hidden:checked + .fav-box .fav-star { color: #FBBF24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); transform: scale(1.1); }
-        .fav-checkbox-hidden:checked + .fav-box .fav-text { color: #FBBF24; }
 
-        /* --- EMOJI PICKER PREMIUM CON SCROLL Y GRUPOS --- */
-        .emoji-picker-wrapper { position: relative; }
+            .fav-box:hover {
+                background: rgba(255,255,255,0.04);
+                border-color: #4A4A63;
+            }
+
+        .fav-star {
+            font-size: 1.5rem;
+            color: #3E3E54;
+            transition: all 0.3s ease;
+            line-height: 1;
+            margin-top: -3px;
+        }
+
+        .fav-text {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .fav-checkbox-hidden:checked + .fav-box {
+            border-style: solid;
+            border-color: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.05);
+        }
+
+            .fav-checkbox-hidden:checked + .fav-box .fav-star {
+                color: #FBBF24;
+                text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+                transform: scale(1.1);
+            }
+
+            .fav-checkbox-hidden:checked + .fav-box .fav-text {
+                color: #FBBF24;
+            }
+
+        .emoji-picker-wrapper {
+            position: relative;
+        }
+
         .emoji-btn {
-            background-color: var(--bg-input); border: 1px solid var(--border); color: #FFF;
-            border-radius: 12px; padding: 10px; width: 50px; height: 100%; cursor: pointer;
-            font-size: 1.3rem; display: flex; align-items: center; justify-content: center; transition: 0.3s ease;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: #FFF;
+            border-radius: 12px;
+            padding: 10px;
+            width: 50px;
+            height: 100%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s ease;
         }
-        .emoji-btn:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.02); }
-        
+
+            .emoji-btn:hover {
+                border-color: rgba(255,255,255,0.2);
+                background: rgba(255,255,255,0.02);
+            }
+
         .emoji-popover {
-            position: absolute; top: calc(100% + 8px); left: 0; width: 280px;
-            background: rgba(20, 20, 28, 0.95); border: 1px solid var(--border); border-radius: 16px;
-            padding: 12px; z-index: 1000; display: none;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 280px;
+            background: rgba(20, 20, 28, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(15px);
         }
-        .emoji-popover.show { display: block; animation: itemReveal 0.2s ease-out forwards; }
-        
-        .emoji-scroll-area { max-height: 220px; overflow-y: auto; overflow-x: hidden; padding-right: 5px; }
-        .emoji-scroll-area::-webkit-scrollbar { width: 5px; }
-        .emoji-scroll-area::-webkit-scrollbar-thumb { background: #3E3E54; border-radius: 10px; }
-        .emoji-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        .emoji-section-title { font-size: 0.65rem; color: #A396FF; font-weight: 800; text-transform: uppercase; margin: 15px 0 8px 5px; letter-spacing: 0.5px; }
-        .emoji-section-title:first-child { margin-top: 0; }
-        
-        .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+            .emoji-popover.show {
+                display: block;
+                animation: itemReveal 0.2s ease-out forwards;
+            }
+
+        .emoji-scroll-area {
+            max-height: 220px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 5px;
+        }
+
+            .emoji-scroll-area::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .emoji-scroll-area::-webkit-scrollbar-thumb {
+                background: #3E3E54;
+                border-radius: 10px;
+            }
+
+        .emoji-section-title {
+            font-size: 0.65rem;
+            color: #A396FF;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 15px 0 8px 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+
         .emoji-item {
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; border-radius: 10px; cursor: pointer; transition: 0.2s; line-height: 1;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1;
         }
-        .emoji-item:hover { background: rgba(107, 91, 255, 0.2); transform: scale(1.15); z-index: 2; position: relative; }
 
-        /* Ajustes Responsivos Móviles */
+            .emoji-item:hover {
+                background: rgba(107, 91, 255, 0.2);
+                transform: scale(1.15);
+                z-index: 2;
+                position: relative;
+            }
+
         @@media (max-width: 576px) {
-            .glass-card { padding: 30px 20px; max-width: 100%; border-radius: 20px; }
-            h2 { font-size: 1.8rem; }
-            .emoji-popover { width: 250px; }
+            .glass-card {
+                padding: 30px 20px;
+                max-width: 100%;
+                border-radius: 20px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .emoji-popover {
+                width: 250px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="glass-card">
-        
+
         <div class="header-content">
             <div class="header-emoji">👤</div>
             <h2>Nuevo Contacto</h2>
@@ -234,214 +438,32 @@
                 </div>
             </div>
 
-            <div id="nuevaCategoriaContainer" class="stagger-2" style="display: none; margin-top: 12px; background: rgba(90, 79, 207, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent);">
+            <div id="nuevaCategoriaContainer" class="stagger-2" style="display: none; margin-top: 12px; background: rgba(90, 79, 207, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent); position: relative; z-index: 99;">
                 <p style="font-size: 0.75rem; color: #A396FF; margin-bottom: 8px; font-weight: 600;">✨ CREAR CATEGORÍA RÁPIDA</p>
                 <div class="d-flex gap-2 gx-1">
-                    
                     <div class="emoji-picker-wrapper">
                         <button type="button" id="emojiBtn" class="emoji-btn">📁</button>
                         <input type="hidden" id="inputEmojiOculto" name="NuevoEmoji" value="📁" />
-                        
                         <div id="emojiPopover" class="emoji-popover">
                             <div class="emoji-scroll-area">
-                                
-                                <div class="emoji-section-title">Caritas y Emociones</div>
+                                <div class="emoji-section-title">Caritas</div>
                                 <div class="emoji-grid">
                                     <div class="emoji-item" onclick="selectEmoji('😀')">😀</div>
                                     <div class="emoji-item" onclick="selectEmoji('😂')">😂</div>
                                     <div class="emoji-item" onclick="selectEmoji('🥰')">🥰</div>
                                     <div class="emoji-item" onclick="selectEmoji('😎')">😎</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥺')">🥺</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥳')">🥳</div>
-                                    <div class="emoji-item" onclick="selectEmoji('😡')">😡</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤯')">🤯</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👻')">👻</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤡')">🤡</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤖')">🤖</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👽')">👽</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤫')">🤫</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤔')">🤔</div>
-                                    <div class="emoji-item" onclick="selectEmoji('😴')">😴</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤢')">🤢</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤠')">🤠</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥸')">🥸</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤓')">🤓</div>
-                                    <div class="emoji-item" onclick="selectEmoji('😇')">😇</div>
                                 </div>
-
-                                <div class="emoji-section-title">Amor y Relaciones</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('❤️')">❤️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💖')">💖</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💔')">💔</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💑')">💑</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👩‍❤️‍👨')">👩‍❤️‍👨</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👨‍❤️‍👨')">👨‍❤️‍👨</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👩‍❤️‍👩')">👩‍❤️‍👩</div>
-                                    <div class="emoji-item" onclick="selectEmoji('👪')">👪</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤝')">🤝</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🫂')">🫂</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💋')">💋</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💍')">💍</div>
-                                </div>
-
-                                <div class="emoji-section-title">Animales y Naturaleza</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('🐶')">🐶</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐱')">🐱</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐭')">🐭</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🦊')">🦊</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐻')">🐻</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐼')">🐼</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🦁')">🦁</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐯')">🐯</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🦋')">🦋</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐢')">🐢</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🦕')">🦕</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐙')">🐙</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐒')">🐒</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐕')">🐕</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🐈')">🐈</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌴')">🌴</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌵')">🌵</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌺')">🌺</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌻')">🌻</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌍')">🌍</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌙')">🌙</div>
-                                    <div class="emoji-item" onclick="selectEmoji('☀️')">☀️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('⭐')">⭐</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌧️')">🌧️</div>
-                                </div>
-
-                                <div class="emoji-section-title">Comidas y Bebidas</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('🍎')">🍎</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍉')">🍉</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍌')">🍌</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍇')">🍇</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍓')">🍓</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍔')">🍔</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍕')">🍕</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍟')">🍟</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌭')">🌭</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍿')">🍿</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌮')">🌮</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍣')">🍣</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍩')">🍩</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍪')">🍪</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍰')">🍰</div>
-                                    <div class="emoji-item" onclick="selectEmoji('☕')">☕</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍷')">🍷</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍺')">🍺</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🍹')">🍹</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥤')">🥤</div>
-                                </div>
-
-                                <div class="emoji-section-title">Deportes y Actividades</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('⚽')">⚽</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏀')">🏀</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏈')">🏈</div>
-                                    <div class="emoji-item" onclick="selectEmoji('⚾')">⚾</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎾')">🎾</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏐')">🏐</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥊')">🥊</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏃')">🏃</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🚴')">🚴</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🧘')">🧘</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏋️')">🏋️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏊')">🏊</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏄')">🏄</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🤽')">🤽</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🚣')">🚣</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏇')">🏇</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎮')">🎮</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎨')">🎨</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎭')">🎭</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎬')">🎬</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎤')">🎤</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎧')">🎧</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎲')">🎲</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🧩')">🧩</div>
-                                </div>
-
-                                <div class="emoji-section-title">Objetos y Tecnología</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('📱')">📱</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💻')">💻</div>
-                                    <div class="emoji-item" onclick="selectEmoji('⌚')">⌚</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📷')">📷</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎥')">🎥</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📞')">📞</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📺')">📺</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💡')">💡</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🔦')">🔦</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📔')">📔</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📚')">📚</div>
-                                    <div class="emoji-item" onclick="selectEmoji('✏️')">✏️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🖊️')">🖊️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💼')">💼</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎒')">🎒</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🛍️')">🛍️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎁')">🎁</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎈')">🎈</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💎')">💎</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏆')">🏆</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🕰️')">🕰️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🔑')">🔑</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🧸')">🧸</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🛹')">🛹</div>
-                                </div>
-
-                                <div class="emoji-section-title">Símbolos Extras</div>
+                                <div class="emoji-section-title">Iconos</div>
                                 <div class="emoji-grid">
                                     <div class="emoji-item" onclick="selectEmoji('✨')">✨</div>
                                     <div class="emoji-item" onclick="selectEmoji('🔥')">🔥</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌟')">🌟</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📌')">📌</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💡')">💡</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🔔')">🔔</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🚫')">🚫</div>
-                                    <div class="emoji-item" onclick="selectEmoji('⚡')">⚡</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💎')">💎</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎯')">🎯</div>
-                                    <div class="emoji-item" onclick="selectEmoji('♻️')">♻️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('✅')">✅</div>
-                                    <div class="emoji-item" onclick="selectEmoji('❌')">❌</div>
-                                    <div class="emoji-item" onclick="selectEmoji('⚠️')">⚠️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('❓')">❓</div>
-                                    <div class="emoji-item" onclick="selectEmoji('❗')">❗</div>
-                                    <div class="emoji-item" onclick="selectEmoji('💯')">💯</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🎵')">🎵</div>
+                                    <div class="emoji-item" onclick="selectEmoji('💼')">💼</div>
+                                    <div class="emoji-item" onclick="selectEmoji('🏠')">🏠</div>
                                 </div>
-
-                                <div class="emoji-section-title">Banderas</div>
-                                <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('🏳️‍🌈')">🏳️‍🌈</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏳️‍⚧️')">🏳️‍⚧️</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇸🇻')">🇸🇻</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇲🇽')">🇲🇽</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇺🇸')">🇺🇸</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇪🇸')">🇪🇸</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇨🇴')">🇨🇴</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇦🇷')">🇦🇷</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇨🇱')">🇨🇱</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇵🇪')">🇵🇪</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇬🇹')">🇬🇹</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇭🇳')">🇭🇳</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇨🇷')">🇨🇷</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇵🇦')">🇵🇦</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🇨🇦')">🇨🇦</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏁')">🏁</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🚩')">🚩</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🏴‍☠️')">🏴‍☠️</div>
-                                </div>
-                                
                             </div>
                         </div>
                     </div>
-
-                    <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre de categoría" style="flex: 1; border-radius: 12px; font-size: 0.85rem;" />
+                    <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre" style="flex: 1; border-radius: 12px; font-size: 0.85rem;" />
                 </div>
             </div>
 
@@ -453,7 +475,7 @@
 
             <div class="row gx-2 stagger-4">
                 <div class="col-md-6 mb-2">
-                    <label asp-for="Correo" class="form-label">Correo (Opcional)</label>
+                    <label asp-for="Correo" class="form-label">Correo *</label>
                     <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" autocomplete="off" />
                     <span asp-validation-for="Correo" class="text-danger"></span>
                 </div>
@@ -464,99 +486,91 @@
                 </div>
             </div>
 
+            <div class="row gx-2 stagger-4" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                <p style="font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; font-weight: 700;">DATOS ADICIONALES (OPCIONALES)</p>
+                <div class="col-md-6 mb-2">
+                    <label asp-for="TelefonoSecundario" class="form-label">Teléfono Alt.</label>
+                    <input asp-for="TelefonoSecundario" id="TelefonoSecundario" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
+                    <span asp-validation-for="TelefonoSecundario" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label asp-for="CorreoSecundario" class="form-label">Correo Alt.</label>
+                    <input asp-for="CorreoSecundario" class="dark-input" type="email" placeholder="otro@ejemplo.com" autocomplete="off" />
+                    <span asp-validation-for="CorreoSecundario" class="text-danger"></span>
+                </div>
+            </div>
+
             <button type="submit" class="btn-gradient stagger-5">Guardar Contacto</button>
             <a asp-action="Index" class="stagger-5" style="display:block; text-align:center; color:var(--text-muted); margin-top:16px; text-decoration:none; transition: 0.3s; font-size: 0.9rem; font-weight: 600;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='var(--text-muted)'">Cancelar y volver</a>
         </form>
     </div>
 
-    @* SCRIPTS *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
-        // --- EMOJI PICKER LÓGICA (Simplificada) ---
         const emojiBtn = document.getElementById('emojiBtn');
         const emojiPopover = document.getElementById('emojiPopover');
         const inputEmojiOculto = document.getElementById('inputEmojiOculto');
 
-        // Abrir/Cerrar popover
-        emojiBtn.addEventListener('click', function(e) {
+        emojiBtn.addEventListener('click', (e) => {
             e.preventDefault();
             emojiPopover.classList.toggle('show');
         });
 
-        // Función llamada por cada emoji (ver HTML)
         function selectEmoji(emoji) {
             emojiBtn.textContent = emoji;
             inputEmojiOculto.value = emoji;
-            emojiPopover.classList.remove('show'); 
+            emojiPopover.classList.remove('show');
         }
 
-        // Cerrar popover si se hace clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', (e) => {
             if (!emojiBtn.contains(e.target) && !emojiPopover.contains(e.target)) {
                 emojiPopover.classList.remove('show');
             }
         });
 
-        // --- FAVORITOS TEXTO ANIMADO ---
         const favCheckbox = document.getElementById('favCheck');
         const favLabelText = document.getElementById('favLabelText');
 
         favCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                favLabelText.textContent = '¡Es un contacto favorito! ⭐';
-            } else {
-                favLabelText.textContent = 'Marcar como favorito ⭐';
-            }
+            favLabelText.textContent = this.checked ? '¡Es un contacto favorito! ⭐' : 'Marcar como favorito ⭐';
         });
-        favCheckbox.dispatchEvent(new Event('change'));
 
-        // --- MOSTRAR/OCULTAR CATEGORÍA NUEVA ---
         function verificarNuevaCategoria() {
             var select = document.getElementById("selectCategoria");
             var container = document.getElementById("nuevaCategoriaContainer");
-            var inputTexto = document.getElementById("inputNuevaCategoria");
-            
             if (select.value === "NUEVA_CATEGORIA") {
                 container.style.display = "block";
-                inputTexto.focus();
             } else {
                 container.style.display = "none";
-                inputTexto.value = "";
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            verificarNuevaCategoria();
-        });
+        function aplicarMascara(id) {
+            const input = document.getElementById(id);
+            input.addEventListener('focus', function() {
+                if (this.value.trim() === "") this.value = "+503 ";
+            });
+            input.addEventListener('input', function() {
+                let value = this.value;
+                if (!value.startsWith("+503 ")) {
+                    let digits = value.replace(/\D/g, "");
+                    if (digits.startsWith("503")) digits = digits.substring(3);
+                    value = "+503 " + digits;
+                }
+                let numbers = value.substring(5).replace(/\D/g, "").substring(0, 8);
+                if (numbers.length > 4) {
+                    this.value = "+503 " + numbers.substring(0, 4) + "-" + numbers.substring(4);
+                } else {
+                    this.value = "+503 " + numbers;
+                }
+            });
+        }
 
-        // --- MÁSCARA DE TELÉFONO OBLIGATORIA ---
-        const phoneInput = document.getElementById('Telefono');
-        phoneInput.addEventListener('focus', function() {
-            if (this.value.trim() === "") { this.value = "+503 "; }
-        });
-        phoneInput.addEventListener('input', function(e) {
-            let value = this.value;
-            if (!value.startsWith("+503 ")) {
-                let digitsOnly = value.replace(/\D/g, "");
-                if (digitsOnly.startsWith("503")) { digitsOnly = digitsOnly.substring(3); }
-                value = "+503 " + digitsOnly;
-            }
-            let numbers = value.substring(5).replace(/\D/g, ""); 
-            numbers = numbers.substring(0, 8);
-            if (numbers.length > 4) {
-                this.value = "+503 " + numbers.substring(0, 4) + "-" + numbers.substring(4);
-            } else {
-                this.value = "+503 " + numbers;
-            }
-        });
-        phoneInput.addEventListener('keydown', function(e) {
-            if (e.key === "Backspace" && this.value.length <= 5) {
-                e.preventDefault();
-            }
-        });
+        aplicarMascara('Telefono');
+        aplicarMascara('TelefonoSecundario');
     </script>
 </body>
 </html>

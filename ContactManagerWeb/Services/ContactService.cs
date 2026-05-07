@@ -19,7 +19,7 @@ namespace ContactManagerWeb.Services
             _context = context;
         }
 
-        // AHORA DEVUELVE UNA LISTA DE ERRORES
+        // AHORA VALIDA USANDO LAS LISTAS RELACIONADAS
         public async Task<List<string>> ValidarYNormalizar(Contacto contacto)
         {
             var errores = new List<string>();
@@ -56,58 +56,52 @@ namespace ContactManagerWeb.Services
                 }
             }
 
-            // 3. Categoría por defecto
-            if (string.IsNullOrWhiteSpace(contacto.Categoria))
-            {
-                contacto.Categoria = "General";
-            }
+            // 3. Validación y Auto-Formato de Teléfono (Ahora en la tabla Telefonos)
+            var telefonoPrincipal = contacto.Telefonos.FirstOrDefault();
 
-            // 4. Validación y Auto-Formato de Teléfono
-            if (string.IsNullOrWhiteSpace(contacto.Telefono))
+            if (telefonoPrincipal == null || string.IsNullOrWhiteSpace(telefonoPrincipal.Numero))
             {
                 errores.Add("El número de teléfono es obligatorio.");
             }
             else
             {
-                string soloNumeros = new string(contacto.Telefono.Where(char.IsDigit).ToArray());
+                string soloNumeros = new string(telefonoPrincipal.Numero.Where(char.IsDigit).ToArray());
 
                 if (soloNumeros.Length < 8)
                 {
                     errores.Add("El teléfono debe contener al menos 8 dígitos.");
                 }
-                else if (soloNumeros.Length == 8 && !contacto.Telefono.Contains("-"))
+                else if (soloNumeros.Length == 8 && !telefonoPrincipal.Numero.Contains("-"))
                 {
-                    contacto.Telefono = soloNumeros.Insert(4, "-");
+                    // Auto-formato XXXX-XXXX
+                    telefonoPrincipal.Numero = soloNumeros.Insert(4, "-");
                 }
 
-                // Validar Duplicados
-                var duplicado = await _context.Contactos
-                    .AnyAsync(c => c.Telefono == contacto.Telefono && c.Id != contacto.Id);
+                // Validar Duplicados (Buscando en la tabla de Telefonos)
+                var numeroParaValidar = telefonoPrincipal.Numero;
+                var duplicado = await _context.Telefonos
+                    .AnyAsync(t => t.Numero == numeroParaValidar && t.ContactoId != contacto.Id);
 
                 if (duplicado)
                 {
-                    errores.Add($"El número {contacto.Telefono} ya pertenece a otro contacto en la agenda.");
+                    errores.Add($"El número {numeroParaValidar} ya pertenece a otro contacto en la agenda.");
                 }
             }
 
-            // 5. Arreglo para Correo y Dirección
-            if (string.IsNullOrWhiteSpace(contacto.Correo))
+            // 4. Validación de Correo (Ahora en la tabla Correos)
+            var correoPrincipal = contacto.Correos.FirstOrDefault();
+
+            if (correoPrincipal != null && !string.IsNullOrWhiteSpace(correoPrincipal.Email))
             {
-                contacto.Correo = "";
-            }
-            else
-            {
-                // Verifica que tenga algo, luego un @, luego algo, luego un punto y algo más.
                 var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
-                if (!emailRegex.IsMatch(contacto.Correo))
+                if (!emailRegex.IsMatch(correoPrincipal.Email))
                 {
-                    // ESTE ES EL MENSAJE QUE APARECERÁ EN LA CAJA ROJA DE ARRIBA Y EN EL SPAN
                     errores.Add("Dirección de correo inválida: debe llevar obligatoriamente una '@' y un dominio.");
                 }
             }
 
-            return errores; // Retornamos todos los errores juntos
+            return errores;
         }
     }
 }

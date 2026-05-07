@@ -271,7 +271,7 @@
                 <div class="info-icon">📞</div>
                 <div class="info-text">
                     <span class="label">Teléfono</span>
-                    <span class="value">@Model.Telefono</span>
+                    <span class="value">@(Model.Telefonos.FirstOrDefault()?.Numero ?? "Sin teléfono")</span>
                 </div>
             </div>
 
@@ -279,13 +279,13 @@
                 <div class="info-icon">✉️</div>
                 <div class="info-text">
                     <span class="label">Correo Electrónico</span>
-                    @if (string.IsNullOrEmpty(Model.Correo))
+                    @if (string.IsNullOrEmpty(Model.Correos.FirstOrDefault()?.Email ?? "Sin correo"))
                     {
                         <span class="value empty-value">No registrado</span>
                     }
                     else
                     {
-                        <span class="value">@Model.Correo</span>
+                        <span class="value">@(Model.Correos.FirstOrDefault()?.Email ?? "Sin correo")</span>
                     }
                 </div>
             </div>
@@ -294,13 +294,13 @@
                 <div class="info-icon">📍</div>
                 <div class="info-text">
                     <span class="label">Dirección</span>
-                    @if (string.IsNullOrEmpty(Model.Direccion))
+                    @if (string.IsNullOrEmpty(Model.Direcciones.FirstOrDefault()?.DetalleFisico ?? "Sin dirección"))
                     {
                         <span class="value empty-value">No registrada</span>
                     }
                     else
                     {
-                        <span class="value">@Model.Direccion</span>
+                        <span class="value">@(Model.Direcciones.FirstOrDefault()?.DetalleFisico ?? "Sin dirección")</span>
                     }
                 </div>
             </div>

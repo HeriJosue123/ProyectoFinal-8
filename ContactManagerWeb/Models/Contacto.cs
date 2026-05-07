@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic; 
 using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 namespace ContactManagerWeb.Models
 {
     public class Contacto
@@ -15,27 +16,26 @@ namespace ContactManagerWeb.Models
         [Display(Name = "Apellido (Opcional)")]
         public string? Apellido { get; set; }
 
-        [Required(ErrorMessage = "El número de teléfono es requerido")]
-        [Display(Name = "Número de Teléfono")]
-        public string Telefono { get; set; } = string.Empty;
-
-        // Como le pusimos "novalidate" a tus formularios HTML, el navegador respetará este mensaje.
-        [EmailAddress(ErrorMessage = "Dirección de correo inválida: debe llevar obligatoriamente una '@' y un dominio válido.")]
-        [Display(Name = "Correo Electrónico")]
-        public string? Correo { get; set; }
-
-        [Display(Name = "Dirección Física")]
-        public string? Direccion { get; set; }
-
-        [Required(ErrorMessage = "Debes seleccionar una categoría")]
-        [Display(Name = "Categoría")]
-        public string Categoria { get; set; } = "General";
-
         [Display(Name = "¿Es Favorito?")]
         public bool EsFavorito { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Name = "Fecha de Registro")]
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
+
+        // 1. Relación con Categoría (Reemplaza al string Categoria)
+        public int? CategoriaId { get; set; }
+        [ForeignKey("CategoriaId")]
+        public virtual Categoria? Categoria { get; set; }
+
+        // 2. Relación con Usuario (Para hacerlo escalable)
+        public int? UsuarioId { get; set; }
+        [ForeignKey("UsuarioId")]
+        public virtual Usuario? Usuario { get; set; }
+
+        // 3. Relaciones de 1 a Muchos (Un contacto puede tener VARIOS de estos)
+        public virtual ICollection<Telefono> Telefonos { get; set; } = new List<Telefono>();
+        public virtual ICollection<Correo> Correos { get; set; } = new List<Correo>();
+        public virtual ICollection<Direccion> Direcciones { get; set; } = new List<Direccion>();
     }
 }
