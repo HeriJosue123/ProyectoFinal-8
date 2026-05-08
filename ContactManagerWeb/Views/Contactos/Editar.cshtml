@@ -1,385 +1,53 @@
 ﻿@model ContactManagerWeb.ViewModels.ContactoViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
-@{
-    Layout = null;
-}
-
+@{ Layout = null; }
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Editar — @Model.Nombre</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <style>
-        :root {
-            --bg-body: #0F0F14;
-            --bg-card: #171721;
-            --bg-input: #1C1C26;
-            --accent: #5A4FCF;
-            --text-muted: #8A8A9E;
-            --border: #2D2D3D;
-            --danger: #FF5555;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        @@keyframes cardReveal {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @@keyframes itemReveal {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .glass-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 30px;
-            width: 100%;
-            max-width: 550px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            transition: max-width 0.3s ease;
-            opacity: 0;
-            animation: cardReveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 25px;
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.1s forwards;
-        }
-
-        .stagger-1 {
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.2s forwards;
-        }
-
-        .stagger-2 {
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.3s forwards;
-        }
-
-        .stagger-3 {
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.4s forwards;
-        }
-
-        .stagger-4 {
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.5s forwards;
-        }
-
-        .stagger-5 {
-            opacity: 0;
-            animation: itemReveal 0.6s ease-out 0.6s forwards;
-        }
-
-        .form-header h2 {
-            font-family: 'DM Serif Display', serif;
-            font-size: 1.8rem;
-            margin-bottom: 3px;
-        }
-
-        .form-header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .form-label {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 6px;
-            margin-top: 8px;
-        }
-
-        .dark-input {
-            width: 100%;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: #FFF;
-            border-radius: 10px;
-            padding: 10px 12px;
-            outline: none;
-            transition: 0.3s;
-            font-size: 0.9rem;
-        }
-
-            .dark-input:focus {
-                border-color: var(--accent);
-                box-shadow: 0 0 0 4px rgba(90, 79, 207, 0.1);
-            }
-
-        .text-danger {
-            color: var(--danger);
-            font-size: 0.7rem;
-            font-weight: 500;
-            margin-top: 4px;
-            display: block;
-            padding-left: 3px;
-        }
-
-        .btn-gradient {
-            display: block;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent), #3E346B);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 18px;
-            transition: 0.3s;
-            font-size: 0.95rem;
-        }
-
-            .btn-gradient:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.1);
-                box-shadow: 0 8px 16px rgba(90, 79, 207, 0.25);
-            }
-
-        .validation-summary-errors {
-            background: rgba(255, 85, 85, 0.1);
-            color: var(--danger);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            font-size: 0.8rem;
-        }
-
-            .validation-summary-errors ul {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }
-
-        .fav-checkbox-hidden {
-            display: none;
-        }
-
-        .fav-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.02);
-            border: 1px dashed var(--border);
-            border-radius: 10px;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-            margin-bottom: 4px;
-            width: 100%;
-        }
-
-            .fav-box:hover {
-                background: rgba(255,255,255,0.04);
-                border-color: #4A4A63;
-            }
-
-        .fav-star {
-            font-size: 1.5rem;
-            color: #3E3E54;
-            transition: all 0.3s ease;
-            line-height: 1;
-            margin-top: -3px;
-        }
-
-        .fav-text {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .fav-checkbox-hidden:checked + .fav-box {
-            border-style: solid;
-            border-color: rgba(251, 191, 36, 0.3);
-            background: rgba(251, 191, 36, 0.05);
-        }
-
-            .fav-checkbox-hidden:checked + .fav-box .fav-star {
-                color: #FBBF24;
-                text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
-                transform: scale(1.05);
-            }
-
-            .fav-checkbox-hidden:checked + .fav-box .fav-text {
-                color: #FBBF24;
-            }
-
-        .emoji-picker-wrapper {
-            position: relative;
-        }
-
-        .emoji-btn {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: #FFF;
-            border-radius: 10px;
-            padding: 10px;
-            width: 50px;
-            height: 100%;
-            cursor: pointer;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-
-            .emoji-btn:hover {
-                border-color: var(--accent);
-                background: rgba(90, 79, 207, 0.1);
-            }
-
-        .emoji-popover {
-            position: absolute;
-            top: 110%;
-            left: 0;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-            z-index: 100;
-            display: none;
-            width: 280px;
-        }
-
-            .emoji-popover.show {
-                display: block;
-                animation: popUp 0.2s ease-out forwards;
-            }
-
-        .emoji-scroll-area {
-            max-height: 220px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-right: 5px;
-        }
-
-            .emoji-scroll-area::-webkit-scrollbar {
-                width: 4px;
-            }
-
-            .emoji-scroll-area::-webkit-scrollbar-thumb {
-                background: var(--border);
-                border-radius: 4px;
-            }
-
-                .emoji-scroll-area::-webkit-scrollbar-thumb:hover {
-                    background: var(--accent);
-                }
-
-        .emoji-section-title {
-            font-size: 0.65rem;
-            color: #A396FF;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin: 12px 0 6px 5px;
-            letter-spacing: 0.5px;
-        }
-
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 4px;
-        }
-
-        .emoji-item {
-            text-align: center;
-            padding: 6px 0;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.2s;
-            line-height: 1;
-        }
-
-            .emoji-item:hover {
-                background: rgba(90, 79, 207, 0.2);
-                transform: scale(1.2);
-            }
-
-        @@keyframes popUp {
-            from {
-                opacity: 0;
-                transform: translateY(-5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .glass-card {
-                padding: 20px 15px;
-                max-width: 100%;
-                border-radius: 15px;
-            }
-
-            .form-header h2 {
-                font-size: 1.6rem;
-            }
-
-            .emoji-popover {
-                width: 250px;
-            }
-        }
+        :root{--bg-body:#0F0F14;--bg-card:rgba(23,23,33,0.7);--bg-input:#1C1C26;--accent:#6B5BFF;--accent-hover:#8375FF;--text-muted:#8A8A9E;--border:rgba(255,255,255,0.08);--danger:#FF5555;--shadow-color:rgba(0,0,0,0.6)}
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'DM Sans',sans-serif}
+        body{background-color:var(--bg-body);background-image:radial-gradient(circle at 50% 0%,rgba(107,91,255,0.05),transparent 50%);color:#FFF;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:15px;overflow-x:hidden}
+        @@keyframes cardReveal{from{opacity:0;transform:translateY(25px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @@keyframes itemReveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        .glass-card{background:var(--bg-card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;padding:26px;width:100%;max-width:510px;box-shadow:0 20px 50px var(--shadow-color),inset 0 1px 0 rgba(255,255,255,0.05);opacity:0;animation:cardReveal .5s ease-out forwards}
+        .header-content{text-align:center;margin-bottom:18px;opacity:0;animation:itemReveal .4s ease-out .1s forwards}
+        .stagger-1{opacity:0;animation:itemReveal .4s ease-out .15s forwards} .stagger-2{opacity:0;animation:itemReveal .4s ease-out .2s forwards} .stagger-3{opacity:0;animation:itemReveal .4s ease-out .25s forwards} .stagger-4{opacity:0;animation:itemReveal .4s ease-out .3s forwards} .stagger-5{opacity:0;animation:itemReveal .4s ease-out .35s forwards}
+        .header-emoji{display:inline-block;background:linear-gradient(135deg,rgba(107,91,255,0.2),rgba(163,150,255,0.1));width:50px;height:50px;border-radius:14px;font-size:1.6rem;line-height:50px;margin-bottom:10px;border:1px solid rgba(107,91,255,0.3);box-shadow:0 6px 18px rgba(107,91,255,0.2)}
+        h2{font-family:'DM Serif Display',serif;font-size:1.7rem;letter-spacing:-.5px;margin-bottom:3px} .header-subtitle{color:var(--text-muted);font-size:.9rem}
+        .form-label{color:var(--text-muted);font-size:.7rem;font-weight:700;text-transform:uppercase;display:block;margin:6px 0;letter-spacing:1px}
+        .dark-input{width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg-input);color:#FFF;outline:none;transition:.3s ease;font-size:.9rem;box-shadow:inset 0 2px 4px rgba(0,0,0,0.2)}
+        .dark-input:focus{border-color:var(--accent);background:rgba(28,28,38,0.8);box-shadow:0 0 0 3px rgba(107,91,255,0.15),inset 0 2px 4px rgba(0,0,0,0.2)}
+        .text-danger{color:var(--danger);font-size:.75rem;font-weight:500;margin-top:4px;display:block;padding-left:3px}
+        .btn-gradient{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),#8375FF);color:#FFF;border:none;border-radius:12px;cursor:pointer;transition:all .3s ease;margin-top:15px;font-size:1rem;font-weight:700;letter-spacing:-.3px;box-shadow:0 8px 18px rgba(107,91,255,0.25)}
+        .btn-gradient:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(107,91,255,0.4);filter:brightness(1.1)}
+        .validation-summary-errors{background:rgba(255,85,85,0.1);border:1px solid rgba(255,85,85,0.2);color:var(--danger);padding:10px;border-radius:12px;margin-bottom:15px;font-size:.85rem} .validation-summary-errors ul{list-style:none;margin:0;padding:0}
+        .fav-checkbox-hidden{display:none}
+        .fav-box{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.02);border:1px dashed var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;transition:all .3s ease;margin:10px 0;width:100%}
+        .fav-box:hover{background:rgba(255,255,255,0.04);border-color:#4A4A63}
+        .fav-star{font-size:1.3rem;color:#3E3E54;transition:all .3s ease;line-height:1;margin-top:-2px} .fav-text{color:var(--text-muted);font-weight:600;font-size:.9rem;transition:all .3s ease}
+        .fav-checkbox-hidden:checked + .fav-box{border-style:solid;border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05)}
+        .fav-checkbox-hidden:checked + .fav-box .fav-star{color:#FBBF24;text-shadow:0 0 10px rgba(251,191,36,0.5);transform:scale(1.1)} .fav-checkbox-hidden:checked + .fav-box .fav-text{color:#FBBF24}
+        .emoji-picker-wrapper{position:relative}
+        .emoji-btn{background-color:var(--bg-input);border:1px solid var(--border);color:#FFF;border-radius:12px;padding:10px;width:45px;height:100%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:.3s ease} .emoji-btn:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.02)}
+        .emoji-popover{position:absolute;top:calc(100% + 8px);left:0;width:270px;background:rgba(20,20,28,0.95);border:1px solid var(--border);border-radius:14px;padding:12px;z-index:1000;display:none;box-shadow:0 12px 35px rgba(0,0,0,0.5);backdrop-filter:blur(15px)} .emoji-popover.show{display:block;animation:itemReveal .2s ease-out forwards}
+        .emoji-scroll-area{max-height:200px;overflow-y:auto;overflow-x:hidden;padding-right:5px} .emoji-scroll-area::-webkit-scrollbar{width:4px} .emoji-scroll-area::-webkit-scrollbar-thumb{background:#3E3E54;border-radius:10px}
+        .emoji-section-title{font-size:.65rem;color:#A396FF;font-weight:800;text-transform:uppercase;margin:12px 0 6px 4px;letter-spacing:.5px} .emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+        .emoji-item{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border-radius:8px;cursor:pointer;transition:.2s;line-height:1} .emoji-item:hover{background:rgba(107,91,255,0.2);transform:scale(1.15);z-index:2;position:relative}
+        @@media(max-width:576px){.glass-card{padding:20px;max-width:100%;border-radius:18px}h2{font-size:1.5rem}.emoji-popover{width:240px}}
     </style>
 </head>
 <body>
     <div class="glass-card">
-        <div class="form-header">
+        <div class="header-content">
+            <div class="header-emoji">✏️</div>
             <h2>Editar Contacto</h2>
-            <p>Modifica los datos de <strong>@Model.Nombre</strong></p>
+            <p class="header-subtitle">Modifica los datos de <strong>@Model.Nombre</strong></p>
         </div>
 
         <form asp-action="Editar" method="post" novalidate>
@@ -416,9 +84,7 @@
                             foreach (var cat in (IEnumerable<ContactManagerWeb.Models.Categoria>)ViewBag.Categorias)
                             {
                                 if (cat.NombreCategoria != "General")
-                                {
-                                    <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option>
-                                }
+                                { <option value="@cat.NombreCategoria">@cat.Emoji @cat.NombreCategoria</option> }
                             }
                         }
                         <option value="NUEVA_CATEGORIA" style="color: var(--accent); font-weight: bold;">➕ Crear nueva categoría...</option>
@@ -427,8 +93,8 @@
                 </div>
             </div>
 
-            <div id="nuevaCategoriaContainer" class="stagger-2" style="display: none; margin-top: 12px; background: rgba(90, 79, 207, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--accent); z-index: 99; position: relative;">
-                <p style="font-size: 0.75rem; color: #A396FF; margin-bottom: 8px; font-weight: 600;">✨ CREAR CATEGORÍA RÁPIDA</p>
+            <div id="nuevaCategoriaContainer" class="stagger-2" style="display: none; margin-top: 10px; background: rgba(90, 79, 207, 0.05); padding: 12px; border-radius: 12px; border: 1px dashed var(--accent); position: relative; z-index: 99;">
+                <p style="font-size: 0.7rem; color: #A396FF; margin-bottom: 8px; font-weight: 600;">✨ CREAR CATEGORÍA RÁPIDA</p>
                 <div class="d-flex gap-2 gx-1">
                     <div class="emoji-picker-wrapper">
                         <button type="button" id="emojiBtn" class="emoji-btn">📁</button>
@@ -437,31 +103,25 @@
                             <div class="emoji-scroll-area">
                                 <div class="emoji-section-title">Caritas y Emociones</div>
                                 <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('😀')">😀</div>
-                                    <div class="emoji-item" onclick="selectEmoji('😂')">😂</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥰')">🥰</div>
-                                    <div class="emoji-item" onclick="selectEmoji('😎')">😎</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥺')">🥺</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🥳')">🥳</div>
+                                    <div class="emoji-item" onclick="selectEmoji('😀')">😀</div> <div class="emoji-item" onclick="selectEmoji('😂')">😂</div>
+                                    <div class="emoji-item" onclick="selectEmoji('🥰')">🥰</div> <div class="emoji-item" onclick="selectEmoji('😎')">😎</div>
+                                    <div class="emoji-item" onclick="selectEmoji('🥺')">🥺</div> <div class="emoji-item" onclick="selectEmoji('🥳')">🥳</div>
                                 </div>
                                 <div class="emoji-section-title">Símbolos</div>
                                 <div class="emoji-grid">
-                                    <div class="emoji-item" onclick="selectEmoji('✨')">✨</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🔥')">🔥</div>
-                                    <div class="emoji-item" onclick="selectEmoji('🌟')">🌟</div>
-                                    <div class="emoji-item" onclick="selectEmoji('📌')">📌</div>
+                                    <div class="emoji-item" onclick="selectEmoji('✨')">✨</div> <div class="emoji-item" onclick="selectEmoji('🔥')">🔥</div>
+                                    <div class="emoji-item" onclick="selectEmoji('🌟')">🌟</div> <div class="emoji-item" onclick="selectEmoji('📌')">📌</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre de categoría" style="flex: 1; border-radius: 8px; font-size: 0.85rem;" />
+                    <input type="text" id="inputNuevaCategoria" name="NuevaCategoriaTexto" class="dark-input" placeholder="Nombre de categoría" style="flex: 1; border-radius: 12px; font-size: 0.85rem;" />
                 </div>
             </div>
 
             <input asp-for="EsFavorito" type="checkbox" class="fav-checkbox-hidden" id="favCheck" />
             <label class="fav-box stagger-3" for="favCheck">
-                <span class="fav-star">★</span>
-                <span class="fav-text" id="favLabelText">Marcar como favorito ⭐</span>
+                <span class="fav-star">★</span> <span class="fav-text" id="favLabelText">Marcar como favorito ⭐</span>
             </label>
 
             <div class="row gx-2 stagger-4">
@@ -477,8 +137,8 @@
                 </div>
             </div>
 
-            <div class="row gx-2 stagger-4" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
-                <p style="font-size: 0.75rem; color: #5A4FCF; margin-bottom: 8px; font-weight: 700;">DATOS ADICIONALES (MULTITABLAS)</p>
+            <div class="row gx-2 stagger-4" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);">
+                <p style="font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; font-weight: 700;">DATOS ADICIONALES (MULTITABLAS)</p>
                 <div class="col-md-6 mb-2">
                     <label asp-for="TelefonoSecundario" class="form-label">Teléfono Alternativo</label>
                     <input asp-for="TelefonoSecundario" id="TelefonoSecundario" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
@@ -492,81 +152,39 @@
             </div>
 
             <button type="submit" class="btn-gradient stagger-5">Guardar Cambios</button>
-            <a asp-action="Index" class="stagger-5" style="display:block; text-align:center; color:var(--text-muted); margin-top:12px; text-decoration:none; transition: 0.3s; font-size: 0.85rem;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='var(--text-muted)'">Cancelar y volver</a>
+            <a asp-action="Index" class="stagger-5" style="display:block; text-align:center; color:var(--text-muted); margin-top:14px; text-decoration:none; transition: 0.3s; font-size: 0.9rem; font-weight: 600;" onmouseover="this.style.color='#FFF'" onmouseout="this.style.color='var(--text-muted)'">Cancelar y volver</a>
         </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-
     <script>
-        const emojiBtn = document.getElementById('emojiBtn');
-        const emojiPopover = document.getElementById('emojiPopover');
-        const inputEmojiOculto = document.getElementById('inputEmojiOculto');
+        const emojiBtn=document.getElementById('emojiBtn'),emojiPopover=document.getElementById('emojiPopover'),inputEmojiOculto=document.getElementById('inputEmojiOculto');
+        emojiBtn.addEventListener('click',e=>{e.preventDefault();emojiPopover.classList.toggle('show');});
+        function selectEmoji(e){emojiBtn.textContent=e;inputEmojiOculto.value=e;emojiPopover.classList.remove('show');}
+        document.addEventListener('click',e=>{if(!emojiBtn.contains(e.target)&&!emojiPopover.contains(e.target))emojiPopover.classList.remove('show');});
+        
+        const f = document.getElementById('favCheck');
+        f.addEventListener('change',function(){document.getElementById('favLabelText').textContent=this.checked?'¡Es un contacto favorito! ⭐':'Marcar como favorito ⭐';});
+        f.dispatchEvent(new Event('change'));
 
-        emojiBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            emojiPopover.classList.toggle('show');
-        });
-
-        function selectEmoji(emoji) {
-            emojiBtn.textContent = emoji;
-            inputEmojiOculto.value = emoji;
-            emojiPopover.classList.remove('show');
+        function verificarNuevaCategoria(){
+            const s=document.getElementById("selectCategoria"), c=document.getElementById("nuevaCategoriaContainer"), i=document.getElementById("inputNuevaCategoria");
+            if(s.value==="NUEVA_CATEGORIA"){ c.style.display="block"; i.focus(); } else { c.style.display="none"; i.value=""; }
         }
-
-        document.addEventListener('click', (e) => {
-            if (!emojiBtn.contains(e.target) && !emojiPopover.contains(e.target)) {
-                emojiPopover.classList.remove('show');
-            }
-        });
-
-        const favCheckbox = document.getElementById('favCheck');
-        const favLabelText = document.getElementById('favLabelText');
-
-        favCheckbox.addEventListener('change', function() {
-            favLabelText.textContent = this.checked ? '¡Es un contacto favorito! ⭐' : 'Marcar como favorito ⭐';
-        });
-        favCheckbox.dispatchEvent(new Event('change'));
-
-        function verificarNuevaCategoria() {
-            var select = document.getElementById("selectCategoria");
-            var container = document.getElementById("nuevaCategoriaContainer");
-            var inputTexto = document.getElementById("inputNuevaCategoria");
-
-            if (select.value === "NUEVA_CATEGORIA") {
-                container.style.display = "block";
-                inputTexto.focus();
-            } else {
-                container.style.display = "none";
-                inputTexto.value = "";
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", verificarNuevaCategoria);
 
-        function aplicarMascara(id) {
-            const input = document.getElementById(id);
-            if(!input) return;
-
-            input.addEventListener('focus', function() {
-                if (this.value.trim() === "") this.value = "+503 ";
-            });
-            input.addEventListener('input', function() {
-                let value = this.value;
-                if (!value.startsWith("+503 ")) {
-                    let digits = value.replace(/\D/g, "");
-                    if (digits.startsWith("503")) digits = digits.substring(3);
-                    value = "+503 " + digits;
-                }
-                let numbers = value.substring(5).replace(/\D/g, "").substring(0, 8);
-                this.value = numbers.length > 4 ? "+503 " + numbers.substring(0, 4) + "-" + numbers.substring(4) : "+503 " + numbers;
+        function aplicarMascara(id){
+            const i=document.getElementById(id);
+            if(!i) return;
+            i.addEventListener('focus',function(){if(this.value.trim()==="")this.value="+503 ";});
+            i.addEventListener('input',function(){
+                let v=this.value;if(!v.startsWith("+503 ")){let d=v.replace(/\D/g,"");if(d.startsWith("503"))d=d.substring(3);v="+503 "+d;}
+                let n=v.substring(5).replace(/\D/g,"").substring(0,8);this.value=n.length>4?"+503 "+n.substring(0,4)+"-"+n.substring(4):"+503 "+n;
             });
         }
-
-        aplicarMascara('Telefono');
-        aplicarMascara('TelefonoSecundario');
+        aplicarMascara('Telefono');aplicarMascara('TelefonoSecundario');
     </script>
 </body>
 </html>

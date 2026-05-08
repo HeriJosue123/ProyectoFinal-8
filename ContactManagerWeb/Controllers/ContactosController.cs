@@ -22,16 +22,15 @@ namespace ContactManagerWeb.Controllers
             _contactService = contactService;
         }
 
-        // --- 1. AGENDA PRINCIPAL (OPTIMIZADA PARA VELOCIDAD) ---
+        // 1. AGENDA PRINCIPAL (Arreglado para contadores persistentes)
         public async Task<IActionResult> Index(string searchString, string categoria, bool? soloFavoritos)
         {
-            // .AsNoTracking() hace que la consulta sea mucho más rápida para lectura
+            // CONSULTA A: Para el contenido central (filtrado)
             IQueryable<Contacto> query = _context.Contactos
                 .AsNoTracking()
                 .Include(c => c.Categoria)
                 .Include(c => c.Telefonos);
 
-            // Filtros de búsqueda
             if (!string.IsNullOrEmpty(searchString))
                 query = query.Where(s => s.Nombre.Contains(searchString) || (s.Apellido != null && s.Apellido.Contains(searchString)));
 
@@ -41,15 +40,15 @@ namespace ContactManagerWeb.Controllers
             if (soloFavoritos == true)
                 query = query.Where(c => c.EsFavorito);
 
-            // Ejecutamos la consulta principal una sola vez
-            var todosLosContactos = await query.OrderBy(c => c.Nombre).ToListAsync();
+            var contactosFiltrados = await query.OrderBy(c => c.Nombre).ToListAsync();
 
-            // Traemos las categorías para la barra lateral
+            // --- CONSULTA B: ARREGLO DE CONTADORES (Globales para la barra lateral) ---
+            // Traemos todos los contactos y categorías sin filtros para que el contador sea real
+            var todosLosContactosGlobal = await _context.Contactos.AsNoTracking().ToListAsync();
             var categoriasLista = await _context.Categorias.AsNoTracking().ToListAsync();
 
-            // CONTEOS EN MEMORIA (Evita 3-4 llamadas extras a la BD, bajando el tiempo de carga)
-            ViewBag.TotalTodos = todosLosContactos.Count;
-            ViewBag.TotalFavoritos = todosLosContactos.Count(c => c.EsFavorito);
+            ViewBag.TotalTodos = todosLosContactosGlobal.Count;
+            ViewBag.TotalFavoritos = todosLosContactosGlobal.Count(c => c.EsFavorito);
 
             ViewBag.CategoriasDinamicas = categoriasLista
                 .Where(cat => cat.NombreCategoria != "General")
@@ -57,10 +56,11 @@ namespace ContactManagerWeb.Controllers
                     Id = cat.Id,
                     NombreCategoria = cat.NombreCategoria,
                     Emoji = cat.Emoji,
-                    Count = todosLosContactos.Count(c => c.CategoriaId == cat.Id)
+                    // CLAVE: Contamos sobre el total global, así el sidebar no se queda en 0 al filtrar
+                    Count = todosLosContactosGlobal.Count(c => c.CategoriaId == cat.Id)
                 }).ToList();
 
-            return View(todosLosContactos);
+            return View(contactosFiltrados);
         }
 
         // --- 2. RECIENTES ---
@@ -116,7 +116,6 @@ namespace ContactManagerWeb.Controllers
                 {
                     int? idCategoriaFinal = null;
 
-                    // Resolver Categoría (Nueva o Existente)
                     if (modelo.Categoria == "NUEVA_CATEGORIA" && !string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
                     {
                         var catNombreLimpio = NuevaCategoriaTexto.Trim();
@@ -139,7 +138,6 @@ namespace ContactManagerWeb.Controllers
                         idCategoriaFinal = catBd?.Id;
                     }
 
-                    // Mapeo de ViewModel a Modelo de Base de Datos
                     var nuevoContacto = new Contacto
                     {
                         Nombre = modelo.Nombre,
@@ -152,7 +150,6 @@ namespace ContactManagerWeb.Controllers
                         Direcciones = new List<Direccion>()
                     };
 
-                    // Guardado en Tablas Relacionadas (Múltiples registros)
                     if (!string.IsNullOrEmpty(modelo.Telefono))
                         nuevoContacto.Telefonos.Add(new Telefono { Numero = modelo.Telefono });
                     if (!string.IsNullOrEmpty(modelo.TelefonoSecundario))
@@ -166,7 +163,6 @@ namespace ContactManagerWeb.Controllers
                     if (!string.IsNullOrEmpty(modelo.Direccion))
                         nuevoContacto.Direcciones.Add(new Direccion { DetalleFisico = modelo.Direccion });
 
-                    // Validaciones de Negocio
                     var erroresValidacion = await _contactService.ValidarYNormalizar(nuevoContacto);
                     if (erroresValidacion.Any())
                     {
@@ -243,7 +239,6 @@ namespace ContactManagerWeb.Controllers
 
                     if (contactoDb == null) return NotFound();
 
-                    // 1. Resolver Categoría
                     int? idCategoriaFinal = null;
                     if (modelo.Categoria == "NUEVA_CATEGORIA" && !string.IsNullOrWhiteSpace(NuevaCategoriaTexto))
                     {
@@ -272,7 +267,6 @@ namespace ContactManagerWeb.Controllers
                     contactoDb.EsFavorito = modelo.EsFavorito;
                     contactoDb.CategoriaId = idCategoriaFinal;
 
-                    // Limpieza y Actualización de Tablas Hijas
                     _context.Telefonos.RemoveRange(contactoDb.Telefonos);
                     if (!string.IsNullOrEmpty(modelo.Telefono))
                         contactoDb.Telefonos.Add(new Telefono { Numero = modelo.Telefono });

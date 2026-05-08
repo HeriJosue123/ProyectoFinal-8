@@ -39,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* --- Animaciones --- */
         @@keyframes scaleIn {
             from { opacity: 0; transform: scale(0.95) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
@@ -50,7 +49,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Tarjeta Principal */
         .card { 
             background: var(--bg-card);
             backdrop-filter: blur(20px);
@@ -65,7 +63,6 @@
             opacity: 0;
         }
 
-        /* Stagger para los elementos hijos */
         .header-content { opacity: 0; animation: itemReveal 0.5s ease-out 0.1s forwards; text-align: center; margin-bottom: 35px; }
         .stagger-1 { opacity: 0; animation: itemReveal 0.5s ease-out 0.2s forwards; }
         .stagger-2 { opacity: 0; animation: itemReveal 0.5s ease-out 0.3s forwards; }
@@ -93,7 +90,6 @@
 
         .header-subtitle { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* Campos del Formulario */
         .form-group { margin-bottom: 22px; position: relative; }
         
         label { 
@@ -117,7 +113,6 @@
 
         .text-danger { color: var(--danger); font-size: 0.75rem; margin-top: 6px; display: block; font-weight: 500; }
 
-        /* Selector de Emojis */
         .custom-emoji-picker { position: relative; user-select: none; }
         
         .emoji-trigger { 
@@ -157,7 +152,6 @@
         .emoji-dropdown::-webkit-scrollbar-thumb { background: #3E3E54; border-radius: 10px; }
         .emoji-dropdown::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        /* Botones */
         .btn-save { 
             width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #8375FF); 
             color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; 
@@ -193,7 +187,8 @@
             <p class="header-subtitle">Modifica los detalles de tu grupo</p>
         </div>
         
-        <form asp-action="Editar" method="post">
+        <form asp-action="Editar" method="post" novalidate>
+            <input type="hidden" name="volverA" value="@ViewBag.VolverA" />
             <input type="hidden" asp-for="Id" />
             
             <div asp-validation-summary="ModelOnly" class="validation-summary-errors stagger-1"></div>
@@ -364,7 +359,7 @@
                             <div class="emoji-item" onclick="selectEmoji('🕰️', 'Reloj Antiguo')">🕰️</div>
                             <div class="emoji-item" onclick="selectEmoji('🔑', 'Llave')">🔑</div>
                             <div class="emoji-item" onclick="selectEmoji('🧸', 'Oso')">🧸</div>
-                            <div class="emoji-item" onclick="selectEmoji('🛹', 'Patineta')">🛹</div>
+                            <div class="emoji-item" onclick="selectEmoji(' skateboard', 'Patineta')">🛹</div>
                         </div>
 
                         <div class="emoji-section-title">Símbolos Extras</div>
@@ -422,7 +417,15 @@
             </div>
 
             <button type="submit" class="btn-save stagger-4">Guardar Cambios</button>
-            <a asp-action="Index" asp-controller="Categorias" class="btn-back stagger-4">Cancelar y volver</a>
+            
+            @if (ViewBag.VolverA == "Contactos")
+            {
+                <a asp-action="Index" asp-controller="Contactos" class="btn-back stagger-4">Cancelar y volver</a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-controller="Categorias" class="btn-back stagger-4">Cancelar y volver</a>
+            }
         </form>
     </div>
 
@@ -442,7 +445,6 @@
             toggleEmojiDropdown();
         }
 
-        // Cerrar el dropdown al hacer click afuera
         window.onclick = function(event) {
             if (!event.target.closest('.custom-emoji-picker')) {
                 document.getElementById('emojiDropdown').classList.remove('active');
