@@ -133,7 +133,7 @@ namespace ContactManagerWeb.Controllers
         }
 
         // --- 5. ELIMINAR CATEGORÍA ---
-        public async Task<IActionResult> Eliminar(int? id)
+        public async Task<IActionResult> Eliminar(int? id, string? volverA) 
         {
             if (id == null) return NotFound();
 
@@ -146,12 +146,13 @@ namespace ContactManagerWeb.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.VolverA = volverA; 
             return View(categoria);
         }
 
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EliminarConfirmado(int id)
+        public async Task<IActionResult> EliminarConfirmado(int id, string? volverA) 
         {
             try
             {
@@ -161,6 +162,12 @@ namespace ContactManagerWeb.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
+            }
+
+            // Redirección 
+            if (volverA == "Contactos")
+            {
+                return RedirectToAction("Index", "Contactos");
             }
 
             return RedirectToAction(nameof(Index));

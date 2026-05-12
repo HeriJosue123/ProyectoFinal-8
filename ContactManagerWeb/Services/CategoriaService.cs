@@ -55,31 +55,34 @@ namespace ContactManagerWeb.Services
 
         public async Task EliminarYReasignar(int idCategoria)
         {
-            var categoria = await _context.Categorias.FindAsync(idCategoria);
-            if (categoria == null) throw new Exception("La categoría no existe.");
+            var categoriaABorrar = await _context.Categorias.FindAsync(idCategoria);
+            if (categoriaABorrar == null) throw new Exception("La categoría no existe.");
 
-            if (categoria.NombreCategoria.Trim().ToLower() == "general")
-            {
-                throw new Exception("La categoría 'General' es la predeterminada del sistema y no puede ser eliminada.");
-            }
-
+            // 1. Buscamos los contactos comparando el ID (Mucho más rápido y seguro)
             var contactosAfectados = await _context.Contactos
-                .Where(c => c.Categoria != null && c.Categoria.NombreCategoria == categoria.NombreCategoria)
+                .Where(c => c.CategoriaId == idCategoria)
                 .ToListAsync();
 
-            bool existeGeneral = await _context.Categorias.AnyAsync(c => c.NombreCategoria == "General");
-            if (!existeGeneral)
+            // 2. Buscamos o creamos la categoría "General" (el objeto completo)
+            var catGeneral = await _context.Categorias
+                .FirstOrDefaultAsync(c => c.NombreCategoria == "General");
+
+            if (catGeneral == null)
             {
-                _context.Categorias.Add(new Categoria { NombreCategoria = "General", Emoji = "📁" });
+                catGeneral = new Categoria { NombreCategoria = "General", Emoji = "📁" };
+                _context.Categorias.Add(catGeneral);
                 await _context.SaveChangesAsync();
             }
 
+            // 3. Reasignamos el OBJETO 'catGeneral' a cada contacto
             foreach (var contacto in contactosAfectados)
             {
+                contacto.Categoria = catGeneral; 
                 _context.Update(contacto);
             }
 
-            _context.Categorias.Remove(categoria);
+            // 4. Finalmente, borramos la categoría vieja
+            _context.Categorias.Remove(categoriaABorrar);
             await _context.SaveChangesAsync();
         }
     }

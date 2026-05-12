@@ -179,13 +179,19 @@
         </p>
 
         <form asp-action="Eliminar" method="post">
-            <input type="hidden" asp-for="Id" />
-            
-            <div class="button-group">
-                <a asp-action="Index" class="btn btn-cancel">Cancelar</a>
-                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-            </div>
-        </form>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" name="volverA" value="@ViewBag.VolverA" /> <div class="button-group">
+        @if (ViewBag.VolverA == "Contactos")
+        {
+            <a asp-controller="Contactos" asp-action="Index" class="btn btn-cancel">Cancelar</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-cancel">Cancelar</a>
+        }
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    </div>
+</form>
     </div>
 </body>
 </html>
