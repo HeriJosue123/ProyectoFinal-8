@@ -64,10 +64,12 @@
         }
 
         .header-content { opacity: 0; animation: itemReveal 0.5s ease-out 0.1s forwards; text-align: center; margin-bottom: 35px; }
-        .stagger-1 { opacity: 0; animation: itemReveal 0.5s ease-out 0.2s forwards; }
-        .stagger-2 { opacity: 0; animation: itemReveal 0.5s ease-out 0.3s forwards; }
-        .stagger-3 { opacity: 0; animation: itemReveal 0.5s ease-out 0.4s forwards; }
-        .stagger-4 { opacity: 0; animation: itemReveal 0.5s ease-out 0.5s forwards; }
+        
+        /* Ajuste de capas para los grupos del formulario */
+        .stagger-1 { position: relative; z-index: 4; opacity: 0; animation: itemReveal 0.5s ease-out 0.2s forwards; }
+        .stagger-2 { position: relative; z-index: 10; opacity: 0; animation: itemReveal 0.5s ease-out 0.3s forwards; }
+        .stagger-3 { position: relative; z-index: 2; opacity: 0; animation: itemReveal 0.5s ease-out 0.4s forwards; }
+        .stagger-4 { position: relative; z-index: 1; opacity: 0; animation: itemReveal 0.5s ease-out 0.5s forwards; }
 
         .header-emoji {
             display: inline-block;
@@ -113,7 +115,7 @@
 
         .text-danger { color: var(--danger); font-size: 0.75rem; margin-top: 6px; display: block; font-weight: 500; }
 
-        .custom-emoji-picker { position: relative; user-select: none; }
+        .custom-emoji-picker { position: relative; user-select: none; z-index: 100; }
         
         .emoji-trigger { 
             display: flex; align-items: center; justify-content: space-between; cursor: pointer; 
@@ -127,9 +129,10 @@
 
         .emoji-dropdown {
             position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
-            background: rgba(20, 20, 28, 0.95); border: 1px solid var(--border); border-radius: 16px;
+            background: var(--bg-card); /* Fondo sólido para tapar el contenido inferior */
+            border: 1px solid var(--border); border-radius: 16px;
             padding: 12px; z-index: 1000; display: none;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(15px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(15px);
             max-height: 280px; overflow-y: auto;
         }
         .emoji-dropdown.active { display: block; animation: itemReveal 0.2s ease-out; }
@@ -293,9 +296,9 @@
                             <div class="emoji-item" onclick="selectEmoji('🍕', 'Pizza')">🍕</div>
                             <div class="emoji-item" onclick="selectEmoji('🍟', 'Papas')">🍟</div>
                             <div class="emoji-item" onclick="selectEmoji('🌭', 'Hotdog')">🌭</div>
-                            <div class="emoji-item" onclick="selectEmoji('🍿', 'Palomitas')">🍿</div>
+                            <div class="emoji-item" onclick="selectEmoji(' popcorn', 'Palomitas')">🍿</div>
                             <div class="emoji-item" onclick="selectEmoji('🌮', 'Taco')">🌮</div>
-                            <div class="emoji-item" onclick="selectEmoji('🍣', 'Sushi')">🍣</div>
+                            <div class="emoji-item" onclick="selectEmoji(' sushi', 'Sushi')">🍣</div>
                             <div class="emoji-item" onclick="selectEmoji('🍩', 'Dona')">🍩</div>
                             <div class="emoji-item" onclick="selectEmoji('🍪', 'Galleta')">🍪</div>
                             <div class="emoji-item" onclick="selectEmoji('🍰', 'Pastel')">🍰</div>
@@ -320,10 +323,10 @@
                             <div class="emoji-item" onclick="selectEmoji('🧘', 'Yoga')">🧘</div>
                             <div class="emoji-item" onclick="selectEmoji('🏋️', 'Pesas')">🏋️</div>
                             <div class="emoji-item" onclick="selectEmoji('🏊', 'Nadar')">🏊</div>
-                            <div class="emoji-item" onclick="selectEmoji('🏄', 'Surf')">🏄</div>
-                            <div class="emoji-item" onclick="selectEmoji('🤽', 'Waterpolo')">🤽</div>
-                            <div class="emoji-item" onclick="selectEmoji('🚣', 'Remo')">🚣</div>
-                            <div class="emoji-item" onclick="selectEmoji('🏇', 'Caballo')">🏇</div>
+                            <div class="emoji-item" onclick="selectEmoji(' surfing', 'Surf')">🏄</div>
+                            <div class="emoji-item" onclick="selectEmoji(' waterpolo', 'Waterpolo')">🤽</div>
+                            <div class="emoji-item" onclick="selectEmoji(' rowing', 'Remo')">🚣</div>
+                            <div class="emoji-item" onclick="selectEmoji(' horse', 'Caballo')">🏇</div>
                             <div class="emoji-item" onclick="selectEmoji('🎮', 'Videojuegos')">🎮</div>
                             <div class="emoji-item" onclick="selectEmoji('🎨', 'Arte')">🎨</div>
                             <div class="emoji-item" onclick="selectEmoji('🎭', 'Teatro')">🎭</div>
@@ -344,21 +347,21 @@
                             <div class="emoji-item" onclick="selectEmoji('📞', 'Teléfono')">📞</div>
                             <div class="emoji-item" onclick="selectEmoji('📺', 'TV')">📺</div>
                             <div class="emoji-item" onclick="selectEmoji('💡', 'Foco')">💡</div>
-                            <div class="emoji-item" onclick="selectEmoji('🔦', 'Linterna')">🔦</div>
-                            <div class="emoji-item" onclick="selectEmoji('📔', 'Libreta')">📔</div>
+                            <div class="emoji-item" onclick="selectEmoji(' flashlight', 'Linterna')">🔦</div>
+                            <div class="emoji-item" onclick="selectEmoji(' notebook', 'Libreta')">📔</div>
                             <div class="emoji-item" onclick="selectEmoji('📚', 'Libros')">📚</div>
                             <div class="emoji-item" onclick="selectEmoji('✏️', 'Lápiz')">✏️</div>
-                            <div class="emoji-item" onclick="selectEmoji('🖊️', 'Bolígrafo')">🖊️</div>
+                            <div class="emoji-item" onclick="selectEmoji(' pen', 'Bolígrafo')">🖊️</div>
                             <div class="emoji-item" onclick="selectEmoji('💼', 'Maletín')">💼</div>
-                            <div class="emoji-item" onclick="selectEmoji('🎒', 'Mochila')">🎒</div>
-                            <div class="emoji-item" onclick="selectEmoji('🛍️', 'Bolsa')">🛍️</div>
+                            <div class="emoji-item" onclick="selectEmoji(' backpack', 'Mochila')">🎒</div>
+                            <div class="emoji-item" onclick="selectEmoji(' shopping', 'Bolsa')">🛍️</div>
                             <div class="emoji-item" onclick="selectEmoji('🎁', 'Regalo')">🎁</div>
-                            <div class="emoji-item" onclick="selectEmoji('🎈', 'Globo')">🎈</div>
+                            <div class="emoji-item" onclick="selectEmoji(' balloon', 'Globo')">🎈</div>
                             <div class="emoji-item" onclick="selectEmoji('💎', 'Joya')">💎</div>
-                            <div class="emoji-item" onclick="selectEmoji('🏆', 'Trofeo')">🏆</div>
-                            <div class="emoji-item" onclick="selectEmoji('🕰️', 'Reloj Antiguo')">🕰️</div>
+                            <div class="emoji-item" onclick="selectEmoji(' trophy', 'Trofeo')">🏆</div>
+                            <div class="emoji-item" onclick="selectEmoji(' clock', 'Reloj Antiguo')">🕰️</div>
                             <div class="emoji-item" onclick="selectEmoji('🔑', 'Llave')">🔑</div>
-                            <div class="emoji-item" onclick="selectEmoji('🧸', 'Oso')">🧸</div>
+                            <div class="emoji-item" onclick="selectEmoji(' teddy', 'Oso')">🧸</div>
                             <div class="emoji-item" onclick="selectEmoji(' skateboard', 'Patineta')">🛹</div>
                         </div>
 
@@ -374,7 +377,7 @@
                             <div class="emoji-item" onclick="selectEmoji('⚡', 'Rayo')">⚡</div>
                             <div class="emoji-item" onclick="selectEmoji('💎', 'VIP')">💎</div>
                             <div class="emoji-item" onclick="selectEmoji('🎯', 'Objetivo')">🎯</div>
-                            <div class="emoji-item" onclick="selectEmoji('♻️', 'Reciclaje')">♻️</div>
+                            <div class="emoji-item" onclick="selectEmoji(' recycling', 'Reciclaje')">♻️</div>
                             <div class="emoji-item" onclick="selectEmoji('✅', 'Check')">✅</div>
                             <div class="emoji-item" onclick="selectEmoji('❌', 'Error')">❌</div>
                             <div class="emoji-item" onclick="selectEmoji('⚠️', 'Peligro')">⚠️</div>
