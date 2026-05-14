@@ -19,8 +19,8 @@
 
     <style>
             :root {
-                --bg-sidebar: rgba(15, 15, 20, 0.85); /* Un poco más transparente */
-                --bg-main: #07040D; 
+                --bg-sidebar: rgba(15, 15, 20, 0.85);
+                --bg-main: #07040D;
                 --bg-card: rgba(28, 28, 38, 0.6);
                 --text-white: #FFFFFF;
                 --text-muted: #8A8A9E;
@@ -45,33 +45,57 @@
                 position: relative;
             }
 
-            /* --- CUADRÍCULA Y LUCES DEL HOME AÑADIDAS AQUÍ --- */
-            body::before {
-                content: ''; position: absolute; inset: 0;
-                background-image: 
-                    linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-                background-size: 40px 40px; z-index: -2; pointer-events: none;
-            }
+                /* --- CUADRÍCULA Y LUCES --- */
+                body::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background-image: linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+                    background-size: 40px 40px;
+                    z-index: -2;
+                    pointer-events: none;
+                }
 
             .ambient-light {
-                position: fixed; border-radius: 50%; filter: blur(140px);
-                z-index: -1; pointer-events: none; opacity: 0.3;
+                position: fixed;
+                border-radius: 50%;
+                filter: blur(140px);
+                z-index: -1;
+                pointer-events: none;
+                opacity: 0.3;
             }
-            .light-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #5B21B6; }
-            .light-2 { bottom: -20%; right: 10%; width: 600px; height: 600px; background: #4C1D95; }
 
-            /* --- OVERLAY DE TRANSICIÓN OSCURO Y SUTIL (RÁPIDO) --- */
+            .light-1 {
+                top: -10%;
+                left: -10%;
+                width: 500px;
+                height: 500px;
+                background: #5B21B6;
+            }
+
+            .light-2 {
+                bottom: -20%;
+                right: 10%;
+                width: 600px;
+                height: 600px;
+                background: #4C1D95;
+            }
+
+            /* --- OVERLAY DE TRANSICIÓN --- */
             .page-transition-overlay {
-                position: fixed; inset: 0;
-                background: rgba(7, 4, 13, 0.98); 
-                backdrop-filter: blur(10px); 
+                position: fixed;
+                inset: 0;
+                background: rgba(7, 4, 13, 0.98);
+                backdrop-filter: blur(10px);
                 z-index: 99999;
                 opacity: 1;
                 pointer-events: none;
-                transition: opacity 0.4s ease-out; 
+                transition: opacity 0.4s ease-out;
             }
-            body.loaded .page-transition-overlay { opacity: 0; }
+
+            body.loaded .page-transition-overlay {
+                opacity: 0;
+            }
 
             ::-webkit-scrollbar {
                 width: 8px;
@@ -95,20 +119,19 @@
                 outline: none;
             }
 
-            /* --- ANIMACIÓN DE ENFOQUE "COOL" (ÁGIL) --- */
+            /* --- ANIMACIÓN DE ENFOQUE --- */
             .app-container {
                 display: flex;
                 min-height: 100vh;
                 position: relative;
-                transform: scale(1.02); 
-                filter: blur(4px); 
-                transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease-out; 
+                transform: scale(1.02);
+                filter: blur(4px);
+                transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease-out;
             }
-            
-            /* Estado final al cargar */
+
             body.loaded .app-container {
-                transform: scale(1);
-                filter: blur(0px);
+                transform: none;
+                filter: none;
             }
 
             @@keyframes fadeUp {
@@ -145,23 +168,21 @@
                 animation: floatIcon 3.5s ease-in-out infinite;
             }
 
-            /* --- SIDEBAR ILUMINADA --- */
+            /* --- SIDEBAR --- */
             .sidebar {
                 width: 280px;
                 min-width: 280px;
                 background-color: var(--bg-sidebar);
-                background-image: 
-                    linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, transparent 40%), 
-                    radial-gradient(circle at bottom right, rgba(91, 33, 182, 0.1) 0%, transparent 50%);
+                background-image: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, transparent 40%), radial-gradient(circle at bottom right, rgba(91, 33, 182, 0.1) 0%, transparent 50%);
                 backdrop-filter: blur(20px);
-                border-right: 1px solid rgba(139, 92, 246, 0.15); /* Borde sutil morado */
+                border-right: 1px solid rgba(139, 92, 246, 0.15);
                 position: fixed;
                 top: 0;
                 left: 0;
                 bottom: 0;
                 z-index: 1000;
                 transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                box-shadow: 5px 0 30px rgba(0,0,0,0.5), inset -2px 0 20px rgba(139, 92, 246, 0.05); /* Sombra interna */
+                box-shadow: 5px 0 30px rgba(0,0,0,0.5), inset -2px 0 20px rgba(139, 92, 246, 0.05);
             }
 
                 .sidebar.collapsed {
@@ -220,16 +241,12 @@
                 left: 0;
                 width: 100vw;
                 height: 100vh;
-                background: rgba(0,0,0,0.7);
+                background: transparent;
                 z-index: 999;
-                backdrop-filter: blur(5px);
-                opacity: 0;
-                transition: opacity 0.3s ease;
             }
 
                 .mobile-overlay.show {
                     display: block;
-                    opacity: 1;
                 }
 
             .logo-row {
@@ -444,7 +461,6 @@
                     color: white;
                 }
 
-            /* --- BOTÓN SALIR PRO --- */
             .exit-link {
                 display: flex;
                 align-items: center;
@@ -710,8 +726,8 @@
                 position: absolute;
                 bottom: 100%;
                 top: auto;
-                right: 0; 
-                left: auto; 
+                right: 0;
+                left: auto;
                 margin-bottom: 8px;
                 background: rgba(20, 20, 28, 0.98);
                 backdrop-filter: blur(15px);
@@ -813,36 +829,107 @@
                 z-index: 0;
             }
 
-            @@media (max-width: 991.98px) {
+            /* RESPONSIVO */
+
+            @@media (max-width: 1024px) {
                 .sidebar {
                     transform: translateX(-280px);
                 }
-
                     .sidebar .toggle-btn {
-                        right: -50px;
-                        background: rgba(28, 28, 38, 0.9);
+                        right: -65px;
+                        top: 20px;
+                        width: 45px;
+                        height: 45px;
+                        background: rgba(28, 28, 38, 0.95);
                         backdrop-filter: blur(10px);
+                        border: 1px solid rgba(139, 92, 246, 0.4);
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 15px rgba(139, 92, 246, 0.2);
+                        border-radius: 12px;
                     }
 
                     .sidebar.mobile-open {
                         transform: translateX(0);
                     }
 
+                        .sidebar.mobile-open .toggle-btn {
+                            right: 20px;
+                            border-color: var(--border-color);
+                            box-shadow: none;
+                        }
+                
                 .main {
                     margin-left: 0 !important;
-                    padding: 20px 15px 40px 15px;
+                    padding: 85px 20px 40px 20px;
+                    transition: margin-left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 }
+                
 
                 .topbar {
                     flex-direction: column;
                     align-items: flex-start;
-                    gap: 15px;
-                    padding-left: 45px;
+                    gap: 20px;
+                    padding-left: 0;
+                    margin-bottom: 30px;
+                }
+
+                .page-title {
+                    font-size: 1.8rem;
+                }
+                /* Menú de pestañas deslizable (Swipe) */
+                .tab-row {
+                    width: 100%;
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    padding-bottom: 8px;
+                    -webkit-overflow-scrolling: touch;
+                    justify-content: flex-start;
+                }
+
+                    .tab-row::-webkit-scrollbar {
+                        height: 4px;
+                    }
+
+                    .tab-row::-webkit-scrollbar-thumb {
+                        background: rgba(255,255,255,0.15);
+                        border-radius: 4px;
+                    }
+
+                .tab {
+                    white-space: nowrap;
+                    padding: 8px 16px;
+                    font-size: 0.85rem;
                 }
 
                 .dropdown-content {
                     right: 0;
                     left: auto;
+                }
+            }
+
+            /* Celulares más pequeños */
+            @@media (max-width: 575.98px) {
+                .fav-card, .c-card {
+                    padding: 12px 14px;
+                    gap: 10px;
+                }
+
+                .avatar-box {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.1rem;
+                }
+
+                .contact-name {
+                    font-size: 0.95rem;
+                }
+
+                .contact-phone {
+                    font-size: 0.75rem;
+                }
+
+                .empty-state-glow {
+                    width: 200px;
+                    height: 200px;
                 }
             }
     </style>
@@ -852,18 +939,15 @@
     <div class="page-transition-overlay" id="transitionOverlay"></div>
 
     <script>
-        // SCRIPT DE DETECCIÓN INTELIGENTE
-        // Solo hacer la transición suave si NO venimos navegando dentro de la misma aplicación
-        const ref = document.referrer.toLowerCase();
-        if (ref.includes('/contactos') || ref.includes('/categorias')) {
-            document.getElementById('transitionOverlay').style.display = 'none';
-            document.body.classList.add('loaded'); // Entra inmediato
-        } else {
-            // Si venimos del Home o de afuera, ejecuta la animación de entrada
-            setTimeout(() => {
+            const ref = document.referrer.toLowerCase();
+            if (ref.includes('/contactos') || ref.includes('/categorias')) {
+                document.getElementById('transitionOverlay').style.display = 'none';
                 document.body.classList.add('loaded');
-            }, 50);
-        }
+            } else {
+                setTimeout(() => {
+                    document.body.classList.add('loaded');
+                }, 50);
+            }
     </script>
 
     <div class="ambient-light light-1"></div>
@@ -924,7 +1008,7 @@
                                     <div class="cat-dropdown-portal">
                                         <a asp-controller="Categorias" asp-action="Detalles" asp-route-id="@cat.Id">👀 Detalles</a>
                                         <a asp-controller="Categorias" asp-action="Editar" asp-route-id="@cat.Id" asp-route-volverA="Contactos">✏️ Editar</a>
-                                        <a asp-controller="Categorias" asp-action="Eliminar" asp-route-id="@cat.Id" asp-route-volverA="Contactos" class="btn-delete">🗑️ Eliminar</a>
+                                        <a asp-controller="Categorias" asp-action="Eliminar" asp-route-id="@cat.Id">🗑️ Eliminar</a>
                                     </div>
                                 </div>
                             </div>
@@ -1011,11 +1095,11 @@
                                                 <button class="dropdown-btn">⋮</button>
                                                 <div class="dropdown-content">
                                                     <a asp-action="Detalles" asp-route-id="@item.Id">👀 Detalles</a>
-                                                    
+
                                                     <a asp-action="Editar" asp-route-id="@item.Id">
                                                         📁 @(item.Categoria == null || item.Categoria.NombreCategoria == "General" ? "Asignar Categoría" : "Cambiar Categoría")
                                                     </a>
-                                                    
+
                                                     <a asp-action="Editar" asp-route-id="@item.Id">✏️ Editar</a>
                                                     <a asp-action="Eliminar" asp-route-id="@item.Id" class="btn-delete">🗑️ Eliminar</a>
                                                 </div>
@@ -1056,13 +1140,13 @@
                                                 <button class="dropdown-btn">⋮</button>
                                                 <div class="dropdown-content">
                                                     <a asp-action="Detalles" asp-route-id="@contact.Id">👀 Detalles</a>
-                                                    
+
                                                     <a asp-action="Editar" asp-route-id="@contact.Id">
                                                         📁 @(contact.Categoria == null || contact.Categoria.NombreCategoria == "General" ? "Asignar Categoría" : "Cambiar Categoría")
                                                     </a>
-                                                    
+
                                                     <a asp-action="Editar" asp-route-id="@contact.Id">✏️ Editar</a>
-                                                    <a asp-controller="Categorias" asp-action="Eliminar" asp-route-id="@contact.Id" asp-route-volverA="Contactos" class="btn-delete">🗑️ Eliminar</a>
+                                                    <a asp-action="Eliminar" asp-route-id="@contact.Id" class="btn-delete">🗑️ Eliminar</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -1080,116 +1164,117 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('mainSidebar');
-            const mainContent = document.getElementById('mainContent');
-            const toggleBtn = document.getElementById('toggleBtn');
-            const toggleIcon = document.getElementById('toggleIcon');
-            const mobileOverlay = document.getElementById('mobileOverlay');
+        const sidebar = document.getElementById('mainSidebar');
+        const mainContent = document.getElementById('mainContent');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const mobileOverlay = document.getElementById('mobileOverlay');
 
-            if (window.innerWidth < 992) {
-                sidebar.classList.add('collapsed');
-                toggleIcon.textContent = '☰';
-            }
+        // --- CAMBIO PARA TABLETS (1024px) ---
+        if (window.innerWidth <= 1024) {
+        sidebar.classList.add('collapsed');
+        toggleIcon.textContent = '☰';
+        }
 
-            function toggleSidebar() {
-                if (window.innerWidth < 992) {
-                    sidebar.classList.toggle('mobile-open');
-                    mobileOverlay.classList.toggle('show');
-                    toggleIcon.textContent = sidebar.classList.contains('mobile-open') ? '◀' : '☰';
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                    toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '☰' : '◀';
-                }
-            }
+        function toggleSidebar() {
+        if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle('mobile-open');
+        mobileOverlay.classList.toggle('show');
+        toggleIcon.textContent = sidebar.classList.contains('mobile-open') ? '◀' : '☰';
+        } else {
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
+        toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '☰' : '◀';
+        }
+        }
 
-            toggleBtn.addEventListener('click', toggleSidebar);
-            mobileOverlay.addEventListener('click', toggleSidebar);
+        toggleBtn.addEventListener('click', toggleSidebar);
+        mobileOverlay.addEventListener('click', toggleSidebar);
 
-            const catMenus = document.querySelectorAll('.cat-dropdown-portal');
-            catMenus.forEach(menu => document.body.appendChild(menu));
+        const catMenus = document.querySelectorAll('.cat-dropdown-portal');
+        catMenus.forEach(menu => document.body.appendChild(menu));
 
-            const triggerWraps = document.querySelectorAll('.cat-trigger-wrap');
-            let hideTimeout;
+        const triggerWraps = document.querySelectorAll('.cat-trigger-wrap');
+        let hideTimeout;
 
-            const hideAllCatMenus = () => {
-                document.querySelectorAll('.cat-dropdown-portal.show').forEach(m => m.classList.remove('show'));
-            };
+        const hideAllCatMenus = () => {
+        document.querySelectorAll('.cat-dropdown-portal.show').forEach(m => m.classList.remove('show'));
+        };
 
-            triggerWraps.forEach((wrap, index) => {
-                const btn = wrap.querySelector('.trigger-cat-menu');
-                const menu = catMenus[index];
+        triggerWraps.forEach((wrap, index) => {
+        const btn = wrap.querySelector('.trigger-cat-menu');
+        const menu = catMenus[index];
 
-                wrap.addEventListener('mouseenter', () => {
-                    clearTimeout(hideTimeout);
-                    hideAllCatMenus();
-                    const rect = btn.getBoundingClientRect();
-                    menu.style.top = `${rect.top - 5}px`;
-                    menu.style.left = `${rect.right + 15}px`;
-                    menu.classList.add('show');
-                });
+        wrap.addEventListener('mouseenter', () => {
+        clearTimeout(hideTimeout);
+        hideAllCatMenus();
+        const rect = btn.getBoundingClientRect();
+        menu.style.top = `${rect.top - 5}px`;
+        menu.style.left = `${rect.right + 15}px`;
+        menu.classList.add('show');
+        });
 
-                wrap.addEventListener('mouseleave', () => {
-                    hideTimeout = setTimeout(() => { menu.classList.remove('show'); }, 200);
-                });
+        wrap.addEventListener('mouseleave', () => {
+        hideTimeout = setTimeout(() => { menu.classList.remove('show'); }, 200);
+        });
 
-                menu.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-                menu.addEventListener('mouseleave', () => {
-                    hideTimeout = setTimeout(() => menu.classList.remove('show'), 200);
-                });
-            });
+        menu.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+        menu.addEventListener('mouseleave', () => {
+        hideTimeout = setTimeout(() => menu.classList.remove('show'), 200);
+        });
+        });
 
-            const dropdowns = document.querySelectorAll('.dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.addEventListener('mouseenter', function() {
-                    const rect = this.getBoundingClientRect();
-                    if (rect.top < 180) this.classList.add('drop-down-force');
-                    else this.classList.remove('drop-down-force');
-                });
-            });
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('mouseenter', function() {
+        const rect = this.getBoundingClientRect();
+        if (rect.top < 180) this.classList.add('drop-down-force');
+        else this.classList.remove('drop-down-force');
+        });
+        });
 
-            const searchInput = document.getElementById('liveSearchInput');
-            const wrappers = document.querySelectorAll('.contact-item-wrapper');
-            const emptyState = document.getElementById('dynamicEmptyState');
+        const searchInput = document.getElementById('liveSearchInput');
+        const wrappers = document.querySelectorAll('.contact-item-wrapper');
+        const emptyState = document.getElementById('dynamicEmptyState');
 
-            const labelFav = document.querySelector('.section-label-fav');
-            const gridFav = document.querySelector('.section-grid-fav');
-            const labelOthers = document.querySelector('.section-label-others');
-            const gridOthers = document.querySelector('.section-grid-others');
+        const labelFav = document.querySelector('.section-label-fav');
+        const gridFav = document.querySelector('.section-grid-fav');
+        const labelOthers = document.querySelector('.section-label-others');
+        const gridOthers = document.querySelector('.section-grid-others');
 
-            if(searchInput) {
-                searchInput.addEventListener('input', function() {
-                    const query = this.value.toLowerCase().trim();
-                    let visibleCount = 0;
-                    let visibleFav = 0;
-                    let visibleOthers = 0;
+        if(searchInput) {
+        searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        let visibleCount = 0;
+        let visibleFav = 0;
+        let visibleOthers = 0;
 
-                    wrappers.forEach(wrap => {
-                        const nameEl = wrap.querySelector('.searchable-name');
-                        const phoneEl = wrap.querySelector('.searchable-phone');
-                        if(!nameEl || !phoneEl) return;
+        wrappers.forEach(wrap => {
+        const nameEl = wrap.querySelector('.searchable-name');
+        const phoneEl = wrap.querySelector('.searchable-phone');
+        if(!nameEl || !phoneEl) return;
 
-                        const name = nameEl.textContent.toLowerCase();
-                        const phone = phoneEl.textContent.toLowerCase();
+        const name = nameEl.textContent.toLowerCase();
+        const phone = phoneEl.textContent.toLowerCase();
 
-                        if (name.includes(query) || phone.includes(query)) {
-                            wrap.style.display = "";
-                            visibleCount++;
-                            if (wrap.classList.contains('fav-wrapper')) visibleFav++;
-                            else visibleOthers++;
-                        } else { wrap.style.display = "none"; }
-                    });
+        if (name.includes(query) || phone.includes(query)) {
+        wrap.style.display = "";
+        visibleCount++;
+        if (wrap.classList.contains('fav-wrapper')) visibleFav++;
+        else visibleOthers++;
+        } else { wrap.style.display = "none"; }
+        });
 
-                    if (labelFav) labelFav.style.display = (visibleFav > 0) ? "" : "none";
-                    if (gridFav) gridFav.style.display = (visibleFav > 0) ? "" : "none";
-                    if (labelOthers) labelOthers.style.display = (visibleOthers > 0) ? "" : "none";
-                    if (gridOthers) gridOthers.style.display = (visibleOthers > 0) ? "" : "none";
+        if (labelFav) labelFav.style.display = (visibleFav > 0) ? "" : "none";
+        if (gridFav) gridFav.style.display = (visibleFav > 0) ? "" : "none";
+        if (labelOthers) labelOthers.style.display = (visibleOthers > 0) ? "" : "none";
+        if (gridOthers) gridOthers.style.display = (visibleOthers > 0) ? "" : "none";
 
-                    if (emptyState) {
-                        emptyState.style.display = (visibleCount === 0 && query !== "") ? "block" : "none";
-                    }
-                });
-            }
+        if (emptyState) {
+        emptyState.style.display = (visibleCount === 0 && query !== "") ? "block" : "none";
+        }
+        });
+        }
         });
     </script>
 </body>

@@ -302,25 +302,34 @@ namespace ContactManagerWeb.Controllers
             return View(modelo);
         }
 
-        // --- 7. ELIMINAR ---
+        // --- 7. ELIMINAR (Corregido para evitar bloqueos) ---
         public async Task<IActionResult> Eliminar(int? id)
         {
-            if (id == null) return NotFound();
-            var contacto = await _context.Contactos.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
-            return contacto == null ? NotFound() : View(contacto);
+            if (id == null) return RedirectToAction(nameof(Index));
+
+            var contacto = await _context.Contactos
+                .AsNoTracking()
+                .Include(c => c.Categoria)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (contacto == null) return RedirectToAction(nameof(Index));
+
+            return View(contacto);
         }
 
+        // --- CONFIRMAR ELIMINACIÓN 
         [HttpPost, ActionName("Eliminar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EliminarConfirmado(int id)
         {
-            var c = await _context.Contactos.FindAsync(id);
-            if (c != null)
+            var contacto = await _context.Contactos.FindAsync(id);
+            if (contacto != null)
             {
-                _context.Contactos.Remove(c);
+                _context.Contactos.Remove(contacto);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index", "Contactos");
         }
 
         // --- 8. FAVORITOS ---
