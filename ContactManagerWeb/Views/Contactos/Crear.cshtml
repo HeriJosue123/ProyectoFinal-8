@@ -406,7 +406,7 @@
             <div class="row gx-2 stagger-1">
                 <div class="col-md-6 mb-2">
                     <label asp-for="Nombre" class="form-label">Nombre *</label>
-                    <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" autocomplete="off" />
+                    <input asp-for="Nombre" class="dark-input" placeholder="Ej: Laura" autocomplete="off" required />
                     <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-2">
@@ -419,7 +419,7 @@
             <div class="row gx-2 stagger-2">
                 <div class="col-md-6 mb-2">
                     <label asp-for="Telefono" class="form-label">Teléfono *</label>
-                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
+                    <input asp-for="Telefono" id="Telefono" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" maxlength="14" pattern="^\+503 \d{4}-\d{4}$" title="El teléfono debe tener exactamente 8 dígitos" required />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-2">
@@ -656,7 +656,7 @@
 
             <div class="row gx-2 stagger-4">
                 <div class="col-md-6 mb-2">
-                    <label asp-for="Correo" class="form-label">Correo </label>
+                    <label asp-for="Correo" class="form-label">Correo (Opcional)</label>
                     <input asp-for="Correo" class="dark-input" type="email" placeholder="correo@ejemplo.com" autocomplete="off" />
                     <span asp-validation-for="Correo" class="text-danger"></span>
                 </div>
@@ -670,12 +670,12 @@
             <div class="row gx-2 stagger-4" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);">
                 <p style="font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; font-weight: 700;">DATOS ADICIONALES (OPCIONALES)</p>
                 <div class="col-md-6 mb-2">
-                    <label asp-for="TelefonoSecundario" class="form-label">Teléfono Alt.</label>
-                    <input asp-for="TelefonoSecundario" id="TelefonoSecundario" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" />
+                    <label asp-for="TelefonoSecundario" class="form-label">Teléfono Alt. (Opcional)</label>
+                    <input asp-for="TelefonoSecundario" id="TelefonoSecundario" class="dark-input" placeholder="+503 XXXX-XXXX" autocomplete="off" maxlength="14" pattern="^\+503 \d{4}-\d{4}$" title="Debe ingresar exactamente 8 dígitos" />
                     <span asp-validation-for="TelefonoSecundario" class="text-danger"></span>
                 </div>
                 <div class="col-md-6 mb-2">
-                    <label asp-for="CorreoSecundario" class="form-label">Correo Alt.</label>
+                    <label asp-for="CorreoSecundario" class="form-label">Correo Alt. (Opcional)</label>
                     <input asp-for="CorreoSecundario" class="dark-input" type="email" placeholder="otro@ejemplo.com" autocomplete="off" />
                     <span asp-validation-for="CorreoSecundario" class="text-danger"></span>
                 </div>
@@ -696,9 +696,14 @@
         document.addEventListener('click',e=>{if(!emojiBtn.contains(e.target)&&!emojiPopover.contains(e.target))emojiPopover.classList.remove('show');});
         document.getElementById('favCheck').addEventListener('change',function(){document.getElementById('favLabelText').textContent=this.checked?'¡Es un contacto favorito! ⭐':'Marcar como favorito ⭐';});
         function verificarNuevaCategoria(){document.getElementById("nuevaCategoriaContainer").style.display=document.getElementById("selectCategoria").value==="NUEVA_CATEGORIA"?"block":"none";}
+
         function aplicarMascara(id){
         const i=document.getElementById(id);
         i.addEventListener('focus',function(){if(this.value.trim()==="")this.value="+503 ";});
+
+        
+        i.addEventListener('blur',function(){if(this.value.trim()==="+503")this.value="";});
+
         i.addEventListener('input',function(){
         let v=this.value;if(!v.startsWith("+503 ")){let d=v.replace(/\D/g,"");if(d.startsWith("503"))d=d.substring(3);v="+503 "+d;}
         let n=v.substring(5).replace(/\D/g,"").substring(0,8);this.value=n.length>4?"+503 "+n.substring(0,4)+"-"+n.substring(4):"+503 "+n;

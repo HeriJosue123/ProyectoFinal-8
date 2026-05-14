@@ -22,7 +22,7 @@ namespace ContactManagerWeb
 
             var app = builder.Build();
 
-            // Pegar esto en Program.cs antes de app.UseStaticFiles();
+            
             app.Use(async (context, next) =>
             {
                 context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
